@@ -4,6 +4,7 @@ Claude Code의 작업 방식을 직접 설계하는 하네스
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Claude Code](https://img.shields.io/badge/Claude%20Code-Plugin-blueviolet)](https://claude.ai/code)
+[![Status](https://img.shields.io/badge/Status-Early%20Stage-orange)](.)
 
 > [English](./README.md) | 한국어
 

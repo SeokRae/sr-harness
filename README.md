@@ -4,6 +4,7 @@
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Claude Code](https://img.shields.io/badge/Claude%20Code-Plugin-blueviolet)](https://claude.ai/code)
+[![Status](https://img.shields.io/badge/Status-Early%20Stage-orange)](.)
 
 > English | [한국어](./README.ko.md)
 
