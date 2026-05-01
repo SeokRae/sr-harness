@@ -1,6 +1,6 @@
 ---
 name: harness-issue
-description: GitHub Issue 생성 및 feature 브랜치 생성 스킬. harness-plan 완료 후 자동 실행. "이슈 만들어줘", "브랜치 생성", "작업 시작" 시 사용. 1 Issue = 1 Branch = 1 PR 규칙 강제. superpowers에 없는 신규 스킬.
+description: GitHub Issue 생성 및 feature 브랜치 생성 스킬. harness-plan 완료 후 자동 실행. "이슈 만들어줘", "브랜치 생성", "작업 시작" 시 사용. 1 Issue = 1 Branch = 1 PR 규칙 강제.
 ---
 
 # harness-issue

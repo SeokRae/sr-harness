@@ -1,6 +1,6 @@
 ---
 name: harness-finish
-description: 브랜치 마무리 및 PR 생성 스킬. superpowers:finishing-a-development-branch 대체. "완료", "PR 올려줘", "마무리", "push해줘" 시 사용. 항상 push + PR(Closes #N)로 마무리. 다른 선택지(로컬 머지, 브랜치 폐기 등) 없음.
+description: 브랜치 마무리 및 PR 생성 스킬. "완료", "PR 올려줘", "마무리", "push해줘" 시 사용. 항상 push + PR(Closes #N)로 마무리. 다른 선택지(로컬 머지, 브랜치 폐기 등) 없음.
 ---
 
 # harness-finish
@@ -12,8 +12,8 @@ description: 브랜치 마무리 및 PR 생성 스킬. superpowers:finishing-a-d
 
 ### 1. 최종 확인
 ```bash
-git status                    # 미커밋 변경사항 없는지
-./gradlew integrationTest     # 통합 테스트 (프로젝트에 따라)
+git status   # 미커밋 변경사항 없는지
+# 프로젝트에 맞는 테스트 실행 (예: ./gradlew test, npm test, pytest ...)
 ```
 
 ### 2. Push

@@ -1,6 +1,6 @@
 ---
 name: harness-plan
-description: 구현 계획을 단계별 검증 기준과 함께 수립하는 스킬. superpowers:writing-plans 대체. "어떻게 구현할까", "계획 세워줘", "설계해줘" 또는 harness-brainstorm 완료 후 자동 실행. 각 단계에 verify 기준 포함, karpathy §4 내장.
+description: 구현 계획을 단계별 검증 기준과 함께 수립하는 스킬. "어떻게 구현할까", "계획 세워줘", "설계해줘" 또는 harness-brainstorm 완료 후 자동 실행. 각 단계에 verify 기준 포함, karpathy §4 내장.
 ---
 
 # harness-plan

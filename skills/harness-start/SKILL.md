@@ -1,11 +1,10 @@
 ---
 name: harness-start
-description: sr-harness 세션 진입점. 모든 대화 시작 시 using-superpowers 대신 반드시 먼저 실행. 작업 유형(아이디어 탐색/계획/구현/디버깅/마무리)을 파악하고 적절한 harness 스킬로 라우팅. 코딩 작업 전 karpathy 체크 강제 실행.
+description: sr-harness 세션 진입점. 모든 대화 시작 시 반드시 먼저 실행. 작업 유형(아이디어 탐색/계획/구현/디버깅/마무리)을 파악하고 적절한 harness 스킬로 라우팅. 코딩 작업 전 karpathy 체크 강제 실행.
 ---
 
 # sr-harness 진입점
 
-superpowers:using-superpowers를 대체하는 세션 시작 스킬.
 **모든 응답 전에 이 스킬을 먼저 실행한다.**
 
 ## 세션 시작 루틴
@@ -35,7 +34,3 @@ superpowers:using-superpowers를 대체하는 세션 시작 스킬.
 - **단순성**: 더 단순한 방법이 있으면 → 먼저 제안
 - **성공 기준**: 완료 조건이 없으면 → 정의 후 시작
 
-## superpowers와의 관계
-
-이 플러그인이 설치된 경우, superpowers 워크플로우 스킬 대신 harness-* 스킬을 우선 사용한다.
-superpowers의 유틸리티 스킬(using-git-worktrees, dispatching-parallel-agents 등)은 그대로 사용 가능.
