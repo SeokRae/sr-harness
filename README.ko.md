@@ -174,7 +174,6 @@ claude plugins marketplace update sr-harness
 ## 참고
 
 - [andrej-karpathy-skills](https://github.com/forrestchang/andrej-karpathy-skills) — Karpathy 원칙 원본
-- [claude-plugins-official](https://github.com/anthropics/claude-plugins-official) — superpowers 플러그인
 
 ---
 

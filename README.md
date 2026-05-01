@@ -152,20 +152,6 @@ One rule: `Closes #N` in the **PR body** closes the Issue. `(#N)` in commit mess
 
 ---
 
-## Relationship with superpowers
-
-sr-harness replaces the superpowers workflow skills. superpowers utility skills remain available.
-
-| Keep using from superpowers |
-|-----------------------------|
-| `superpowers:using-git-worktrees` |
-| `superpowers:dispatching-parallel-agents` |
-| `superpowers:requesting-code-review` |
-| `superpowers:receiving-code-review` |
-| `superpowers:subagent-driven-development` |
-
----
-
 ## Updating Skills
 
 ```bash
@@ -190,7 +176,6 @@ Workflow patterns, Karpathy checkpoint improvements, and issue-driven rule refin
 ## References
 
 - [andrej-karpathy-skills](https://github.com/forrestchang/andrej-karpathy-skills) — Original Karpathy guidelines plugin
-- [claude-plugins-official](https://github.com/anthropics/claude-plugins-official) — superpowers plugin
 
 ---
 
