@@ -10,31 +10,21 @@ Claude Code의 작업 방식을 직접 설계하는 하네스
 
 ---
 
-## superpowers의 문제
+## 왜 만들었나
 
-[superpowers](https://github.com/anthropics/claude-plugins-official)는 Claude Code의 강력한 워크플로우 플러그인이다. 하지만 실제로 쓰다 보면 세 가지가 항상 걸린다.
+Claude Code로 개발하다 보면 반복적으로 겪는 패턴이 있다.
 
-- Karpathy 원칙이 배경 규칙으로만 로드될 뿐, 각 단계에서 강제되지 않는다
-- Issue-Driven Development가 워크플로우에 없다 — CLAUDE.md 규칙으로만 존재한다
-- 워크플로우가 고정되어 있어, 실제 작업 방식과 맞지 않는 경우가 많다
+- 원칙은 알고 있는데, 막상 구현할 때 지켜지지 않는다
+- "Issue 먼저 만들고 브랜치 생성"이 규칙인데, 흐름이 끊기면 건너뛰게 된다
+- 아이디어 탐색에서 구현까지 각 단계가 따로 놀고, 하나의 흐름으로 이어지지 않는다
 
-sr-harness는 이 세 가지를 하나의 플러그인으로 통합한다.
+sr-harness는 이 세 가지를 하나의 워크플로우로 구조화한다.
 
 ---
 
-## 뭐가 다른가
+## 어떻게 작동하나
 
-**superpowers** — Karpathy 원칙이 배경 규칙
-
-```
-# coding-guidelines.md (로드되지만 강제되지 않음)
-§1 Handle Uncertainty First
-§2 Simplicity First
-§3 Surgical Changes
-§4 Incremental, Verified Execution
-```
-
-**sr-harness** — Karpathy 원칙이 구조적 체크포인트
+원칙을 규칙으로 외우는 게 아니라, 각 단계 진입 시 체크포인트로 강제한다.
 
 ```
 harness-execute 진입 시:
@@ -47,6 +37,8 @@ harness-execute 기존 코드 수정 시:
   [ ] 요청과 직접 관련된 줄만 변경한다
   [ ] 주변 코드·주석·포맷은 건드리지 않는다
 ```
+
+아이디어 단계부터 PR 생성까지, 각 스킬이 다음 스킬로 자연스럽게 이어진다.
 
 ---
 
