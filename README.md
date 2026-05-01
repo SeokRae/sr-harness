@@ -1,32 +1,65 @@
 # sr-harness
 
-Claude Code의 작업 방식을 직접 설계하는 하네스
+> A custom Claude Code harness for designing how your AI assistant works — not the other way around.
+
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Claude Code](https://img.shields.io/badge/Claude%20Code-Plugin-blueviolet)](https://claude.ai/code)
+
+> English | [한국어](./README.ko.md)
 
 ---
 
-## 왜 만들었나
+## superpowers is great — until it isn't
 
-Claude Code에는 superpowers라는 강력한 워크플로우 플러그인이 있다. 하지만 실제로 쓰다 보면 몇 가지 문제가 생긴다.
+[superpowers](https://github.com/anthropics/claude-plugins-official) ships a solid workflow for Claude Code. But the moment you diverge from its assumed flow, things break down:
 
-- 워크플로우가 고정되어 있어 내 방식과 맞지 않는 경우가 많다
-- Karpathy 원칙이 배경 규칙으로만 존재하고 각 단계에 구조적으로 강제되지 않는다
-- Issue-Driven Development가 워크플로우에 없다 — 별도 규칙으로만 존재한다
+- Karpathy principles load into context but aren't enforced at each stage
+- Issue-Driven Development is a separate CLAUDE.md rule, not part of the workflow
+- The workflow stages are fixed — you adapt to them, not the other way around
 
-sr-harness는 이 세 가지를 하나의 플러그인으로 통합한다.
+sr-harness is a replacement harness built around one idea: **you design the workflow, the harness enforces it.**
 
 ---
 
-## 설치
+## What's different
+
+**superpowers** — Karpathy principles as background rules
+
+```
+# coding-guidelines.md (loaded, not enforced)
+§1 Handle Uncertainty First
+§2 Simplicity First
+§3 Surgical Changes
+§4 Incremental, Verified Execution
+```
+
+**sr-harness** — Karpathy principles as structural checkpoints
+
+```
+harness-execute: before touching code
+  [ ] Is the request clear? If not → ask first
+  [ ] Is there a simpler path? If yes → propose it
+  [ ] Is there a success criterion? If not → define it
+
+harness-execute: when editing existing code
+  [ ] Read the file before writing
+  [ ] Only touch lines directly related to the request
+  [ ] Leave surrounding code, comments, and formatting as-is
+```
+
+---
+
+## Installation
 
 ```bash
-# 마켓플레이스 추가
+# Add marketplace
 claude plugins marketplace add https://github.com/SeokRae/sr-harness.git
 
-# 플러그인 설치
+# Install
 claude plugins install sr-harness@sr-harness
 ```
 
-설치 확인:
+Verify:
 ```bash
 claude plugins list
 #   ❯ sr-harness@sr-harness
@@ -37,107 +70,94 @@ claude plugins list
 
 ---
 
-## 스킬 구성
-
-| 스킬 | 역할 | 대체 |
-|------|------|------|
-| `harness-start` | 세션 진입점 · 라우팅 | superpowers:using-superpowers |
-| `harness-brainstorm` | 반복 피드백 기반 아이디어 구체화 | superpowers:brainstorming |
-| `harness-plan` | step → verify 형식 계획 수립 | superpowers:writing-plans |
-| `harness-issue` | GitHub Issue + 브랜치 생성 | *(신규)* |
-| `harness-execute` | 구현 실행 · karpathy 4원칙 강제 | superpowers:executing-plans |
-| `harness-finish` | push + PR (Closes #N) | superpowers:finishing-a-development-branch |
-| `harness-debug` | 진단 우선 디버깅 | superpowers:systematic-debugging |
-
----
-
-## 워크플로우
+## Workflow
 
 ```
-harness-start          세션 시작 · 작업 유형 파악 · 라우팅
+harness-start
+      │  Identify task type, load session plan, route to the right skill
       │
       ├─ harness-brainstorm
-      │    아이디어를 한 번에 펼치지 않는다
-      │    한 라운드 = 구체적 출력 하나 + 확인 질문 하나
-      │    목표: 하나의 Issue로 만들기에 충분한 크기로 좁힌다
+      │    Not: dump all ideas at once
+      │    But: one round = one concrete output + one clarifying question
+      │    Exit: idea is small enough to fit in a single GitHub Issue
       │
       ├─ harness-plan
-      │    각 단계에 verify 기준 포함
-      │    step → verify: [완료 조건] 형식 필수
+      │    Every step must have a verify condition
+      │    Format: "do X → verify: [done criteria]"
+      │    No verify = step doesn't go in the plan
       │
       ├─ harness-issue
-      │    GitHub Issue 생성 → origin/main 기준 브랜치 생성
-      │    1 Issue = 1 Branch = 1 PR 규칙 강제
+      │    Create GitHub Issue → branch from origin/main
+      │    Rule: 1 Issue = 1 Branch = 1 PR
+      │    No chain branches. No multi-issue branches.
       │
-      ├─ harness-execute ←─────────────────────┐
-      │    karpathy 4원칙 체크포인트 적용       │
-      │    단계별 verify → 커밋 → 다음 단계    │
-      │                                         │
-      ├─ harness-debug  ────────────────────────┘
-      │    에러 발생 시 진단 우선
-      │    원인 확인 후 execute로 복귀
+      ├─ harness-execute ←─────────────────────────┐
+      │    Karpathy checkpoints at stage entry       │
+      │    step → verify → commit → next step       │
+      │                                              │
+      ├─ harness-debug  ──────────────────────────  ┘
+      │    Diagnose before touching code
+      │    Never retry the same failing approach twice
       │
       └─ harness-finish
-           push → PR 생성 (Closes #N 필수)
+           push → PR with "Closes #N" in body
+           No alternatives. Always a PR.
 ```
 
 ---
 
-## 핵심 설계 원칙
+## Skills
 
-### Karpathy 4원칙 (각 스킬에 구조적으로 내장)
-
-superpowers에서는 이 원칙이 배경 규칙으로만 존재한다. sr-harness는 각 단계 진입 시 체크포인트로 강제한다.
-
-| 원칙 | 적용 단계 | 하는 것 |
-|------|----------|--------|
-| **§1 Think Before Coding** | start · brainstorm · debug | 불명확하면 먼저 질문, 단순한 방법 있으면 먼저 제안 |
-| **§2 Simplicity First** | execute | 요청한 것만, 200줄이 50줄로 가능하면 50줄로 |
-| **§3 Surgical Changes** | execute | 관련 줄만 변경, Read before Write |
-| **§4 Goal-Driven Execution** | plan · execute | 각 단계에 verify 기준, 통과 후 다음 단계 |
-
-### Issue-Driven Development (harness-issue에 내장)
-
-```
-Issue 생성 → 브랜치 생성 → 구현 → 커밋(#N) → PR(Closes #N) → Merge
-```
-
-- 모든 코드 변경은 GitHub Issue에서 시작한다
-- 항상 origin/main 기준으로 분기한다 (체인 브랜치 금지)
-- PR body의 `Closes #N`이 Issue를 close한다 (커밋 메시지 `(#N)` 아님)
+| Skill | Role | Replaces |
+|-------|------|----------|
+| `harness-start` | Session entry point · routing | superpowers:using-superpowers |
+| `harness-brainstorm` | Iterative feedback loop to concretize ideas | superpowers:brainstorming |
+| `harness-plan` | Planning with step → verify format | superpowers:writing-plans |
+| `harness-issue` | GitHub Issue + branch creation | *(new)* |
+| `harness-execute` | Implementation with Karpathy checkpoints | superpowers:executing-plans |
+| `harness-finish` | push + PR (Closes #N) | superpowers:finishing-a-development-branch |
+| `harness-debug` | Diagnose-first debugging | superpowers:systematic-debugging |
 
 ---
 
-## 잘 동작하고 있다면
+## Core Principles
 
-- brainstorm이 끝날 때 항상 하나의 구체적인 계획이 나온다
-- 계획의 각 단계마다 "이걸로 완료를 확인한다"는 기준이 있다
-- 코드 수정 범위가 요청한 것에서 벗어나지 않는다
-- PR이 올라갈 때마다 `Closes #N`이 포함되어 있다
+### Karpathy's Four Rules
 
----
+Each rule is a checkpoint at a specific stage — not a suggestion loaded into context.
 
-## 스킬 수정 및 업데이트
+| Rule | Enforced in | What it prevents |
+|------|-------------|-----------------|
+| **§1 Think Before Coding** | start · brainstorm · debug | Silently picking an interpretation and running with it |
+| **§2 Simplicity First** | execute | Writing 200 lines when 50 would do |
+| **§3 Surgical Changes** | execute | Touching code that wasn't part of the request |
+| **§4 Goal-Driven Execution** | plan · execute | Moving to the next step before verifying the current one |
 
-```bash
-# 스킬 수정
-cd ~/IdeaProjects/sr-harness
-# skills/{skill-name}/SKILL.md 편집 후
+### Issue-Driven Development
 
-git add . && git commit -m "fix: 스킬 내용 수정" && git push
-
-# Claude Code에 반영
-claude plugins marketplace update sr-harness
+```
+Issue → Branch (from origin/main) → Implement → Commit (#N) → PR (Closes #N) → Merge
 ```
 
+One rule: `Closes #N` in the **PR body** closes the Issue. `(#N)` in commit messages does not.
+
 ---
 
-## superpowers와의 관계
+## How to Know It's Working
 
-sr-harness는 superpowers 워크플로우 스킬을 대체하지만, superpowers의 유틸리티 스킬은 그대로 사용 가능하다.
+- Every brainstorm ends with one concrete, Issue-sized plan
+- Every step in the plan has an explicit done-condition
+- Diffs contain only lines directly related to the request
+- Every PR has `Closes #N` in the body
 
-| 계속 사용 가능 |
-|--------------|
+---
+
+## Relationship with superpowers
+
+sr-harness replaces the superpowers workflow skills. superpowers utility skills remain available.
+
+| Keep using from superpowers |
+|-----------------------------|
 | `superpowers:using-git-worktrees` |
 | `superpowers:dispatching-parallel-agents` |
 | `superpowers:requesting-code-review` |
@@ -146,10 +166,31 @@ sr-harness는 superpowers 워크플로우 스킬을 대체하지만, superpowers
 
 ---
 
-## 참고
+## Updating Skills
 
-- [andrej-karpathy-skills](https://github.com/forrestchang/andrej-karpathy-skills) — Karpathy 원칙 원본
-- [claude-plugins-official](https://github.com/anthropics/claude-plugins-official) — superpowers 플러그인
+```bash
+cd ~/IdeaProjects/sr-harness
+# Edit skills/{skill-name}/SKILL.md
+
+git add . && git commit -m "fix: update skill" && git push
+claude plugins marketplace update sr-harness
+```
+
+---
+
+## Contributing
+
+Workflow patterns, Karpathy checkpoint improvements, and issue-driven rule refinements are welcome.
+
+- 🐛 [Bug report](https://github.com/SeokRae/sr-harness/issues/new)
+- ✨ [Feature request](https://github.com/SeokRae/sr-harness/issues/new)
+
+---
+
+## References
+
+- [andrej-karpathy-skills](https://github.com/forrestchang/andrej-karpathy-skills) — Original Karpathy guidelines plugin
+- [claude-plugins-official](https://github.com/anthropics/claude-plugins-official) — superpowers plugin
 
 ---
 
