@@ -108,15 +108,15 @@ harness-start
 
 ## Skills
 
-| Skill | Role | Replaces |
-|-------|------|----------|
-| `harness-start` | Session entry point · routing | superpowers:using-superpowers |
-| `harness-brainstorm` | Iterative feedback loop to concretize ideas | superpowers:brainstorming |
-| `harness-plan` | Planning with step → verify format | superpowers:writing-plans |
-| `harness-issue` | GitHub Issue + branch creation | *(new)* |
-| `harness-execute` | Implementation with Karpathy checkpoints | superpowers:executing-plans |
-| `harness-finish` | push + PR (Closes #N) | superpowers:finishing-a-development-branch |
-| `harness-debug` | Diagnose-first debugging | superpowers:systematic-debugging |
+| Skill | Role |
+|-------|------|
+| `harness-start` | Session entry point · routing |
+| `harness-brainstorm` | Iterative feedback loop to concretize ideas |
+| `harness-plan` | Planning with step → verify format |
+| `harness-issue` | GitHub Issue + branch creation |
+| `harness-execute` | Implementation with Karpathy checkpoints |
+| `harness-finish` | push + PR (Closes #N) |
+| `harness-debug` | Diagnose-first debugging |
 
 ---
 

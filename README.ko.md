@@ -108,15 +108,15 @@ harness-start
 
 ## 스킬
 
-| 스킬 | 역할 | 대체 |
-|------|------|------|
-| `harness-start` | 세션 진입점 · 라우팅 | superpowers:using-superpowers |
-| `harness-brainstorm` | 반복 피드백 기반 아이디어 구체화 | superpowers:brainstorming |
-| `harness-plan` | step → verify 형식 계획 수립 | superpowers:writing-plans |
-| `harness-issue` | GitHub Issue + 브랜치 생성 | *(신규)* |
-| `harness-execute` | 구현 실행 · karpathy 체크포인트 | superpowers:executing-plans |
-| `harness-finish` | push + PR (Closes #N) | superpowers:finishing-a-development-branch |
-| `harness-debug` | 진단 우선 디버깅 | superpowers:systematic-debugging |
+| 스킬 | 역할 |
+|------|------|
+| `harness-start` | 세션 진입점 · 라우팅 |
+| `harness-brainstorm` | 반복 피드백 기반 아이디어 구체화 |
+| `harness-plan` | step → verify 형식 계획 수립 |
+| `harness-issue` | GitHub Issue + 브랜치 생성 |
+| `harness-execute` | 구현 실행 · karpathy 체크포인트 |
+| `harness-finish` | push + PR (Closes #N) |
+| `harness-debug` | 진단 우선 디버깅 |
 
 ---
 
