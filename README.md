@@ -10,31 +10,21 @@
 
 ---
 
-## superpowers is great — until it isn't
+## Why
 
-[superpowers](https://github.com/anthropics/claude-plugins-official) ships a solid workflow for Claude Code. But the moment you diverge from its assumed flow, things break down:
+When working with Claude Code day-to-day, the same patterns keep breaking down:
 
-- Karpathy principles load into context but aren't enforced at each stage
-- Issue-Driven Development is a separate CLAUDE.md rule, not part of the workflow
-- The workflow stages are fixed — you adapt to them, not the other way around
+- Principles exist as background rules — they load into context but don't get enforced when it matters
+- Issue-Driven Development lives in a CLAUDE.md file, disconnected from the actual workflow
+- Brainstorming, planning, and implementation feel like separate sessions, not one continuous flow
 
-sr-harness is a replacement harness built around one idea: **you design the workflow, the harness enforces it.**
+sr-harness structures these into a single workflow where each stage enforces the right behavior automatically.
 
 ---
 
-## What's different
+## How it works
 
-**superpowers** — Karpathy principles as background rules
-
-```
-# coding-guidelines.md (loaded, not enforced)
-§1 Handle Uncertainty First
-§2 Simplicity First
-§3 Surgical Changes
-§4 Incremental, Verified Execution
-```
-
-**sr-harness** — Karpathy principles as structural checkpoints
+Instead of relying on rules loaded somewhere in context, each skill applies checkpoints at stage entry.
 
 ```
 harness-execute: before touching code
@@ -47,6 +37,8 @@ harness-execute: when editing existing code
   [ ] Only touch lines directly related to the request
   [ ] Leave surrounding code, comments, and formatting as-is
 ```
+
+From idea to PR, each skill hands off naturally to the next.
 
 ---
 
