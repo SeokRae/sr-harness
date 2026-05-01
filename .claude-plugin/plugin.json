@@ -1,0 +1,20 @@
+{
+  "name": "sr-harness",
+  "description": "karpathy-guidelines와 issue-driven development가 구조적으로 통합된 커스텀 개발 워크플로우 하네스",
+  "version": "0.1.0",
+  "author": {
+    "name": "SeokRae",
+    "email": "kslbsh@gmail.com"
+  },
+  "license": "MIT",
+  "keywords": ["harness", "workflow", "karpathy", "issue-driven", "tdd"],
+  "skills": [
+    "./skills/harness-start",
+    "./skills/harness-brainstorm",
+    "./skills/harness-plan",
+    "./skills/harness-issue",
+    "./skills/harness-execute",
+    "./skills/harness-finish",
+    "./skills/harness-debug"
+  ]
+}

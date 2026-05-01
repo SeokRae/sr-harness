@@ -1,0 +1,61 @@
+---
+name: harness-execute
+description: 구현 계획을 실행하는 스킬. superpowers:executing-plans 대체. "구현해줘", "만들어줘", "코드 작성" 또는 harness-issue 완료 후 자동 실행. karpathy 4원칙(Think/Simplicity/Surgical/Goal-Driven) 구조적 내장. 각 단계 완료 시 verify 후 다음 단계 진행.
+---
+
+# harness-execute
+
+구현 시작 전 karpathy 체크포인트를 통과해야 한다.
+단계별로 실행하고, 각 단계가 끝나면 verify 후 다음으로 넘어간다.
+
+## 시작 전 체크포인트 (karpathy §1 Think Before Coding)
+
+다음을 확인하고 넘어간다:
+
+```
+[ ] 요청이 명확한가? → 불명확하면 먼저 질문
+[ ] 여러 해석이 가능한가? → 모두 제시하고 선택받기
+[ ] 더 단순한 방법이 있는가? → 있으면 먼저 제안
+[ ] 성공 기준이 정의되어 있는가? → harness-plan의 verify 기준 확인
+```
+
+## 구현 원칙 (각 단계마다 적용)
+
+### karpathy §2 Simplicity First
+코드를 작성하기 전:
+- 요청한 것만 만든다 — 추가 기능, 미래 대비 추상화 금지
+- 200줄로 쓸 수 있는 걸 50줄로 쓸 수 있으면 → 50줄로 쓴다
+
+### karpathy §3 Surgical Changes
+기존 코드를 수정할 때:
+- 수정 대상 파일을 먼저 읽는다 (Read before Write)
+- 요청과 직접 관련된 줄만 변경한다
+- 주변 코드, 주석, 포맷은 건드리지 않는다
+- 내 변경으로 생긴 unused import/변수만 제거한다 (기존 dead code 건드리지 않음)
+
+### karpathy §4 Goal-Driven Execution
+각 단계 실행 형식:
+```
+[Step N 실행 중]: {설명}
+→ verify: {확인 방법}
+→ 결과: ✅ 통과 / ❌ 실패 (실패 시 harness-debug 전환)
+```
+
+## 단계 간 커밋
+
+각 논리적 단위 완료 시 커밋:
+```bash
+git add {관련 파일만}
+git commit -m "{type}: {설명} (#N)"
+```
+
+커밋 단위: 하나의 완료된 verify를 통과한 변경
+
+## 완료 조건
+
+harness-plan의 모든 단계 verify 통과 → `harness-finish` 호출
+
+## 예외 상황
+
+- 테스트 실패 / 예상 밖 에러 → `harness-debug` 전환
+- 범위 밖 작업 발견 → session-plan.md Deviations 기록, 현재 작업 계속

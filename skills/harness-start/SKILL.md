@@ -1,0 +1,41 @@
+---
+name: harness-start
+description: sr-harness 세션 진입점. 모든 대화 시작 시 using-superpowers 대신 반드시 먼저 실행. 작업 유형(아이디어 탐색/계획/구현/디버깅/마무리)을 파악하고 적절한 harness 스킬로 라우팅. 코딩 작업 전 karpathy 체크 강제 실행.
+---
+
+# sr-harness 진입점
+
+superpowers:using-superpowers를 대체하는 세션 시작 스킬.
+**모든 응답 전에 이 스킬을 먼저 실행한다.**
+
+## 세션 시작 루틴
+
+1. `.claude/session-plan.md` 존재 여부 확인
+   - 있으면: 목표와 미완료 항목 로드 → 사용자에게 한 줄로 상태 보고
+   - 없으면: 작업 시작 전에 생성 (목표 + scope + tasks 포함)
+
+2. 아래 라우팅 표로 적절한 스킬 호출
+
+## 라우팅 표
+
+| 사용자 의도 | 호출할 스킬 |
+|------------|------------|
+| 아이디어 탐색, 방향 논의, 뭔가 만들고 싶어 | `harness-brainstorm` |
+| 구현 계획 수립, 설계 | `harness-plan` |
+| Issue 생성, 브랜치 생성 | `harness-issue` |
+| 코드 작성, 기능 구현, PR 작업 | `harness-execute` |
+| 버그, 테스트 실패, 에러 | `harness-debug` |
+| 완료, PR 올리기, 브랜치 마무리 | `harness-finish` |
+
+## 코딩 작업 전 karpathy 즉시 체크
+
+작업이 코드 수정을 포함하면, 시작 전에 다음을 확인한다:
+
+- **명확성**: 요청이 불명확하면 → 구현 전에 먼저 질문
+- **단순성**: 더 단순한 방법이 있으면 → 먼저 제안
+- **성공 기준**: 완료 조건이 없으면 → 정의 후 시작
+
+## superpowers와의 관계
+
+이 플러그인이 설치된 경우, superpowers 워크플로우 스킬 대신 harness-* 스킬을 우선 사용한다.
+superpowers의 유틸리티 스킬(using-git-worktrees, dispatching-parallel-agents 등)은 그대로 사용 가능.
