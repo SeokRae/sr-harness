@@ -8,6 +8,16 @@ description: 구현 계획을 실행하는 스킬. "구현해줘", "만들어줘
 구현 시작 전 karpathy 체크포인트를 통과해야 한다.
 단계별로 실행하고, 각 단계가 끝나면 verify 후 다음으로 넘어간다.
 
+## 전제 조건 (Worktree 확인)
+
+현재 작업 디렉토리가 worktree(`.claude/worktrees/{description}`) 안인지 확인한다.
+- 맞으면 → 진행
+- 아니면 → `harness-issue`로 돌아가서 worktree 생성
+
+```bash
+git worktree list | grep "$(pwd)"
+```
+
 ## 시작 전 체크포인트 (karpathy §1 Think Before Coding)
 
 다음을 확인하고 넘어간다:
@@ -48,6 +58,8 @@ description: 구현 계획을 실행하는 스킬. "구현해줘", "만들어줘
 git add {관련 파일만}
 git commit -m "{type}: {설명} (#N)"
 ```
+
+**`git add .` 사용 금지** — 관련 파일만 개별 지정한다.
 
 **커밋 단위**: `harness-plan`의 단계 하나에서 verify를 통과한 변경이 커밋 하나다.
 - verify를 통과하기 전에 커밋하지 않는다
