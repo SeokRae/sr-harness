@@ -53,7 +53,7 @@ git commit -m "{type}: {설명} (#N)"
 
 ## 완료 조건
 
-harness-plan의 모든 단계 verify 통과 → `harness-finish` 호출
+harness-plan의 모든 단계 verify 통과 → `harness-verify` 호출 (통합 검증 후 harness-finish)
 
 ## 예외 상황
 
