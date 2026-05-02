@@ -13,7 +13,14 @@ description: sr-harness 세션 진입점. 모든 대화 시작 시 반드시 먼
    - 있으면: 목표와 미완료 항목 로드 → 사용자에게 한 줄로 상태 보고
    - 없으면: 작업 시작 전에 생성 (목표 + scope + tasks 포함)
 
-2. 아래 라우팅 표로 적절한 스킬 호출
+2. 활성 worktree 감지
+   ```bash
+   git worktree list
+   ```
+   - `.claude/worktrees/`에 활성 worktree가 있으면 → 해당 작업 재개 안내
+   - 없으면 → 새 작업 시작
+
+3. 아래 라우팅 표로 적절한 스킬 호출
 
 ## 라우팅 표
 
@@ -25,6 +32,7 @@ description: sr-harness 세션 진입점. 모든 대화 시작 시 반드시 먼
 | 코드 작성, 기능 구현, PR 작업 | `harness-execute` |
 | 버그, 테스트 실패, 에러 | `harness-debug` |
 | 완료, PR 올리기, 브랜치 마무리 | `harness-finish` |
+| 세션 중단, 다음 세션에서 이어서, 여기까지만 | `harness-pause` |
 
 ### 의도 모호 시 질문 목록
 
@@ -44,3 +52,8 @@ description: sr-harness 세션 진입점. 모든 대화 시작 시 반드시 먼
 - **단순성**: 더 단순한 방법이 있으면 → 먼저 제안
 - **성공 기준**: 완료 조건이 없으면 → 정의 후 시작
 
+## superpowers와의 관계
+
+이 플러그인이 설치된 경우, superpowers 워크플로우 스킬 대신 harness-* 스킬을 우선 사용한다.
+superpowers의 유틸리티 스킬(dispatching-parallel-agents 등)은 그대로 사용 가능.
+워크트리 관리는 sr-harness가 자체 처리한다 (`harness-issue` Step 3, `harness-finish` Step 4).
