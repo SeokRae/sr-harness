@@ -18,12 +18,7 @@ git status   # 미커밋 변경사항 없는지
 테스트 명령어는 다음 순서로 결정한다:
 1. `.claude/session-plan.md`의 `test-command` 필드가 있으면 → 그 명령어 실행
 2. 없으면 → 프로젝트 루트에서 `./gradlew test` / `npm test` / `pytest` 순으로 시도
-3. 어느 것도 없으면 → 사용자에게 테스트 명령어 확인 후 실행
-
-```yaml
-# session-plan.md 예시
-test-command: ./gradlew integrationTest
-```
+3. 어느 것도 없으면 → 스킵 (vault 등 테스트 없는 프로젝트)
 
 ### 2. Push
 ```bash
@@ -47,10 +42,17 @@ Closes #{N}"
 
 **PR body `Closes #N` 필수** — 커밋 메시지의 `(#N)`은 Issue를 자동 close하지 않음.
 
-### 4. 완료 보고
+### 4. Worktree 정리
+```bash
+cd {프로젝트 루트}              # vault root로 복귀
+git worktree remove .claude/worktrees/{description}
+```
+
+### 5. 완료 보고
 ```
 ✅ PR 생성: #{PR-number}
 ✅ Closes #{issue-number}
+✅ Worktree 정리: .claude/worktrees/{description} 제거
 브랜치: feature/{N}-{description}
 ```
 

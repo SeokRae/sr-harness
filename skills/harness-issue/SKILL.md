@@ -31,11 +31,25 @@ git checkout -b feature/{issue-number}-{short-description}
 - 다른 feature 브랜치에서 분기 (체인 브랜치 금지)
 - 한 브랜치에 여러 Issue 혼재
 
-### 3. 확인 출력
+### 3. Worktree 생성 (격리 의무)
+```bash
+git checkout main
+git worktree add .claude/worktrees/{short-description} feature/{issue-number}-{short-description}
+```
+
+이후 모든 파일 작업은 worktree 안에서 수행한다.
+
+**컨벤션**:
+- 위치: `.claude/worktrees/` (프로젝트 `.gitignore`에 포함 확인)
+- 이름: 브랜치의 `{short-description}` 부분 그대로 사용
+- `.gitignore`에 `.claude/worktrees/` 없으면 추가 후 커밋
+
+### 4. 확인 출력
 ```
 ✅ Issue #N 생성: {제목}
 ✅ 브랜치 생성: feature/{N}-{description}
-✅ 현재 위치: feature/{N}-{description}
+✅ Worktree 생성: .claude/worktrees/{description}
+✅ 현재 위치: .claude/worktrees/{description}
 
 다음 단계: harness-execute
 ```
