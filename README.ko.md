@@ -63,6 +63,10 @@ claude plugins list
 
 ---
 
+## 라이프사이클
+
+전체 라이프사이클 — 상태 전이 테이블, 갭 분석, v0.2 로드맵은 [`docs/LIFECYCLE.md`](./docs/LIFECYCLE.md)에 정의되어 있다.
+
 ## 워크플로우
 
 ```
