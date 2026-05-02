@@ -13,7 +13,16 @@ description: 브랜치 마무리 및 PR 생성 스킬. "완료", "PR 올려줘",
 ### 1. 최종 확인
 ```bash
 git status   # 미커밋 변경사항 없는지
-# 프로젝트에 맞는 테스트 실행 (예: ./gradlew test, npm test, pytest ...)
+```
+
+테스트 명령어는 다음 순서로 결정한다:
+1. `.claude/session-plan.md`의 `test-command` 필드가 있으면 → 그 명령어 실행
+2. 없으면 → 프로젝트 루트에서 `./gradlew test` / `npm test` / `pytest` 순으로 시도
+3. 어느 것도 없으면 → 사용자에게 테스트 명령어 확인 후 실행
+
+```yaml
+# session-plan.md 예시
+test-command: ./gradlew integrationTest
 ```
 
 ### 2. Push
