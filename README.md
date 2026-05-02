@@ -63,6 +63,10 @@ claude plugins list
 
 ---
 
+## Lifecycle
+
+The full lifecycle — state transitions, gap analysis, and v0.2 roadmap — is documented in [`docs/LIFECYCLE.md`](./docs/LIFECYCLE.md).
+
 ## Workflow
 
 ```
