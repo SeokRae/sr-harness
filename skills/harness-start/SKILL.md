@@ -32,6 +32,7 @@ description: sr-harness 세션 진입점. 모든 대화 시작 시 반드시 먼
 | 코드 작성, 기능 구현, PR 작업 | `harness-execute` |
 | 버그, 테스트 실패, 에러 | `harness-debug` |
 | 완료, PR 올리기, 브랜치 마무리 | `harness-finish` |
+| 세션 중단, 다음 세션에서 이어서, 여기까지만 | `harness-pause` |
 
 ### 의도 모호 시 질문 목록
 
