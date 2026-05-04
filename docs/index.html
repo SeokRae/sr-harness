@@ -1,0 +1,779 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>sr-harness · Workflow Cycle</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #07101b;
+      --surface: rgba(12,21,36,0.92);
+      --surface-strong: rgba(14,24,40,0.99);
+      --border: rgba(153,186,255,0.14);
+      --border-strong: rgba(153,186,255,0.28);
+      --text: #edf3ff;
+      --text-muted: #98abc9;
+      --accent: #68b6ff;
+      --accent-2: #70e1cb;
+      --success: #52d988;
+      --danger: #ff8c9f;
+      --warning: #ffd072;
+      --radius-xl: 28px;
+      --radius-lg: 20px;
+      --font: "Inter","Noto Sans KR",-apple-system,BlinkMacSystemFont,sans-serif;
+      --shadow: 0 24px 72px rgba(0,0,0,0.34);
+      --max: 1240px;
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    html,body{min-height:100%}
+    body{
+      font-family:var(--font);color:var(--text);
+      background:radial-gradient(circle at top left,rgba(104,182,255,0.18),transparent 28%),
+                 linear-gradient(180deg,#091320 0%,#07101b 42%,#050a12 100%);
+      line-height:1.65;letter-spacing:-0.014em;-webkit-font-smoothing:antialiased;
+    }
+    .page{width:min(var(--max),calc(100% - 32px));margin:0 auto;padding:28px 0 56px;display:grid;gap:18px}
+
+    /* Hero */
+    .hero{
+      border:1px solid var(--border);border-radius:var(--radius-xl);padding:36px;
+      background:linear-gradient(180deg,rgba(15,27,44,0.98),rgba(8,15,28,0.94));
+      box-shadow:var(--shadow);
+    }
+    .eyebrow{
+      display:inline-flex;align-items:center;gap:8px;padding:7px 12px;
+      border-radius:999px;border:1px solid rgba(104,182,255,0.22);
+      background:rgba(104,182,255,0.08);color:#c2ddff;
+      font-size:12px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;
+    }
+    h1{margin-top:16px;font-size:clamp(2.1rem,5vw,3.2rem);line-height:1.08;letter-spacing:-0.03em}
+    h2{font-size:clamp(1.35rem,2.5vw,1.8rem);line-height:1.1;letter-spacing:-0.025em}
+    .hero p{margin-top:14px;color:var(--text-muted);font-size:16px;max-width:64ch}
+    .hero-badges{display:flex;flex-wrap:wrap;gap:10px;margin-top:20px}
+    .badge{
+      display:inline-flex;align-items:center;gap:7px;padding:6px 12px;
+      border-radius:999px;border:1px solid var(--border);background:rgba(255,255,255,0.04);
+      font-size:12px;color:var(--text-muted);
+    }
+    .badge-dot{width:6px;height:6px;border-radius:50%;background:var(--accent)}
+
+    /* Stats */
+    .stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+    .stat-card{
+      border:1px solid var(--border);background:var(--surface);
+      border-radius:var(--radius-lg);padding:18px 20px;
+    }
+    .stat-num{font-size:clamp(1.8rem,3vw,2.4rem);font-weight:800;letter-spacing:-0.04em;color:var(--accent);display:block}
+    .stat-label{font-size:13px;color:var(--text-muted);margin-top:4px}
+
+    /* Section card */
+    .section{border:1px solid var(--border);background:var(--surface);border-radius:var(--radius-xl);padding:24px;box-shadow:var(--shadow)}
+    .section-head{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;margin-bottom:20px}
+    .section-head p{margin-top:8px;color:var(--text-muted);font-size:14px}
+    .zoom-hint{font-size:12px;color:rgba(152,171,201,0.5);flex-shrink:0}
+
+    /* SVG canvas */
+    #topoSvg{display:block;width:100%;height:640px;cursor:grab;border-radius:14px;background:rgba(0,0,0,0.15)}
+    #topoSvg:active{cursor:grabbing}
+
+    /* Legend */
+    .legend{display:flex;flex-wrap:wrap;gap:24px;margin-top:18px;padding-top:18px;border-top:1px solid var(--border)}
+    .legend-group{display:flex;flex-direction:column;gap:7px}
+    .legend-title{font-size:10px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:rgba(152,171,201,0.5)}
+    .legend-items{display:flex;flex-wrap:wrap;gap:12px}
+    .legend-item{display:flex;align-items:center;gap:7px;font-size:12px;color:var(--text-muted)}
+
+    /* Karpathy */
+    .karpathy-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+    .k-card{border:1px solid var(--border);background:rgba(255,255,255,0.02);border-radius:var(--radius-lg);padding:18px 20px}
+    .k-num{font-size:11px;font-weight:800;letter-spacing:0.1em;text-transform:uppercase;color:var(--accent)}
+    .k-title{font-size:15px;font-weight:700;margin:6px 0;color:var(--text)}
+    .k-prevent{font-size:13px;color:var(--text-muted);margin-bottom:10px;line-height:1.5}
+    .chip-row{display:flex;flex-wrap:wrap;gap:6px}
+    .chip{display:inline-flex;align-items:center;padding:4px 10px;border-radius:999px;border:1px solid var(--border);background:rgba(104,182,255,0.06);font-size:11px;color:var(--accent)}
+
+    /* Detail panel */
+    .detail-overlay{display:none;position:fixed;inset:0;z-index:99;background:rgba(0,0,0,0.45);backdrop-filter:blur(2px)}
+    .detail-overlay.open{display:block}
+    .detail-panel{
+      position:fixed;top:0;right:-460px;width:440px;height:100vh;
+      background:var(--surface-strong);border-left:1px solid var(--border-strong);
+      overflow-y:auto;transition:right 0.28s cubic-bezier(0.4,0,0.2,1);z-index:100;
+    }
+    .detail-panel.open{right:0}
+    .dp-header{
+      position:sticky;top:0;padding:22px 24px 16px;
+      background:var(--surface-strong);border-bottom:1px solid var(--border);
+      display:flex;justify-content:space-between;align-items:flex-start;gap:12px;
+    }
+    .dp-badge{
+      display:inline-flex;align-items:center;padding:6px 14px;border-radius:999px;
+      border:1px solid;font-size:11px;font-weight:800;letter-spacing:0.09em;text-transform:uppercase;
+    }
+    .dp-close{
+      background:none;border:1px solid var(--border);color:var(--text-muted);
+      width:30px;height:30px;border-radius:8px;cursor:pointer;
+      display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;
+    }
+    .dp-close:hover{background:rgba(255,255,255,0.06)}
+    .dp-body{padding:20px 24px 32px}
+    .dp-role{font-size:17px;font-weight:700;letter-spacing:-0.02em;margin-bottom:8px}
+    .dp-desc{font-size:14px;color:var(--text-muted);line-height:1.65;margin-bottom:22px}
+    .dp-sec{margin-bottom:20px}
+    .dp-sec-title{font-size:10px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:rgba(152,171,201,0.5);margin-bottom:9px}
+    .dp-list{list-style:none}
+    .dp-list li{font-size:13px;color:var(--text-muted);padding:5px 0;border-bottom:1px solid rgba(153,186,255,0.06);display:flex;gap:8px;line-height:1.5}
+    .dp-list li:last-child{border-bottom:none}
+    .dp-list li::before{content:'›';color:var(--accent);flex-shrink:0;font-size:14px}
+    .dp-karp-list{display:flex;flex-direction:column;gap:7px}
+    .dp-karp-chip{
+      display:flex;align-items:flex-start;gap:9px;padding:8px 12px;
+      border-radius:8px;background:rgba(104,182,255,0.05);border:1px solid rgba(104,182,255,0.13);
+      font-size:12px;color:var(--accent);line-height:1.5;
+    }
+    .dp-karp-chip .kn{font-weight:800;font-size:11px;flex-shrink:0;margin-top:1px}
+
+    /* Footer */
+    footer{border-top:1px solid var(--border);padding:20px 0;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px}
+    footer a{color:var(--accent);text-decoration:none;font-size:13px}
+    footer a:hover{text-decoration:underline}
+    .footer-right{font-size:12px;color:var(--text-muted)}
+
+    /* SVG edge animation */
+    @keyframes flow{to{stroke-dashoffset:-20}}
+    .edge-flow{animation:flow 0.65s linear infinite}
+    #nodeG > g{transition:opacity 0.15s}
+
+    /* Responsive */
+    @media(max-width:900px){
+      .stats-grid{grid-template-columns:repeat(2,1fr)}
+      .karpathy-grid{grid-template-columns:1fr}
+    }
+    @media(max-width:640px){
+      .detail-panel{width:100%;top:auto;bottom:-100%;right:0;height:80vh;border-left:none;border-top:1px solid var(--border-strong);border-radius:24px 24px 0 0;transition:bottom 0.28s cubic-bezier(0.4,0,0.2,1)}
+      .detail-panel.open{bottom:0;right:0}
+      #topoSvg{height:460px}
+      .section-head{flex-direction:column;align-items:flex-start}
+    }
+    @media(max-width:375px){
+      body{overflow-x:hidden}
+      .page{width:calc(100% - 20px)}
+      .hero{padding:20px}
+    }
+    @media print{
+      body{background:#fff;color:#111}
+      .hero,.section,.stat-card,.k-card{box-shadow:none;background:#fff;border-color:#ddd}
+    }
+  </style>
+</head>
+<body>
+<main class="page">
+
+  <!-- Hero -->
+  <header class="hero">
+    <span class="eyebrow">sr-harness v0.4.0</span>
+    <h1>Workflow Cycle</h1>
+    <p>아이디어에서 PR까지 — 12개 스킬이 Karpathy의 4가지 원칙과 Issue-Driven Development를 단일 워크플로우로 통합합니다.</p>
+    <div class="hero-badges">
+      <span class="badge"><span class="badge-dot"></span>12 Skills</span>
+      <span class="badge"><span class="badge-dot" style="background:var(--accent-2)"></span>4 Karpathy Principles</span>
+      <span class="badge"><span class="badge-dot" style="background:var(--success)"></span>Issue-Driven Development</span>
+      <span class="badge"><span class="badge-dot" style="background:var(--warning)"></span>Worktree Isolation</span>
+    </div>
+  </header>
+
+  <!-- Stats -->
+  <div class="stats-grid">
+    <div class="stat-card">
+      <span class="stat-num">12</span>
+      <div class="stat-label">Skills — 아이디어부터 머지까지</div>
+    </div>
+    <div class="stat-card">
+      <span class="stat-num" style="color:var(--accent-2)">4</span>
+      <div class="stat-label">Karpathy Rules — 스테이지별 강제 적용</div>
+    </div>
+    <div class="stat-card">
+      <span class="stat-num" style="color:var(--success)">1:1:1</span>
+      <div class="stat-label">Issue = Branch = PR 규칙</div>
+    </div>
+    <div class="stat-card">
+      <span class="stat-num" style="color:var(--warning)">∞</span>
+      <div class="stat-label">Debug / Review 반복 루프</div>
+    </div>
+  </div>
+
+  <!-- Topology -->
+  <section class="section">
+    <div class="section-head">
+      <div>
+        <h2>Interactive Workflow</h2>
+        <p>노드를 클릭하면 스킬 상세 정보를 볼 수 있습니다. 스크롤로 확대, 드래그로 이동.</p>
+      </div>
+      <span class="zoom-hint">scroll · drag</span>
+    </div>
+
+    <svg id="topoSvg" viewBox="0 0 1080 770" preserveAspectRatio="xMidYMid meet">
+      <defs>
+        <marker id="arr-http"    markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto"><path d="M0,0 L0,7 L7,3.5z" fill="rgba(104,182,255,0.78)"/></marker>
+        <marker id="arr-sync"    markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto"><path d="M0,0 L0,7 L7,3.5z" fill="rgba(104,182,255,0.60)"/></marker>
+        <marker id="arr-async"   markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto"><path d="M0,0 L0,7 L7,3.5z" fill="rgba(112,225,203,0.78)"/></marker>
+        <marker id="arr-ctrl"    markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto"><path d="M0,0 L0,7 L7,3.5z" fill="rgba(152,171,201,0.50)"/></marker>
+        <marker id="arr-hi-out"  markerWidth="8" markerHeight="8" refX="6" refY="4"   orient="auto"><path d="M0,0 L0,8 L8,4z"   fill="#68b6ff"/></marker>
+        <marker id="arr-hi-in"   markerWidth="8" markerHeight="8" refX="6" refY="4"   orient="auto"><path d="M0,0 L0,8 L8,4z"   fill="#70e1cb"/></marker>
+        <filter id="glow" x="-40%" y="-40%" width="180%" height="180%">
+          <feGaussianBlur in="SourceGraphic" stdDeviation="5" result="b"/>
+          <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+      </defs>
+      <g id="edgeG"></g>
+      <g id="lblG"></g>
+      <g id="nodeG"></g>
+    </svg>
+
+    <!-- Legend -->
+    <div class="legend">
+      <div class="legend-group">
+        <div class="legend-title">노드 타입</div>
+        <div class="legend-items">
+          <div class="legend-item">
+            <svg width="28" height="16"><rect x="1" y="2" width="26" height="12" rx="4" fill="rgba(104,182,255,0.07)" stroke="#68b6ff" stroke-width="1.5"/></svg>
+            <span>Happy Path</span>
+          </div>
+          <div class="legend-item">
+            <svg width="18" height="18"><polygon points="9,1 17,9 9,17 1,9" fill="rgba(112,225,203,0.08)" stroke="#70e1cb" stroke-width="1.5"/></svg>
+            <span>라우터 (START)</span>
+          </div>
+          <div class="legend-item">
+            <svg width="28" height="16"><rect x="1" y="2" width="26" height="12" rx="3" fill="rgba(255,208,114,0.07)" stroke="#ffd072" stroke-width="1.5" stroke-dasharray="5,3"/></svg>
+            <span>Side Loop</span>
+          </div>
+          <div class="legend-item">
+            <svg width="18" height="18"><polygon points="9,0 17,4.5 17,13.5 9,18 1,13.5 1,4.5" fill="rgba(255,140,159,0.07)" stroke="#ff8c9f" stroke-width="1.5" stroke-dasharray="4,2"/></svg>
+            <span>ABORT</span>
+          </div>
+          <div class="legend-item">
+            <svg width="18" height="18"><polygon points="9,0 17,4.5 17,13.5 9,18 1,13.5 1,4.5" fill="rgba(152,171,201,0.07)" stroke="#98abc9" stroke-width="1.5" stroke-dasharray="4,2"/></svg>
+            <span>PAUSE</span>
+          </div>
+          <div class="legend-item">
+            <svg width="28" height="16"><rect x="1" y="2" width="26" height="12" rx="4" fill="rgba(82,217,136,0.07)" stroke="#52d988" stroke-width="1.5"/></svg>
+            <span>완료 (FINISH)</span>
+          </div>
+        </div>
+      </div>
+      <div class="legend-group">
+        <div class="legend-title">엣지 타입</div>
+        <div class="legend-items">
+          <div class="legend-item">
+            <svg width="36" height="12"><line x1="0" y1="6" x2="30" y2="6" stroke="rgba(104,182,255,0.78)" stroke-width="2"/><path d="M28,3 L35,6 L28,9z" fill="rgba(104,182,255,0.78)"/></svg>
+            <span>Happy Path</span>
+          </div>
+          <div class="legend-item">
+            <svg width="36" height="12"><line x1="0" y1="6" x2="30" y2="6" stroke="rgba(104,182,255,0.55)" stroke-width="2" stroke-dasharray="4,3"/><path d="M28,3 L35,6 L28,9z" fill="rgba(104,182,255,0.55)"/></svg>
+            <span>대안 / 루프백</span>
+          </div>
+          <div class="legend-item">
+            <svg width="36" height="12"><line x1="0" y1="6" x2="30" y2="6" stroke="rgba(112,225,203,0.78)" stroke-width="2" stroke-dasharray="6,3"/><path d="M28,3 L35,6 L28,9z" fill="rgba(112,225,203,0.78)"/></svg>
+            <span>Debug Loop</span>
+          </div>
+          <div class="legend-item">
+            <svg width="36" height="12"><line x1="0" y1="6" x2="30" y2="6" stroke="rgba(152,171,201,0.45)" stroke-width="2" stroke-dasharray="3,4"/><path d="M28,3 L35,6 L28,9z" fill="rgba(152,171,201,0.45)"/></svg>
+            <span>제어 (any stage)</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Karpathy Principles -->
+  <section class="section">
+    <div class="section-head">
+      <div>
+        <h2>Karpathy's Four Rules</h2>
+        <p>배경 규칙이 아닌 스테이지 진입 시 강제되는 체크포인트.</p>
+      </div>
+    </div>
+    <div class="karpathy-grid">
+      <div class="k-card">
+        <div class="k-num">§1 · Think Before Coding</div>
+        <div class="k-title">코딩 전에 생각하기</div>
+        <div class="k-prevent">모호한 해석을 선택하고 바로 구현에 돌입하는 것을 방지</div>
+        <div class="chip-row">
+          <span class="chip">harness-start</span>
+          <span class="chip">harness-brainstorm</span>
+          <span class="chip">harness-debug</span>
+        </div>
+      </div>
+      <div class="k-card">
+        <div class="k-num">§2 · Simplicity First</div>
+        <div class="k-title">단순함 우선</div>
+        <div class="k-prevent">50줄로 가능한데 200줄을 작성하는 과잉 구현을 방지</div>
+        <div class="chip-row">
+          <span class="chip">harness-execute</span>
+        </div>
+      </div>
+      <div class="k-card">
+        <div class="k-num">§3 · Surgical Changes</div>
+        <div class="k-title">외과적 변경</div>
+        <div class="k-prevent">요청과 무관한 코드, 주석, 포맷을 건드리는 것을 방지</div>
+        <div class="chip-row">
+          <span class="chip">harness-execute</span>
+          <span class="chip">harness-review</span>
+          <span class="chip">harness-debug</span>
+        </div>
+      </div>
+      <div class="k-card">
+        <div class="k-num">§4 · Goal-Driven Execution</div>
+        <div class="k-title">목표 주도 실행</div>
+        <div class="k-prevent">현재 step을 검증하기 전에 다음 step으로 넘어가는 것을 방지</div>
+        <div class="chip-row">
+          <span class="chip">harness-plan</span>
+          <span class="chip">harness-execute</span>
+          <span class="chip">harness-verify</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div>
+      <a href="https://github.com/SeokRae/sr-harness" target="_blank" rel="noopener">GitHub: SeokRae/sr-harness</a>
+      <span style="margin:0 8px;color:var(--border-strong)">·</span>
+      <span style="font-size:12px;color:var(--text-muted)">MIT License</span>
+    </div>
+    <div class="footer-right">sr-harness v0.4.0 · Claude Code Plugin</div>
+  </footer>
+
+</main>
+
+<!-- Detail Panel -->
+<div id="dpOverlay" class="detail-overlay"></div>
+<div id="dpPanel" class="detail-panel">
+  <div class="dp-header">
+    <div id="dpBadge" class="dp-badge"></div>
+    <button class="dp-close" id="dpClose" title="닫기">✕</button>
+  </div>
+  <div class="dp-body">
+    <div id="dpRole" class="dp-role"></div>
+    <div id="dpDesc" class="dp-desc"></div>
+    <div class="dp-sec" id="dpTrigSec">
+      <div class="dp-sec-title">Trigger Phrases</div>
+      <ul class="dp-list" id="dpTrig"></ul>
+    </div>
+    <div class="dp-sec" id="dpKarpSec">
+      <div class="dp-sec-title">Karpathy Principles</div>
+      <div class="dp-karp-list" id="dpKarp"></div>
+    </div>
+    <div class="dp-sec">
+      <div class="dp-sec-title">Exit Conditions</div>
+      <ul class="dp-list" id="dpExit"></ul>
+    </div>
+    <div class="dp-sec">
+      <div class="dp-sec-title">Key Rules</div>
+      <ul class="dp-list" id="dpRules"></ul>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ── Skill metadata ── */
+const SKILLS = {
+  start:{
+    label:'START', sub:'세션 진입점', type:'gateway', x:520,y:55, color:'#70e1cb', fill:'rgba(112,225,203,0.08)',
+    role:'세션 라우터 · 진입점',
+    desc:'모든 대화의 시작점. session-plan.md와 worktree 상태를 확인하고 의도에 맞는 스킬로 라우팅한다.',
+    triggers:['대화 시작','세션 재개','새로운 작업'],
+    karpathy:['§1 Think Before Coding — 의도 불분명 시 라우팅 전 질문 먼저'],
+    exit:['아이디어 탐색 → BRAINSTORM','요구사항 있음 → PLAN','session-plan + issue 있음 → EXECUTE','버그/에러 → DEBUG'],
+    rules:['session-plan.md 있으면 먼저 로드','worktree 감지 시 재개 안내','의도 불분명 → 라우팅 전 질문']
+  },
+  brainstorm:{
+    label:'BRAINSTORM', sub:'아이디어 구체화', type:'service', x:520,y:145, color:'#68b6ff', fill:'rgba(104,182,255,0.06)',
+    role:'아이디어 반복 구체화',
+    desc:'라운드당 하나의 구체적 출력 + 하나의 질문. 한꺼번에 모든 방향을 나열하지 않는다.',
+    triggers:['뭔가 만들고 싶은데','어떻게 접근할까','아이디어 있어?'],
+    karpathy:['§1 Think Before Coding — 모호함 속에서 설계하지 않기'],
+    exit:['종료 조건 3가지 충족 + 사용자 확인 → PLAN'],
+    rules:['종료 조건: ①무엇을 만들지 ②성공 기준 ③단일 Issue 크기','Claude 혼자 종료 결정 금지','한 번에 5가지 방향 제시 금지']
+  },
+  plan:{
+    label:'PLAN', sub:'구현 계획 수립', type:'service', x:520,y:235, color:'#68b6ff', fill:'rgba(104,182,255,0.06)',
+    role:'step → verify 형식 구현 계획',
+    desc:'모든 step에 완료 기준(verify)을 명시. verify 없는 step은 계획에서 제외된다.',
+    triggers:['어떻게 구현할까','계획 세워줘','설계해줘'],
+    karpathy:['§4 Goal-Driven Execution — verify 없는 step은 계획에 포함 금지'],
+    exit:['사용자 승인 → ISSUE','미승인 → 재작성'],
+    rules:['모든 step에 verify 조건 필수','session-plan.md에 저장','scope 외 항목은 Deviations에 기록']
+  },
+  issue:{
+    label:'ISSUE', sub:'GitHub Issue + Branch', type:'service', x:520,y:325, color:'#68b6ff', fill:'rgba(104,182,255,0.06)',
+    role:'GitHub Issue + 브랜치 + worktree 생성',
+    desc:'1 Issue = 1 Branch = 1 PR. 항상 origin/main에서 분기하고 worktree를 생성한다.',
+    triggers:['이슈 만들어줘','브랜치 만들어줘','시작하자'],
+    karpathy:[],
+    exit:['브랜치 + worktree 생성 완료 → EXECUTE'],
+    rules:['체인 브랜치 절대 금지 (main에서만 분기)','uncommitted 변경 있으면 분기 금지','커밋 메시지에 (#N) 포함']
+  },
+  execute:{
+    label:'EXECUTE', sub:'단계별 구현', type:'service', x:520,y:415, color:'#68b6ff', fill:'rgba(104,182,255,0.06)',
+    role:'Karpathy 체크포인트 기반 구현',
+    desc:'step → verify → commit 단위로 작업. 각 단계 완료 전 verify 조건을 확인한다.',
+    triggers:['구현해줘','만들어줘','코드 작성해줘'],
+    karpathy:['§2 Simplicity First — 50줄로 되면 200줄 작성 금지','§3 Surgical Changes — Read Before Write, 필요한 라인만 수정','§4 Goal-Driven Execution — verify 통과 후 다음 step'],
+    exit:['모든 step 통과 → VERIFY','테스트 실패/에러 → DEBUG','범위 밖 작업 발견 → Deviations 기록 후 계속'],
+    rules:['worktree 확인 필수 (없으면 → ISSUE)','git add . 금지','step 단위 커밋 (verify 통과 후)']
+  },
+  debug:{
+    label:'DEBUG', sub:'진단 우선', type:'cache', x:760,y:415, color:'#ffd072', fill:'rgba(255,208,114,0.06)',
+    role:'진단 우선 디버깅',
+    desc:'에러를 만나면 코드를 먼저 건드리지 않는다. Observe → Hypothesize → Verify → Fix 순서로.',
+    triggers:['에러났어','테스트 실패','왜 안 되지?','버그'],
+    karpathy:['§1 Think Before Coding — 원인 파악 전 코드 수정 금지','§3 Surgical Changes — 원인 확인된 부분만 수정'],
+    exit:['원인 확인 + 수정 완료 → EXECUTE'],
+    rules:['같은 접근법 2회 실패 시 즉시 폐기','증상이 아닌 원인 수정','수정 전 재현 테스트 먼저 작성']
+  },
+  verify:{
+    label:'VERIFY', sub:'통합 검증', type:'service', x:520,y:505, color:'#68b6ff', fill:'rgba(104,182,255,0.06)',
+    role:'PR 전 통합 검증',
+    desc:'git status, 변경 파일 목록, 테스트 실행으로 PR 준비 상태를 검증한다.',
+    triggers:['EXECUTE 완료 후 자동 진입'],
+    karpathy:['§4 Goal-Driven Execution — 검증 통과 전 SUBMIT 불가'],
+    exit:['통과 → SUBMIT','실패 → EXECUTE','예상 외 파일 → 사용자 확인 후 계속'],
+    rules:['git status clean 확인 필수','변경 파일 목록 사용자에게 표시','테스트 실패 상태로 SUBMIT 진행 불가']
+  },
+  submit:{
+    label:'SUBMIT', sub:'push + PR (Closes #N)', type:'service', x:520,y:595, color:'#68b6ff', fill:'rgba(104,182,255,0.06)',
+    role:'push + PR 생성 후 STOP',
+    desc:'"Closes #N"이 포함된 PR을 생성하고 STOP. 머지는 이 스킬에서 하지 않는다.',
+    triggers:['PR 올려줘','push해줘','리뷰 요청'],
+    karpathy:[],
+    exit:['PR 생성 후 STOP (사용자가 PR 확인)','리뷰 피드백 수신 → REVIEW','사용자 머지 요청 → FINISH'],
+    rules:['PR body에 "Closes #N" 필수','머지는 harness-finish에서만','session-plan 완료 시 정리']
+  },
+  review:{
+    label:'REVIEW', sub:'피드백 반영', type:'cache', x:760,y:635, color:'#ffd072', fill:'rgba(255,208,114,0.06)',
+    role:'PR 리뷰 피드백 수신 및 반영',
+    desc:'피드백을 Apply/Ignore/Discuss로 분류. 사용자 확인 후 Apply 항목만 반영한다.',
+    triggers:['리뷰 달렸어','코멘트 반영해줘','PR 피드백'],
+    karpathy:['§3 Surgical Changes — 요청된 변경만, 분류 확인 후 수정'],
+    exit:['Apply 항목 반영 완료 → EXECUTE → VERIFY → SUBMIT'],
+    rules:['분류 없이 코드 수정 금지','force push / rebase 금지','Discuss 항목 단독 결정 금지']
+  },
+  finish:{
+    label:'FINISH', sub:'머지 + 정리', type:'service', x:520,y:700, color:'#52d988', fill:'rgba(82,217,136,0.06)',
+    role:'머지 + 브랜치 정리 + main pull',
+    desc:'squash merge로 머지하고 worktree를 제거한다. 사이클의 완료 지점.',
+    triggers:['머지해줘','마무리','브랜치 정리'],
+    karpathy:[],
+    exit:['머지 완료 → DONE','새 작업 있으면 → 새 세션 START 권장'],
+    rules:['unresolved 코멘트 있으면 사용자 확인','squash merge 기본 (merge/rebase 선택 가능)','worktree 제거 + main pull']
+  },
+  abort:{
+    label:'ABORT', sub:'작업 중단', type:'external', x:245,y:415, color:'#ff8c9f', fill:'rgba(255,140,159,0.06)',
+    anyStage:true,
+    role:'작업 중단 + 브랜치 정리',
+    desc:'어느 단계에서든 진입 가능. 중단 사유를 Deviations에 기록하고 브랜치를 처리한다.',
+    triggers:['그만할게','방향 바꿀게','폐기해줘','중단'],
+    karpathy:[],
+    exit:['정리 완료 → DONE (방향 전환 또는 전체 폐기)'],
+    rules:['어느 단계에서든 진입 가능','중단 사유 반드시 기록','브랜치 처리: 전체삭제 / 로컬만 / 보존 선택']
+  },
+  pause:{
+    label:'PAUSE', sub:'세션 일시정지', type:'external', x:245,y:505, color:'#98abc9', fill:'rgba(152,171,201,0.06)',
+    anyStage:true,
+    role:'세션 일시정지 + 인계',
+    desc:'현재 진행 상황을 session-plan.md에 저장하고 세션을 마친다.',
+    triggers:['세션 마무리','여기서 멈춰','다음 세션에 이어서'],
+    karpathy:[],
+    exit:['session-plan.md 저장 → 다음 세션 START에서 재개'],
+    rules:['worktree 제거하지 않음 (다음 세션에서 감지)','미완료 0개 → harness-finish 권장','완료 [x], 잔여 [ ] 업데이트']
+  }
+};
+
+/* Set IDs from keys */
+Object.entries(SKILLS).forEach(([k,v]) => v.id = k);
+
+/* ── Edge definitions ── */
+/* Node boundary helpers (approx):
+   service (w160 h44): top±22 left/right±80
+   cache   (w140 h44): top±22 left/right±70
+   gateway (diamond sz32): points at ±32
+   external (hex sz38): right≈+33, left≈-33, top≈-38, bot≈+38 */
+const EDGES = [
+  /* Happy path — solid blue (http) */
+  {from:'start',     to:'brainstorm', type:'http',  label:'아이디어 탐색', d:'M520,87 L520,123',                             lx:538,ly:108},
+  {from:'brainstorm',to:'plan',       type:'http',  label:'scope 확정',   d:'M520,167 L520,213',                             lx:538,ly:192},
+  {from:'plan',      to:'issue',      type:'http',  label:'사용자 승인',   d:'M520,257 L520,303',                             lx:538,ly:282},
+  {from:'issue',     to:'execute',    type:'http',  label:'브랜치 생성',   d:'M520,347 L520,393',                             lx:538,ly:372},
+  {from:'execute',   to:'verify',     type:'http',  label:'step 통과',    d:'M520,437 L520,483',                             lx:538,ly:462},
+  {from:'verify',    to:'submit',     type:'http',  label:'검증 통과',    d:'M520,527 L520,573',                             lx:538,ly:552},
+  {from:'submit',    to:'finish',     type:'http',  label:'PR 확인',     d:'M520,617 L520,678',                             lx:538,ly:650},
+
+  /* Alt entries from START — dashed blue (sync) */
+  {from:'start',     to:'plan',       type:'sync',  label:'요구사항 있음', d:'M488,55 C378,55 378,235 440,235',              lx:388,ly:148},
+  {from:'start',     to:'execute',    type:'sync',  label:'plan 재개',   d:'M488,55 C308,55 308,415 440,415',               lx:318,ly:235},
+
+  /* Debug loop — teal dashed (async) */
+  {from:'execute',   to:'debug',      type:'async', label:'테스트 실패',  d:'M600,420 L690,420',                             lx:645,ly:413},
+  {from:'debug',     to:'execute',    type:'async', label:'수정 완료',   d:'M760,393 C760,374 520,374 520,393',              lx:640,ly:370},
+
+  /* Review loop — dashed blue (sync) */
+  {from:'submit',    to:'review',     type:'sync',  label:'PR 피드백',   d:'M600,595 C720,595 760,612 760,613',              lx:688,ly:591},
+  {from:'review',    to:'execute',    type:'sync',  label:'피드백 반영',  d:'M690,635 C868,635 868,415 600,415',              lx:826,ly:525},
+
+  /* Verify fail back — dashed blue (sync) */
+  {from:'verify',    to:'execute',    type:'sync',  label:'검증 실패',   d:'M440,505 C362,505 362,415 440,415',              lx:353,ly:462},
+
+  /* Pause resume — dashed blue (sync) */
+  {from:'pause',     to:'start',      type:'sync',  label:'다음 세션',   d:'M212,505 C78,505 78,55 488,55',                 lx:92,ly:275},
+
+  /* Control edges (representative) — grey dashed (ctrl) */
+  {from:'execute',   to:'abort',      type:'ctrl',  label:'중단',        d:'M440,412 L288,412',                             lx:365,ly:405},
+  {from:'execute',   to:'pause',      type:'ctrl',  label:'일시정지',     d:'M440,420 C384,420 384,505 288,505',              lx:374,ly:466},
+];
+
+/* ── Render ── */
+const ns = 'http://www.w3.org/2000/svg';
+const edgeG = document.getElementById('edgeG');
+const lblG  = document.getElementById('lblG');
+const nodeG = document.getElementById('nodeG');
+
+const nodeElems = {};
+const edgeElems = [];
+
+function mk(tag, attrs) {
+  const el = document.createElementNS(ns, tag);
+  for (const [k,v] of Object.entries(attrs)) el.setAttribute(k,v);
+  return el;
+}
+function mkTxt(txt, attrs) { const el=mk('text',attrs); el.textContent=txt; return el; }
+
+/* Dark node background color (covers edges beneath) */
+const NODE_BG = '#07111e';
+
+/* --- Edges --- */
+const eSt = {
+  http:  {stroke:'rgba(104,182,255,0.55)', dash:null,    m:'url(#arr-http)'},
+  sync:  {stroke:'rgba(104,182,255,0.38)', dash:'4,3',   m:'url(#arr-sync)'},
+  async: {stroke:'rgba(112,225,203,0.55)', dash:'6,3',   m:'url(#arr-async)'},
+  ctrl:  {stroke:'rgba(152,171,201,0.28)', dash:'3,4',   m:'url(#arr-ctrl)'},
+};
+
+EDGES.forEach(e => {
+  const s = eSt[e.type];
+  const attrs = {d:e.d, fill:'none', stroke:s.stroke, 'stroke-width':'2', 'marker-end':s.m, class:'edge-flow'};
+  if (s.dash) attrs['stroke-dasharray'] = s.dash;
+  const path = mk('path', attrs);
+  edgeG.appendChild(path);
+
+  let lbl = null;
+  if (e.label) {
+    /* tiny bg rect for readability */
+    const bg = mk('rect', {x:e.lx-26,y:e.ly-11,width:52,height:14,rx:3,fill:'rgba(5,10,17,0.72)'});
+    lblG.appendChild(bg);
+    lbl = mkTxt(e.label, {
+      x:e.lx, y:e.ly, 'text-anchor':'middle', fill:'rgba(152,171,201,0.55)',
+      'font-size':'10', 'font-family':'Inter,sans-serif', 'pointer-events':'none'
+    });
+    lblG.appendChild(lbl);
+  }
+  edgeElems.push({from:e.from, to:e.to, path, lbl, origStroke:s.stroke, origDash:s.dash||null, origM:s.m});
+});
+
+/* --- Nodes --- */
+function hexPts(cx,cy,sz) {
+  return Array.from({length:6},(_,i)=>{
+    const a=(i*60-30)*Math.PI/180;
+    return `${cx+sz*Math.cos(a)},${cy+sz*Math.sin(a)}`;
+  }).join(' ');
+}
+
+Object.entries(SKILLS).forEach(([id, n]) => {
+  const g = mk('g', {'data-id':id, cursor:'pointer'});
+
+  switch(n.type) {
+    case 'service': {
+      g.appendChild(mk('rect',{x:n.x-80,y:n.y-22,width:160,height:44,rx:12,fill:NODE_BG}));
+      g.appendChild(mk('rect',{x:n.x-80,y:n.y-22,width:160,height:44,rx:12,fill:n.fill,stroke:n.color,'stroke-width':'1.5'}));
+      g.appendChild(mkTxt(n.label,{x:n.x,y:n.y-5,'text-anchor':'middle',fill:n.color,'font-size':'12','font-weight':'700','letter-spacing':'0.05em','font-family':'Inter,sans-serif'}));
+      g.appendChild(mkTxt(n.sub,  {x:n.x,y:n.y+10,'text-anchor':'middle',fill:'rgba(152,171,201,0.7)','font-size':'10','font-family':'Inter,Noto Sans KR,sans-serif','pointer-events':'none'}));
+      break;
+    }
+    case 'cache': {
+      g.appendChild(mk('rect',{x:n.x-70,y:n.y-22,width:140,height:44,rx:8,fill:NODE_BG}));
+      g.appendChild(mk('rect',{x:n.x-70,y:n.y-22,width:140,height:44,rx:8,fill:n.fill,stroke:n.color,'stroke-width':'1.5','stroke-dasharray':'5,3'}));
+      g.appendChild(mkTxt(n.label,{x:n.x,y:n.y-5,'text-anchor':'middle',fill:n.color,'font-size':'12','font-weight':'700','letter-spacing':'0.05em','font-family':'Inter,sans-serif'}));
+      g.appendChild(mkTxt(n.sub,  {x:n.x,y:n.y+10,'text-anchor':'middle',fill:'rgba(152,171,201,0.7)','font-size':'10','font-family':'Inter,Noto Sans KR,sans-serif','pointer-events':'none'}));
+      break;
+    }
+    case 'gateway': {
+      const sz=32;
+      g.appendChild(mk('polygon',{points:`${n.x},${n.y-sz-2} ${n.x+sz+2},${n.y} ${n.x},${n.y+sz+2} ${n.x-sz-2},${n.y}`,fill:NODE_BG}));
+      g.appendChild(mk('polygon',{points:`${n.x},${n.y-sz} ${n.x+sz},${n.y} ${n.x},${n.y+sz} ${n.x-sz},${n.y}`,fill:n.fill,stroke:n.color,'stroke-width':'1.5'}));
+      g.appendChild(mkTxt(n.label,{x:n.x,y:n.y-4,'text-anchor':'middle',fill:n.color,'font-size':'11','font-weight':'700','letter-spacing':'0.04em','font-family':'Inter,sans-serif'}));
+      g.appendChild(mkTxt(n.sub,  {x:n.x,y:n.y+10,'text-anchor':'middle',fill:'rgba(152,171,201,0.65)','font-size':'9','font-family':'Inter,Noto Sans KR,sans-serif','pointer-events':'none'}));
+      break;
+    }
+    case 'external': {
+      const sz=38;
+      g.appendChild(mk('polygon',{points:hexPts(n.x,n.y,sz+2),fill:NODE_BG}));
+      g.appendChild(mk('polygon',{points:hexPts(n.x,n.y,sz),fill:n.fill,stroke:n.color,'stroke-width':'1.5','stroke-dasharray':'4,2'}));
+      g.appendChild(mkTxt(n.label,{x:n.x,y:n.y-5,'text-anchor':'middle',fill:n.color,'font-size':'11','font-weight':'700','letter-spacing':'0.04em','font-family':'Inter,sans-serif'}));
+      g.appendChild(mkTxt(n.sub,  {x:n.x,y:n.y+9,'text-anchor':'middle',fill:'rgba(152,171,201,0.65)','font-size':'9','font-family':'Inter,Noto Sans KR,sans-serif','pointer-events':'none'}));
+      if (n.anyStage) {
+        g.appendChild(mkTxt('← any stage',{x:n.x,y:n.y+sz+15,'text-anchor':'middle',fill:'rgba(152,171,201,0.38)','font-size':'9','font-style':'italic','font-family':'Inter,sans-serif','pointer-events':'none'}));
+      }
+      break;
+    }
+  }
+
+  /* DONE indicator below FINISH */
+  if (id==='finish') {
+    g.appendChild(mk('circle',{cx:n.x,cy:n.y+36,r:7,fill:'rgba(82,217,136,0.15)',stroke:'#52d988','stroke-width':'1.5'}));
+    g.appendChild(mkTxt('✓',{x:n.x,y:n.y+40,'text-anchor':'middle',fill:'#52d988','font-size':'9','font-weight':'700','font-family':'Inter,sans-serif','pointer-events':'none'}));
+  }
+
+  g.addEventListener('mouseenter',()=>{ if(!dpPanel.classList.contains('open')) highlightNode(id); });
+  g.addEventListener('mouseleave',()=>{ if(!dpPanel.classList.contains('open')) resetHL(); });
+  g.addEventListener('click',e=>{ e.stopPropagation(); showDetail(id); });
+
+  nodeG.appendChild(g);
+  nodeElems[id]=g;
+});
+
+/* ── Hover interaction ── */
+function highlightNode(nodeId) {
+  const conns = EDGES.filter(e=>e.from===nodeId||e.to===nodeId);
+  const connIds = new Set(conns.flatMap(e=>[e.from,e.to]));
+  Object.entries(nodeElems).forEach(([id,el])=>{
+    if(id===nodeId){el.style.opacity='1';el.style.filter='url(#glow)';}
+    else if(connIds.has(id)){el.style.opacity='0.85';el.style.filter='';}
+    else{el.style.opacity='0.1';el.style.filter='';}
+  });
+  edgeElems.forEach(ee=>{
+    const conn=conns.find(e=>e.from===ee.from&&e.to===ee.to);
+    if(conn){
+      const isOut=ee.from===nodeId;
+      ee.path.style.stroke=isOut?'rgba(104,182,255,0.95)':'rgba(112,225,203,0.95)';
+      ee.path.style.strokeWidth='2.5';ee.path.style.opacity='1';
+      ee.path.setAttribute('marker-end',`url(#arr-hi-${isOut?'out':'in'})`);
+      ee.path.classList.add('edge-flow');
+      if(ee.lbl){ee.lbl.style.opacity='1';ee.lbl.style.fill=isOut?'#68b6ff':'#70e1cb';}
+    } else {
+      ee.path.style.opacity='0.04';ee.path.classList.remove('edge-flow');
+      if(ee.lbl)ee.lbl.style.opacity='0';
+    }
+  });
+}
+
+function resetHL() {
+  Object.values(nodeElems).forEach(el=>{el.style.opacity='';el.style.filter='';});
+  edgeElems.forEach(ee=>{
+    ee.path.setAttribute('stroke',ee.origStroke);
+    ee.path.style.strokeWidth='';ee.path.style.opacity='';
+    ee.path.setAttribute('marker-end',ee.origM);
+    ee.path.classList.add('edge-flow');
+    if(ee.origDash)ee.path.setAttribute('stroke-dasharray',ee.origDash);
+    else ee.path.removeAttribute('stroke-dasharray');
+    if(ee.lbl){ee.lbl.style.opacity='';ee.lbl.style.fill='';}
+  });
+}
+
+const topoSvg = document.getElementById('topoSvg');
+topoSvg.addEventListener('click',e=>{
+  const tgt=e.target;
+  if([topoSvg,edgeG,lblG,nodeG].includes(tgt)||tgt.parentElement===edgeG||tgt.parentElement===lblG) {
+    if(!dpPanel.classList.contains('open')) resetHL();
+  }
+});
+
+/* ── Detail panel ── */
+const dpPanel   = document.getElementById('dpPanel');
+const dpOverlay = document.getElementById('dpOverlay');
+
+function showDetail(nodeId) {
+  const n = SKILLS[nodeId];
+  if(!n) return;
+  const badge = document.getElementById('dpBadge');
+  badge.textContent = n.label;
+  badge.style.color = n.color;
+  badge.style.borderColor = n.color+'55';
+  badge.style.background  = n.fill;
+  document.getElementById('dpRole').textContent = n.role;
+  document.getElementById('dpDesc').textContent = n.desc;
+  document.getElementById('dpTrig').innerHTML  = n.triggers.map(t=>`<li>${t}</li>`).join('');
+  const ks = document.getElementById('dpKarpSec');
+  const kc = document.getElementById('dpKarp');
+  if(!n.karpathy.length){ks.style.display='none';}
+  else{
+    ks.style.display='';
+    kc.innerHTML = n.karpathy.map(k=>{
+      const sp = k.indexOf(' ');
+      return `<div class="dp-karp-chip"><span class="kn">${k.slice(0,sp)}</span><span>${k.slice(sp+1)}</span></div>`;
+    }).join('');
+  }
+  document.getElementById('dpExit').innerHTML  = n.exit.map(e=>`<li>${e}</li>`).join('');
+  document.getElementById('dpRules').innerHTML = n.rules.map(r=>`<li>${r}</li>`).join('');
+  dpPanel.classList.add('open');
+  dpOverlay.classList.add('open');
+  highlightNode(nodeId);
+}
+
+function closeDetail() {
+  dpPanel.classList.remove('open');
+  dpOverlay.classList.remove('open');
+  resetHL();
+}
+
+document.getElementById('dpClose').addEventListener('click', closeDetail);
+dpOverlay.addEventListener('click', closeDetail);
+document.addEventListener('keydown', e=>{ if(e.key==='Escape') closeDetail(); });
+
+/* ── Zoom / Pan ── */
+let vb = {x:0,y:0,w:1080,h:770};
+const updVB = ()=>topoSvg.setAttribute('viewBox',`${vb.x} ${vb.y} ${vb.w} ${vb.h}`);
+
+topoSvg.addEventListener('wheel', e=>{
+  e.preventDefault();
+  const f = e.deltaY>0?1.12:0.89;
+  const r = topoSvg.getBoundingClientRect();
+  const mx=(e.clientX-r.left)/r.width*vb.w+vb.x;
+  const my=(e.clientY-r.top)/r.height*vb.h+vb.y;
+  vb.w=Math.min(2400,Math.max(400,vb.w*f));
+  vb.h=Math.min(1600,Math.max(300,vb.h*f));
+  vb.x=mx-(e.clientX-r.left)/r.width*vb.w;
+  vb.y=my-(e.clientY-r.top)/r.height*vb.h;
+  updVB();
+},{passive:false});
+
+let drag=false,ds,vs;
+topoSvg.addEventListener('mousedown',e=>{drag=true;ds={x:e.clientX,y:e.clientY};vs={...vb};topoSvg.style.cursor='grabbing';});
+window.addEventListener('mousemove',e=>{
+  if(!drag)return;
+  const r=topoSvg.getBoundingClientRect();
+  vb.x=vs.x-(e.clientX-ds.x)/r.width*vb.w;
+  vb.y=vs.y-(e.clientY-ds.y)/r.height*vb.h;
+  updVB();
+});
+window.addEventListener('mouseup',()=>{drag=false;topoSvg.style.cursor='grab';});
+
+/* Touch pan support */
+let touch0=null;
+topoSvg.addEventListener('touchstart',e=>{if(e.touches.length===1){touch0={x:e.touches[0].clientX,y:e.touches[0].clientY};vs={...vb};}},{passive:true});
+topoSvg.addEventListener('touchmove',e=>{
+  if(!touch0||e.touches.length!==1)return;
+  e.preventDefault();
+  const r=topoSvg.getBoundingClientRect();
+  vb.x=vs.x-(e.touches[0].clientX-touch0.x)/r.width*vb.w;
+  vb.y=vs.y-(e.touches[0].clientY-touch0.y)/r.height*vb.h;
+  updVB();
+},{passive:false});
+topoSvg.addEventListener('touchend',()=>{touch0=null;},{passive:true});
+</script>
+</body>
+</html>
