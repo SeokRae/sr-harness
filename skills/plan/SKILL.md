@@ -1,9 +1,9 @@
 ---
-name: harness-plan
-description: 구현 계획을 단계별 검증 기준과 함께 수립하는 스킬. "어떻게 구현할까", "계획 세워줘", "설계해줘" 또는 harness-brainstorm 완료 후 자동 실행. 각 단계에 verify 기준 포함, karpathy §4 내장.
+name: plan
+description: 구현 계획을 단계별 검증 기준과 함께 수립하는 스킬. "어떻게 구현할까", "계획 세워줘", "설계해줘" 또는 brainstorm 완료 후 자동 실행. 각 단계에 verify 기준 포함, karpathy §4 내장.
 ---
 
-# harness-plan
+# plan
 
 계획의 각 단계는 반드시 검증 가능한 완료 조건을 포함한다.
 단계는 작게 — 하나의 단계가 하나의 논리적 변경 단위를 넘지 않는다.
@@ -41,7 +41,7 @@ description: 구현 계획을 단계별 검증 기준과 함께 수립하는 스
 ## 계획 완료 후
 
 1. 사용자에게 계획 확인 요청
-2. 승인되면 → `harness-issue` 호출 (Issue 생성 + 브랜치 생성)
+2. 승인되면 → `issue` 호출 (Issue 생성 + 브랜치 생성)
 3. 미승인이면 → 피드백 반영 후 재작성
 
 ## session-plan.md 연동

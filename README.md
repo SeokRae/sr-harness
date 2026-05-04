@@ -28,12 +28,12 @@ sr-harness structures these into a single workflow where each stage enforces the
 Instead of relying on rules loaded somewhere in context, each skill applies checkpoints at stage entry.
 
 ```
-harness-execute: before touching code
+execute: before touching code
   [ ] Is the request clear? If not → ask first
   [ ] Is there a simpler path? If yes → propose it
   [ ] Is there a success criterion? If not → define it
 
-harness-execute: when editing existing code
+execute: when editing existing code
   [ ] Read the file before writing
   [ ] Only touch lines directly related to the request
   [ ] Leave surrounding code, comments, and formatting as-is
@@ -71,44 +71,44 @@ The full lifecycle — state transitions, gap analysis, and v0.2 roadmap — is 
 ## Workflow
 
 ```
-harness-start
+start
       │  Identify task type, load session plan, route to the right skill
       │
-      ├─ harness-brainstorm
+      ├─ brainstorm
       │    Not: dump all ideas at once
       │    But: one round = one concrete output + one clarifying question
       │    Exit: idea is small enough to fit in a single GitHub Issue
       │
-      ├─ harness-plan
+      ├─ plan
       │    Every step must have a verify condition
       │    Format: "do X → verify: [done criteria]"
       │    No verify = step doesn't go in the plan
       │
-      ├─ harness-issue
+      ├─ issue
       │    Create GitHub Issue → branch from origin/main
       │    Rule: 1 Issue = 1 Branch = 1 PR
       │    No chain branches. No multi-issue branches.
       │
-      ├─ harness-execute ←─────────────────────────┐
+      ├─ execute ←─────────────────────────┐
       │    Karpathy checkpoints at stage entry       │
       │    step → verify → commit → next step       │
       │                                              │
-      ├─ harness-debug  ──────────────────────────  ┘
+      ├─ debug  ──────────────────────────  ┘
       │    Diagnose before touching code
       │    Never retry the same failing approach twice
       │
-      ├─ harness-verify
+      ├─ verify
       │    Integration check before submitting
       │    git status · changed files · test suite
       │
-      ├─ harness-submit
+      ├─ submit
       │    push → PR with "Closes #N" in body
       │    Stops here. User reviews the PR.
       │
-      ├─ harness-review
+      ├─ review
       │    Receive review feedback → back to execute
       │
-      └─ harness-finish
+      └─ finish
            Merge + delete branch + pull main
            The work is truly done.
 ```
@@ -119,18 +119,18 @@ harness-start
 
 | Skill | Role |
 |-------|------|
-| `harness-start` | Session entry point · routing |
-| `harness-brainstorm` | Iterative feedback loop to concretize ideas |
-| `harness-plan` | Planning with step → verify format |
-| `harness-issue` | GitHub Issue + branch creation |
-| `harness-execute` | Implementation with Karpathy checkpoints |
-| `harness-debug` | Diagnose-first debugging |
-| `harness-verify` | Integration check before PR |
-| `harness-submit` | push + PR (Closes #N) · stops for user review |
-| `harness-review` | Receive review feedback → back to execute |
-| `harness-finish` | Merge + delete branch + pull main |
-| `harness-abort` | Cancel work · clean up branch |
-| `harness-pause` | Suspend session · hand off to next session |
+| `start` | Session entry point · routing |
+| `brainstorm` | Iterative feedback loop to concretize ideas |
+| `plan` | Planning with step → verify format |
+| `issue` | GitHub Issue + branch creation |
+| `execute` | Implementation with Karpathy checkpoints |
+| `debug` | Diagnose-first debugging |
+| `verify` | Integration check before PR |
+| `submit` | push + PR (Closes #N) · stops for user review |
+| `review` | Receive review feedback → back to execute |
+| `finish` | Merge + delete branch + pull main |
+| `abort` | Cancel work · clean up branch |
+| `pause` | Suspend session · hand off to next session |
 
 ---
 

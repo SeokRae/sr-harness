@@ -109,22 +109,22 @@
 
 | From | To | 트리거 | 담당 스킬 |
 |------|----|--------|----------|
-| START | BRAINSTORM | 아이디어 탐색 의도 | harness-start → harness-brainstorm |
-| START | PLAN | 구체적인 요구사항 이미 있음 | harness-start → harness-plan |
-| START | EXECUTE | session-plan + Issue 존재 | harness-start → harness-execute |
-| BRAINSTORM | PLAN | 종료 조건 3가지 충족 | harness-brainstorm → harness-plan |
-| PLAN | ISSUE | 사용자 승인 | harness-plan → harness-issue |
-| ISSUE | EXECUTE | 브랜치 생성 완료 | harness-issue → harness-execute |
-| EXECUTE | DEBUG | 테스트 실패 / 예상 밖 에러 | harness-execute → harness-debug |
-| DEBUG | EXECUTE | 원인 확인 + 수정 완료 | harness-debug → harness-execute |
-| EXECUTE | VERIFY | 모든 step verify 통과 | harness-execute → **harness-verify** *(v0.2)* |
-| VERIFY | REVIEW | 통합 검증 통과 | harness-verify → **harness-review** *(v0.2)* |
-| VERIFY | EXECUTE | 검증 실패 → 추가 수정 필요 | harness-verify → harness-execute |
-| REVIEW | SUBMIT | solo 진행 또는 approve | harness-review → harness-submit |
-| REVIEW | EXECUTE | 리뷰 피드백 수신 → 반영 | harness-review → harness-execute |
-| SUBMIT | FINISH | 사용자가 PR 확인 후 머지 요청 | harness-finish |
-| FINISH | DONE | 머지 + 브랜치 정리 + main pull 완료 | harness-finish |
-| ANY | ABORT | 방향 전환 / 폐기 결정 | harness-abort |
+| START | BRAINSTORM | 아이디어 탐색 의도 | start → brainstorm |
+| START | PLAN | 구체적인 요구사항 이미 있음 | start → plan |
+| START | EXECUTE | session-plan + Issue 존재 | start → execute |
+| BRAINSTORM | PLAN | 종료 조건 3가지 충족 | brainstorm → plan |
+| PLAN | ISSUE | 사용자 승인 | plan → issue |
+| ISSUE | EXECUTE | 브랜치 생성 완료 | issue → execute |
+| EXECUTE | DEBUG | 테스트 실패 / 예상 밖 에러 | execute → debug |
+| DEBUG | EXECUTE | 원인 확인 + 수정 완료 | debug → execute |
+| EXECUTE | VERIFY | 모든 step verify 통과 | execute → **verify** *(v0.2)* |
+| VERIFY | REVIEW | 통합 검증 통과 | verify → **review** *(v0.2)* |
+| VERIFY | EXECUTE | 검증 실패 → 추가 수정 필요 | verify → execute |
+| REVIEW | SUBMIT | solo 진행 또는 approve | review → submit |
+| REVIEW | EXECUTE | 리뷰 피드백 수신 → 반영 | review → execute |
+| SUBMIT | FINISH | 사용자가 PR 확인 후 머지 요청 | finish |
+| FINISH | DONE | 머지 + 브랜치 정리 + main pull 완료 | finish |
+| ANY | ABORT | 방향 전환 / 폐기 결정 | abort |
 
 > **볼드** 표시: v0.2에서 신규 추가 예정 스킬
 
@@ -134,9 +134,9 @@
 
 | 우선순위 | 스킬명 | 역할 | 해소하는 Gap |
 |---------|--------|------|-------------|
-| P0 | `harness-verify` | 빌드+테스트+lint 실행, 변경 파일 전수 확인 | G2 |
-| P0 | `harness-review` | PR 리뷰 피드백 수신 → execute 재진입 루프 | G1 |
-| P1 | `harness-abort` | session-plan 정리, 브랜치 삭제 여부 확인, deviation 기록 | G3 |
+| P0 | `verify` | 빌드+테스트+lint 실행, 변경 파일 전수 확인 | G2 |
+| P0 | `review` | PR 리뷰 피드백 수신 → execute 재진입 루프 | G1 |
+| P1 | `abort` | session-plan 정리, 브랜치 삭제 여부 확인, deviation 기록 | G3 |
 | P2 | `harness-test` | TDD Red→Green→Refactor 강제 루프 | G5 |
 | P2 | `harness-parallel` | worktree 기반 다중 Issue 병렬 처리 | G4 |
 
@@ -148,7 +148,7 @@
 
 | 스킬 | 문제 | 개선 방향 |
 |------|------|----------|
-| harness-start | 의도 모호 시 판단 기준 부재 | AskUserQuestion 호출 패턴 추가 |
-| harness-brainstorm | 종료 판단을 Claude에게 위임 | 종료 전 사용자 확인 강제 |
-| harness-execute | 커밋 크기 판단 가이드 없음 | "커밋 크기 = 하나의 verify 통과 단위" 명시 |
-| harness-finish | 테스트 명령어 추상화 | session-plan.md의 `test-command` 필드에서 읽기 |
+| start | 의도 모호 시 판단 기준 부재 | AskUserQuestion 호출 패턴 추가 |
+| brainstorm | 종료 판단을 Claude에게 위임 | 종료 전 사용자 확인 강제 |
+| execute | 커밋 크기 판단 가이드 없음 | "커밋 크기 = 하나의 verify 통과 단위" 명시 |
+| finish | 테스트 명령어 추상화 | session-plan.md의 `test-command` 필드에서 읽기 |

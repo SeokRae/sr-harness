@@ -1,9 +1,9 @@
 ---
-name: harness-review
-description: PR 리뷰 피드백 수신 및 반영 스킬. "리뷰 달렸어", "코멘트 반영해줘", "PR 피드백" 시 사용. 피드백을 반영/무시/논의로 분류하고 harness-execute 재진입. force push 없이 일반 push로 마무리.
+name: review
+description: PR 리뷰 피드백 수신 및 반영 스킬. "리뷰 달렸어", "코멘트 반영해줘", "PR 피드백" 시 사용. 피드백을 반영/무시/논의로 분류하고 execute 재진입. force push 없이 일반 push로 마무리.
 ---
 
-# harness-review
+# review
 
 PR 리뷰 피드백은 새로운 작업 사이클의 시작이다.
 **피드백을 하나씩 확인하고, 반영 여부를 결정한 후 실행한다.**
@@ -36,7 +36,7 @@ PR 리뷰 피드백은 새로운 작업 사이클의 시작이다.
 - [ ] review: {반영 항목 설명} → verify: {확인 방법}
 ```
 
-### 3. harness-execute 재진입
+### 3. execute 재진입
 session-plan의 새 step을 하나씩 실행한다.
 기존 코드를 수정하므로 karpathy §3 Surgical Changes를 반드시 적용한다.
 

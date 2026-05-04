@@ -1,9 +1,9 @@
 ---
-name: harness-issue
-description: GitHub Issue 생성 및 feature 브랜치 생성 스킬. harness-plan 완료 후 자동 실행. "이슈 만들어줘", "브랜치 생성", "작업 시작" 시 사용. 1 Issue = 1 Branch = 1 PR 규칙 강제.
+name: issue
+description: GitHub Issue 생성 및 feature 브랜치 생성 스킬. plan 완료 후 자동 실행. "이슈 만들어줘", "브랜치 생성", "작업 시작" 시 사용. 1 Issue = 1 Branch = 1 PR 규칙 강제.
 ---
 
-# harness-issue
+# issue
 
 모든 코드 변경은 GitHub Issue에서 시작한다.
 **Issue 없이 브랜치를 만들지 않는다. 브랜치 없이 코드를 수정하지 않는다.**
@@ -51,11 +51,11 @@ git worktree add .claude/worktrees/{short-description} feature/{issue-number}-{s
 ✅ Worktree 생성: .claude/worktrees/{description}
 ✅ 현재 위치: .claude/worktrees/{description}
 
-다음 단계: harness-execute
+다음 단계: execute
 ```
 
 ## 연동 규칙
 
-- 이 스킬 완료 후 → `harness-execute` 자동 진행
+- 이 스킬 완료 후 → `execute` 자동 진행
 - 커밋 메시지에 항상 `(#N)` 포함
 - PR body에 반드시 `Closes #N` 포함 (커밋 메시지의 #N은 closing 트리거 아님)

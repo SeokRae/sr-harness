@@ -1,5 +1,5 @@
 ---
-name: harness-start
+name: start
 description: sr-harness 세션 진입점. 모든 대화 시작 시 반드시 먼저 실행. 작업 유형(아이디어 탐색/계획/구현/디버깅/마무리)을 파악하고 적절한 harness 스킬로 라우팅. 코딩 작업 전 karpathy 체크 강제 실행.
 ---
 
@@ -26,14 +26,14 @@ description: sr-harness 세션 진입점. 모든 대화 시작 시 반드시 먼
 
 | 사용자 의도 | 호출할 스킬 |
 |------------|------------|
-| 아이디어 탐색, 방향 논의, 뭔가 만들고 싶어 | `harness-brainstorm` |
-| 구현 계획 수립, 설계 | `harness-plan` |
-| Issue 생성, 브랜치 생성 | `harness-issue` |
-| 코드 작성, 기능 구현, PR 작업 | `harness-execute` |
-| 버그, 테스트 실패, 에러 | `harness-debug` |
-| PR 올리기, push, 리뷰 요청 | `harness-submit` |
-| 머지, 마무리, 브랜치 정리 | `harness-finish` |
-| 세션 중단, 다음 세션에서 이어서, 여기까지만 | `harness-pause` |
+| 아이디어 탐색, 방향 논의, 뭔가 만들고 싶어 | `brainstorm` |
+| 구현 계획 수립, 설계 | `plan` |
+| Issue 생성, 브랜치 생성 | `issue` |
+| 코드 작성, 기능 구현, PR 작업 | `execute` |
+| 버그, 테스트 실패, 에러 | `debug` |
+| PR 올리기, push, 리뷰 요청 | `submit` |
+| 머지, 마무리, 브랜치 정리 | `finish` |
+| 세션 중단, 다음 세션에서 이어서, 여기까지만 | `pause` |
 
 ### 의도 모호 시 질문 목록
 
@@ -43,7 +43,7 @@ description: sr-harness 세션 진입점. 모든 대화 시작 시 반드시 먼
 - "현재 진행 중인 Issue가 있나요? 있다면 번호를 알려주세요."
 - "코드를 작성하려는 건가요, 아니면 방향을 논의하려는 건가요?"
 
-의도가 명확해지기 전에 `harness-execute`나 `harness-plan`을 호출하지 않는다.
+의도가 명확해지기 전에 `execute`나 `plan`을 호출하지 않는다.
 
 ## 코딩 작업 전 karpathy 즉시 체크
 
@@ -55,9 +55,9 @@ description: sr-harness 세션 진입점. 모든 대화 시작 시 반드시 먼
 
 ## superpowers와의 관계
 
-이 플러그인이 설치된 경우, superpowers 워크플로우 스킬 대신 harness-* 스킬을 우선 사용한다.
+이 플러그인이 설치된 경우, superpowers 워크플로우 스킬 대신 sr-harness 스킬을 우선 사용한다.
 superpowers의 유틸리티 스킬(dispatching-parallel-agents 등)은 그대로 사용 가능.
-워크트리 관리는 sr-harness가 자체 처리한다 (`harness-issue` Step 3, `harness-finish` Step 4).
+워크트리 관리는 sr-harness가 자체 처리한다 (`issue` Step 3, `finish` Step 4).
 
 ## 워크플로우 전체 흐름
 
