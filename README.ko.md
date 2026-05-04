@@ -28,12 +28,12 @@ sr-harness는 이 세 가지를 하나의 워크플로우로 구조화한다.
 원칙을 규칙으로 외우는 게 아니라, 각 단계 진입 시 체크포인트로 강제한다.
 
 ```
-harness-execute 진입 시:
+execute 진입 시:
   [ ] 요청이 명확한가? → 불명확하면 먼저 질문
   [ ] 더 단순한 방법이 있는가? → 있으면 먼저 제안
   [ ] 성공 기준이 있는가? → 없으면 정의 후 시작
 
-harness-execute 기존 코드 수정 시:
+execute 기존 코드 수정 시:
   [ ] 수정 전 파일을 먼저 읽는다
   [ ] 요청과 직접 관련된 줄만 변경한다
   [ ] 주변 코드·주석·포맷은 건드리지 않는다
@@ -71,33 +71,33 @@ claude plugins list
 ## 워크플로우
 
 ```
-harness-start
+start
       │  작업 유형 파악 · session-plan.md 로드 · 라우팅
       │
-      ├─ harness-brainstorm
+      ├─ brainstorm
       │    아이디어를 한 번에 펼치지 않는다
       │    한 라운드 = 구체적 출력 하나 + 확인 질문 하나
       │    종료 기준: 하나의 Issue로 만들기에 충분한 크기
       │
-      ├─ harness-plan
+      ├─ plan
       │    각 단계에 verify 기준 필수
       │    형식: "X를 한다 → verify: [완료 조건]"
       │    verify 없는 단계는 계획에 포함하지 않는다
       │
-      ├─ harness-issue
+      ├─ issue
       │    GitHub Issue 생성 → origin/main 기준 브랜치 생성
       │    규칙: 1 Issue = 1 Branch = 1 PR
       │    체인 브랜치 금지 · 복수 Issue 혼재 금지
       │
-      ├─ harness-execute ←─────────────────────┐
+      ├─ execute ←─────────────────────┐
       │    단계 진입 시 Karpathy 체크포인트      │
       │    단계 → verify → 커밋 → 다음 단계   │
       │                                         │
-      ├─ harness-debug  ────────────────────────┘
+      ├─ debug  ────────────────────────┘
       │    코드 수정 전 원인 진단 필수
       │    같은 방법 두 번 시도 금지
       │
-      └─ harness-finish
+      └─ finish
            push → PR (body에 "Closes #N" 필수)
            다른 마무리 방식 없음
 ```
@@ -108,13 +108,13 @@ harness-start
 
 | 스킬 | 역할 |
 |------|------|
-| `harness-start` | 세션 진입점 · 라우팅 |
-| `harness-brainstorm` | 반복 피드백 기반 아이디어 구체화 |
-| `harness-plan` | step → verify 형식 계획 수립 |
-| `harness-issue` | GitHub Issue + 브랜치 생성 |
-| `harness-execute` | 구현 실행 · karpathy 체크포인트 |
-| `harness-finish` | push + PR (Closes #N) |
-| `harness-debug` | 진단 우선 디버깅 |
+| `start` | 세션 진입점 · 라우팅 |
+| `brainstorm` | 반복 피드백 기반 아이디어 구체화 |
+| `plan` | step → verify 형식 계획 수립 |
+| `issue` | GitHub Issue + 브랜치 생성 |
+| `execute` | 구현 실행 · karpathy 체크포인트 |
+| `finish` | push + PR (Closes #N) |
+| `debug` | 진단 우선 디버깅 |
 
 ---
 
