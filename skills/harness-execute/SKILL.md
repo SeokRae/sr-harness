@@ -39,6 +39,7 @@ git worktree list | grep "$(pwd)"
 ### karpathy §3 Surgical Changes
 기존 코드를 수정할 때:
 - 수정 대상 파일을 먼저 읽는다 (Read before Write)
+- 값의 의미·범위가 바뀌는 변경(null 도입, 타입 변경, 기본값 변경 등)은 그 값의 소비처(호출부, 생성자, 파라미터)까지 추적한다 — 확인 방법은 언어마다 다름
 - 요청과 직접 관련된 줄만 변경한다
 - 주변 코드, 주석, 포맷은 건드리지 않는다
 - 내 변경으로 생긴 unused import/변수만 제거한다 (기존 dead code 건드리지 않음)
