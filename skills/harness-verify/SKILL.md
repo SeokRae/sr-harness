@@ -1,12 +1,12 @@
 ---
 name: harness-verify
-description: 구현 완료 후 PR 생성 전 통합 검증 스킬. harness-execute 모든 step verify 통과 후 자동 실행. 빌드·테스트·변경파일 전수 확인. 통과 시 harness-finish, 실패 시 harness-execute 재진입.
+description: 구현 완료 후 PR 생성 전 통합 검증 스킬. harness-execute 모든 step verify 통과 후 자동 실행. 빌드·테스트·변경파일 전수 확인. 통과 시 harness-submit, 실패 시 harness-execute 재진입.
 ---
 
 # harness-verify
 
 "완료됐다고 생각하는 것"과 "실제로 완료된 것"을 구분한다.
-**harness-finish를 호출하기 전에 반드시 이 스킬을 먼저 통과한다.**
+**harness-submit를 호출하기 전에 반드시 이 스킬을 먼저 통과한다.**
 
 ## 검증 체크리스트
 
@@ -44,12 +44,12 @@ git diff origin/main --name-only
 
 | 결과 | 다음 단계 |
 |------|----------|
-| 모든 항목 통과 | `harness-finish` 호출 |
+| 모든 항목 통과 | `harness-submit` 호출 |
 | 테스트 실패 | `harness-debug` 전환 후 `harness-execute` 재진입 |
 | 의도치 않은 파일 변경 | 사용자 확인 후 수정 → 재검증 |
 | 미커밋 변경 있음 | 커밋 처리 후 재검증 |
 
 ## 금지 사항
 
-- 테스트 실패 상태에서 harness-finish 진행 금지
-- 변경 파일 목록 확인 없이 harness-finish 진행 금지
+- 테스트 실패 상태에서 harness-submit 진행 금지
+- 변경 파일 목록 확인 없이 harness-submit 진행 금지

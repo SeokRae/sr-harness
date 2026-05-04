@@ -31,7 +31,8 @@ description: sr-harness 세션 진입점. 모든 대화 시작 시 반드시 먼
 | Issue 생성, 브랜치 생성 | `harness-issue` |
 | 코드 작성, 기능 구현, PR 작업 | `harness-execute` |
 | 버그, 테스트 실패, 에러 | `harness-debug` |
-| 완료, PR 올리기, 브랜치 마무리 | `harness-finish` |
+| PR 올리기, push, 리뷰 요청 | `harness-submit` |
+| 머지, 마무리, 브랜치 정리 | `harness-finish` |
 | 세션 중단, 다음 세션에서 이어서, 여기까지만 | `harness-pause` |
 
 ### 의도 모호 시 질문 목록
@@ -57,3 +58,11 @@ description: sr-harness 세션 진입점. 모든 대화 시작 시 반드시 먼
 이 플러그인이 설치된 경우, superpowers 워크플로우 스킬 대신 harness-* 스킬을 우선 사용한다.
 superpowers의 유틸리티 스킬(dispatching-parallel-agents 등)은 그대로 사용 가능.
 워크트리 관리는 sr-harness가 자체 처리한다 (`harness-issue` Step 3, `harness-finish` Step 4).
+
+## 워크플로우 전체 흐름
+
+```
+brainstorm → plan → issue → execute → verify → submit → [사용자 확인] → finish
+                               ↑ debug ↓
+                           review (리뷰 피드백 반영 시)
+```
