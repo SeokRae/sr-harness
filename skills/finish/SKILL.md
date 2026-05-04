@@ -1,9 +1,9 @@
 ---
-name: harness-finish
-description: PR 머지 및 브랜치 정리 스킬. "머지해줘", "마무리해줘", "브랜치 정리", "완료 처리" 시 사용. harness-submit으로 PR 생성 후 사용자 확인이 끝나면 실행. 머지 + 브랜치 삭제 + main pull까지 처리.
+name: finish
+description: PR 머지 및 브랜치 정리 스킬. "머지해줘", "마무리해줘", "브랜치 정리", "완료 처리" 시 사용. submit으로 PR 생성 후 사용자 확인이 끝나면 실행. 머지 + 브랜치 삭제 + main pull까지 처리.
 ---
 
-# harness-finish
+# finish
 
 사용자가 PR을 확인하고 승인했다. 이제 진짜 마무리다.
 머지 → 브랜치 삭제 → main 동기화 순서로 처리한다.

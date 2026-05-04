@@ -1,9 +1,9 @@
 ---
-name: harness-execute
-description: 구현 계획을 실행하는 스킬. "구현해줘", "만들어줘", "코드 작성" 또는 harness-issue 완료 후 자동 실행. karpathy 4원칙(Think/Simplicity/Surgical/Goal-Driven) 구조적 내장. 각 단계 완료 시 verify 후 다음 단계 진행.
+name: execute
+description: 구현 계획을 실행하는 스킬. "구현해줘", "만들어줘", "코드 작성" 또는 issue 완료 후 자동 실행. karpathy 4원칙(Think/Simplicity/Surgical/Goal-Driven) 구조적 내장. 각 단계 완료 시 verify 후 다음 단계 진행.
 ---
 
-# harness-execute
+# execute
 
 구현 시작 전 karpathy 체크포인트를 통과해야 한다.
 단계별로 실행하고, 각 단계가 끝나면 verify 후 다음으로 넘어간다.
@@ -12,7 +12,7 @@ description: 구현 계획을 실행하는 스킬. "구현해줘", "만들어줘
 
 현재 작업 디렉토리가 worktree(`.claude/worktrees/{description}`) 안인지 확인한다.
 - 맞으면 → 진행
-- 아니면 → `harness-issue`로 돌아가서 worktree 생성
+- 아니면 → `issue`로 돌아가서 worktree 생성
 
 ```bash
 git worktree list | grep "$(pwd)"
@@ -26,7 +26,7 @@ git worktree list | grep "$(pwd)"
 [ ] 요청이 명확한가? → 불명확하면 먼저 질문
 [ ] 여러 해석이 가능한가? → 모두 제시하고 선택받기
 [ ] 더 단순한 방법이 있는가? → 있으면 먼저 제안
-[ ] 성공 기준이 정의되어 있는가? → harness-plan의 verify 기준 확인
+[ ] 성공 기준이 정의되어 있는가? → plan의 verify 기준 확인
 ```
 
 ## 구현 원칙 (각 단계마다 적용)
@@ -49,7 +49,7 @@ git worktree list | grep "$(pwd)"
 ```
 [Step N 실행 중]: {설명}
 → verify: {확인 방법}
-→ 결과: ✅ 통과 / ❌ 실패 (실패 시 harness-debug 전환)
+→ 결과: ✅ 통과 / ❌ 실패 (실패 시 debug 전환)
 ```
 
 ## 단계 간 커밋
@@ -62,16 +62,16 @@ git commit -m "{type}: {설명} (#N)"
 
 **`git add .` 사용 금지** — 관련 파일만 개별 지정한다.
 
-**커밋 단위**: `harness-plan`의 단계 하나에서 verify를 통과한 변경이 커밋 하나다.
+**커밋 단위**: `plan`의 단계 하나에서 verify를 통과한 변경이 커밋 하나다.
 - verify를 통과하기 전에 커밋하지 않는다
 - 여러 step을 한 커밋에 묶지 않는다
 - 커밋 후에 다음 step으로 넘어간다
 
 ## 완료 조건
 
-harness-plan의 모든 단계 verify 통과 → `harness-verify` 호출 (통합 검증 후 harness-submit)
+plan의 모든 단계 verify 통과 → `verify` 호출 (통합 검증 후 submit)
 
 ## 예외 상황
 
-- 테스트 실패 / 예상 밖 에러 → `harness-debug` 전환
+- 테스트 실패 / 예상 밖 에러 → `debug` 전환
 - 범위 밖 작업 발견 → session-plan.md Deviations 기록, 현재 작업 계속

@@ -1,12 +1,12 @@
 ---
-name: harness-submit
-description: 구현 완료 후 push + PR 생성 스킬. "PR 올려줘", "push해줘", "submit", "리뷰 요청" 시 사용. 항상 push + PR(Closes #N)로 제출. 사용자가 PR을 눈으로 확인한 뒤 harness-finish로 머지.
+name: submit
+description: 구현 완료 후 push + PR 생성 스킬. "PR 올려줘", "push해줘", "submit", "리뷰 요청" 시 사용. 항상 push + PR(Closes #N)로 제출. 사용자가 PR을 눈으로 확인한 뒤 finish로 머지.
 ---
 
-# harness-submit
+# submit
 
 검증이 완료된 브랜치를 리뷰에 제출한다.
-push + PR 생성이 이 스킬의 끝이다. **머지는 사용자가 확인 후 `harness-finish`에서 처리한다.**
+push + PR 생성이 이 스킬의 끝이다. **머지는 사용자가 확인 후 `finish`에서 처리한다.**
 
 ## 실행 순서
 
@@ -53,7 +53,7 @@ Closes #{N}"
 ✅ Closes #{issue-number}
 브랜치: feature/{N}-{description}
 
-PR을 확인하고 머지할 준비가 되면 harness-finish를 실행하세요.
+PR을 확인하고 머지할 준비가 되면 finish를 실행하세요.
 ```
 
 ## session-plan.md 정리

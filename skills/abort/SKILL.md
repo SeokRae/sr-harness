@@ -1,9 +1,9 @@
 ---
-name: harness-abort
+name: abort
 description: 작업 중단 및 브랜치 정리 스킬. "그만할게", "방향 바꿀게", "이 작업 취소", "브랜치 정리" 시 사용. session-plan Deviations 기록 + 브랜치 삭제 여부 확인. 어느 단계에서든 진입 가능.
 ---
 
-# harness-abort
+# abort
 
 작업을 중단할 때 흔적을 정리한다.
 **정리하지 않으면 다음 세션에서 좀비 브랜치와 stale session-plan이 남는다.**
@@ -65,7 +65,7 @@ gh issue comment {N} --body "일시 중단: {이유}. 추후 재개 예정."
 
 ### 5. 완료 보고
 ```
-[harness-abort 완료]
+[abort 완료]
 중단 유형: {유형}
 기록 위치: session-plan.md Deviations
 브랜치: {삭제됨 / 보존됨}

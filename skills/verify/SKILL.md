@@ -1,12 +1,12 @@
 ---
-name: harness-verify
-description: 구현 완료 후 PR 생성 전 통합 검증 스킬. harness-execute 모든 step verify 통과 후 자동 실행. 빌드·테스트·변경파일 전수 확인. 통과 시 harness-submit, 실패 시 harness-execute 재진입.
+name: verify
+description: 구현 완료 후 PR 생성 전 통합 검증 스킬. execute 모든 step verify 통과 후 자동 실행. 빌드·테스트·변경파일 전수 확인. 통과 시 submit, 실패 시 execute 재진입.
 ---
 
-# harness-verify
+# verify
 
 "완료됐다고 생각하는 것"과 "실제로 완료된 것"을 구분한다.
-**harness-submit를 호출하기 전에 반드시 이 스킬을 먼저 통과한다.**
+**submit를 호출하기 전에 반드시 이 스킬을 먼저 통과한다.**
 
 ## 검증 체크리스트
 
@@ -34,7 +34,7 @@ git diff origin/main --name-only
 
 ### 4. 검증 결과 보고
 ```
-[harness-verify 결과]
+[verify 결과]
 ✅ 미커밋 변경사항 없음
 ✅ 변경 파일: {N}개 (목록 표시)
 ✅ 테스트: {명령어} → {통과/실패}
@@ -44,12 +44,12 @@ git diff origin/main --name-only
 
 | 결과 | 다음 단계 |
 |------|----------|
-| 모든 항목 통과 | `harness-submit` 호출 |
-| 테스트 실패 | `harness-debug` 전환 후 `harness-execute` 재진입 |
+| 모든 항목 통과 | `submit` 호출 |
+| 테스트 실패 | `debug` 전환 후 `execute` 재진입 |
 | 의도치 않은 파일 변경 | 사용자 확인 후 수정 → 재검증 |
 | 미커밋 변경 있음 | 커밋 처리 후 재검증 |
 
 ## 금지 사항
 
-- 테스트 실패 상태에서 harness-submit 진행 금지
-- 변경 파일 목록 확인 없이 harness-submit 진행 금지
+- 테스트 실패 상태에서 submit 진행 금지
+- 변경 파일 목록 확인 없이 submit 진행 금지
