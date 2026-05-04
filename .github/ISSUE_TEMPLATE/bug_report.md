@@ -5,7 +5,7 @@ labels: bug
 ---
 
 **Which skill**
-<!-- harness-start / harness-brainstorm / harness-plan / harness-issue / harness-execute / harness-finish / harness-debug -->
+<!-- start / brainstorm / plan / issue / execute / submit / finish / debug / verify / review / abort / pause -->
 
 **What you expected**
 
