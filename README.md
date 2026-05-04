@@ -96,9 +96,20 @@ harness-start
       │    Diagnose before touching code
       │    Never retry the same failing approach twice
       │
+      ├─ harness-verify
+      │    Integration check before submitting
+      │    git status · changed files · test suite
+      │
+      ├─ harness-submit
+      │    push → PR with "Closes #N" in body
+      │    Stops here. User reviews the PR.
+      │
+      ├─ harness-review
+      │    Receive review feedback → back to execute
+      │
       └─ harness-finish
-           push → PR with "Closes #N" in body
-           No alternatives. Always a PR.
+           Merge + delete branch + pull main
+           The work is truly done.
 ```
 
 ---
@@ -112,8 +123,13 @@ harness-start
 | `harness-plan` | Planning with step → verify format |
 | `harness-issue` | GitHub Issue + branch creation |
 | `harness-execute` | Implementation with Karpathy checkpoints |
-| `harness-finish` | push + PR (Closes #N) |
 | `harness-debug` | Diagnose-first debugging |
+| `harness-verify` | Integration check before PR |
+| `harness-submit` | push + PR (Closes #N) · stops for user review |
+| `harness-review` | Receive review feedback → back to execute |
+| `harness-finish` | Merge + delete branch + pull main |
+| `harness-abort` | Cancel work · clean up branch |
+| `harness-pause` | Suspend session · hand off to next session |
 
 ---
 

@@ -1,63 +1,52 @@
 ---
 name: harness-finish
-description: 브랜치 마무리 및 PR 생성 스킬. "완료", "PR 올려줘", "마무리", "push해줘" 시 사용. 항상 push + PR(Closes #N)로 마무리. 다른 선택지(로컬 머지, 브랜치 폐기 등) 없음.
+description: PR 머지 및 브랜치 정리 스킬. "머지해줘", "마무리해줘", "브랜치 정리", "완료 처리" 시 사용. harness-submit으로 PR 생성 후 사용자 확인이 끝나면 실행. 머지 + 브랜치 삭제 + main pull까지 처리.
 ---
 
 # harness-finish
 
-구현이 완료되면 반드시 push + PR로 마무리한다.
-**다른 선택지는 없다.** 로컬 머지, 브랜치 폐기는 이 프로젝트에서 선택지가 아니다.
+사용자가 PR을 확인하고 승인했다. 이제 진짜 마무리다.
+머지 → 브랜치 삭제 → main 동기화 순서로 처리한다.
 
 ## 실행 순서
 
-### 1. 최종 확인
+### 1. PR 상태 확인
 ```bash
-git status   # 미커밋 변경사항 없는지
+gh pr view {PR-number}
+```
+→ 리뷰 코멘트나 미해결 이슈가 있으면 사용자에게 확인 후 진행.
+
+### 2. 머지
+```bash
+gh pr merge {PR-number} --squash --delete-branch
 ```
 
-테스트 명령어는 다음 순서로 결정한다:
-1. `.claude/session-plan.md`의 `test-command` 필드가 있으면 → 그 명령어 실행
-2. 없으면 → 프로젝트 루트에서 `./gradlew test` / `npm test` / `pytest` 순으로 시도
-3. 어느 것도 없으면 → 스킵 (vault 등 테스트 없는 프로젝트)
+머지 전략 선택 기준:
+- `--squash`: 기본값. 단일 커밋으로 정리되어 main 히스토리가 깔끔함
+- `--merge`: step별 커밋을 main에 그대로 남겨야 할 때
+- `--rebase`: 리니어 히스토리를 유지하면서 각 커밋을 보존할 때
 
-### 2. Push
+### 3. main 동기화
 ```bash
-git push origin feature/{N}-{description}
+git checkout main
+git pull origin main
 ```
 
-### 3. PR 생성
+### 4. Worktree 정리 (worktree 사용 시)
 ```bash
-gh pr create \
-  --title "{type}: {설명}" \
-  --body "## 변경 내용
-
-{변경 내용 요약}
-
-## 테스트
-
-- [ ] 통합 테스트 통과
-
-Closes #{N}"
-```
-
-**PR body `Closes #N` 필수** — 커밋 메시지의 `(#N)`은 Issue를 자동 close하지 않음.
-
-### 4. Worktree 정리
-```bash
-cd {프로젝트 루트}              # vault root로 복귀
 git worktree remove .claude/worktrees/{description}
 ```
 
 ### 5. 완료 보고
 ```
-✅ PR 생성: #{PR-number}
-✅ Closes #{issue-number}
-✅ Worktree 정리: .claude/worktrees/{description} 제거
-브랜치: feature/{N}-{description}
+✅ PR #{PR-number} 머지 완료
+✅ Issue #{issue-number} close
+✅ 브랜치 삭제: feature/{N}-{description}
+✅ main 동기화 완료
 ```
 
 ## session-plan.md 정리
 
-PR 생성 후:
-- 완료 → 파일 삭제 또는 아카이브
-- 미완료 항목 있으면 → 파일 유지 (다음 세션에서 이어서 사용)
+머지 완료 후:
+- 완료 → 파일 삭제
+- 다음 세션 작업이 남아 있으면 → 새 session-plan.md 작성 권장

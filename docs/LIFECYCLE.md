@@ -120,10 +120,11 @@
 | EXECUTE | VERIFY | 모든 step verify 통과 | harness-execute → **harness-verify** *(v0.2)* |
 | VERIFY | REVIEW | 통합 검증 통과 | harness-verify → **harness-review** *(v0.2)* |
 | VERIFY | EXECUTE | 검증 실패 → 추가 수정 필요 | harness-verify → harness-execute |
-| REVIEW | FINISH | solo 진행 또는 approve | **harness-review** → harness-finish |
-| REVIEW | EXECUTE | 리뷰 피드백 수신 → 반영 | **harness-review** → harness-execute |
-| FINISH | CLEANUP | PR 생성 완료 | harness-finish (session-plan 정리) |
-| ANY | ABORT | 방향 전환 / 폐기 결정 | **harness-abort** *(v0.2)* |
+| REVIEW | SUBMIT | solo 진행 또는 approve | harness-review → harness-submit |
+| REVIEW | EXECUTE | 리뷰 피드백 수신 → 반영 | harness-review → harness-execute |
+| SUBMIT | FINISH | 사용자가 PR 확인 후 머지 요청 | harness-finish |
+| FINISH | DONE | 머지 + 브랜치 정리 + main pull 완료 | harness-finish |
+| ANY | ABORT | 방향 전환 / 폐기 결정 | harness-abort |
 
 > **볼드** 표시: v0.2에서 신규 추가 예정 스킬
 
