@@ -5,8 +5,9 @@ Claude Code의 작업 방식을 직접 설계하는 하네스
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Claude Code](https://img.shields.io/badge/Claude%20Code-Plugin-blueviolet)](https://claude.ai/code)
 [![Status](https://img.shields.io/badge/Status-Early%20Stage-orange)](.)
+[![Workflow Cycle](https://img.shields.io/badge/워크플로우-인터랙티브%20다이어그램-68b6ff)](https://seokrae.github.io/sr-harness/)
 
-> [English](./README.md) | 한국어
+> [English](./README.md) | 한국어 | [인터랙티브 워크플로우 →](https://seokrae.github.io/sr-harness/)
 
 ---
 
