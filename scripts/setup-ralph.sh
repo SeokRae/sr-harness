@@ -15,7 +15,7 @@ if [[ ! -f "$PLAN_FILE" ]]; then
   exit 1
 fi
 
-WORKTREE_CHECK=$(git worktree list | grep "$(pwd)" | grep -v "bare" || true)
+WORKTREE_CHECK=$(git worktree list | grep -F "$(pwd)" | grep -v "bare" || true)
 if [[ -z "$WORKTREE_CHECK" ]]; then
   echo "❌ worktree 밖에서 실행됨. .claude/worktrees/ 안으로 이동하세요." >&2
   exit 1
@@ -23,7 +23,7 @@ fi
 
 if [[ -f "$STATE_FILE" ]]; then
   echo "⚠️  활성 Ralph 루프가 이미 존재합니다: $STATE_FILE" >&2
-  echo "   취소하려면: /cancel-ralph 또는 bash \"\${CLAUDE_PLUGIN_ROOT}/scripts/cleanup-ralph.sh\"" >&2
+  echo "   취소하려면: bash \"\${CLAUDE_PLUGIN_ROOT}/scripts/cleanup-ralph.sh\"" >&2
   exit 1
 fi
 
@@ -33,7 +33,7 @@ ISSUE=$(grep -m1 '#[0-9]' "$PLAN_FILE" | grep -o '#[0-9]*' | head -1 || echo "#?
 TEST_CMD=$(grep -m1 '^test-command:' "$PLAN_FILE" | sed 's/^test-command: *//' || echo "")
 
 # 미완료 Tasks 추출
-TASKS=$(grep '^\- \[ \]' "$PLAN_FILE" || echo "- [ ] (Tasks 항목 없음)")
+TASKS=$(grep '^\- \[ \]' "$PLAN_FILE" || echo "(미완료 Tasks 없음)")
 
 # max_iterations 결정
 TASK_COUNT=$(echo "$TASKS" | grep -c '^\- \[ \]' || echo 0)
@@ -181,4 +181,4 @@ echo ""
 echo "Stop hook이 활성화됩니다. 종료 시도 → 같은 프롬프트 재주입."
 echo "완료 조건: <promise>READY_FOR_PR</promise>"
 echo ""
-echo "수동 중단: /cancel-ralph"
+echo "수동 중단: bash \"\${CLAUDE_PLUGIN_ROOT}/scripts/cleanup-ralph.sh\""
