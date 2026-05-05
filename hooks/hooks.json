@@ -1,0 +1,15 @@
+{
+  "description": "sr-harness Ralph loop stop hook — harness-ralph 스킬의 반복 루프 제어",
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"${CLAUDE_PLUGIN_ROOT}/hooks/stop-hook.sh\""
+          }
+        ]
+      }
+    ]
+  }
+}
