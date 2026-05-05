@@ -136,9 +136,11 @@ git commit -m "{type}: {설명} (#N)"
 
 ## 완료 조건
 
-plan의 모든 단계 verify 통과 → `verify` 호출 (통합 검증 후 submit)
+**단일 모드**: plan의 모든 단계 verify 통과 → `verify` 호출 (통합 검증 후 submit)
+**서브에이전트 모드**: 모든 태스크 2단계 리뷰 통과 → `verify` 호출 → `submit` (PR 1개)
 
 ## 예외 상황
 
 - 테스트 실패 / 예상 밖 에러 → `debug` 전환
 - 범위 밖 작업 발견 → session-plan.md Deviations 기록, 현재 작업 계속
+- 서브에이전트 BLOCKED → 원인 분석: 컨텍스트 보강 재시도 / 모델 업그레이드 / 태스크 분할 / 사용자 에스컬레이션
