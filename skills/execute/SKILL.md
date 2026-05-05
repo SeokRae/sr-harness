@@ -1,6 +1,6 @@
 ---
 name: execute
-description: 구현 계획을 실행하는 스킬. "구현해줘", "만들어줘", "코드 작성" 또는 issue 완료 후 자동 실행. karpathy 4원칙(Think/Simplicity/Surgical/Goal-Driven) 구조적 내장. 각 단계 완료 시 verify 후 다음 단계 진행.
+description: 구현 계획을 실행하는 스킬. "구현해줘", "만들어줘", "코드 작성" 또는 issue 완료 후 자동 실행. 태스크 수 ≥ 3이면 서브에이전트 모드로 자동 전환. karpathy 4원칙(Think/Simplicity/Surgical/Goal-Driven) 구조적 내장.
 ---
 
 # execute
