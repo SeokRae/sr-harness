@@ -30,6 +30,7 @@ description: sr-harness 세션 진입점. 모든 대화 시작 시 반드시 먼
 | 구현 계획 수립, 설계 | `plan` |
 | Issue 생성, 브랜치 생성 | `issue` |
 | 코드 작성, 기능 구현, PR 작업 | `execute` |
+| 자동으로 구현, ralph 모드, bypass로 실행 | `ralph` |
 | 버그, 테스트 실패, 에러 | `debug` |
 | PR 올리기, push, 리뷰 요청 | `submit` |
 | 머지, 마무리, 브랜치 정리 | `finish` |
@@ -63,6 +64,7 @@ superpowers의 유틸리티 스킬(dispatching-parallel-agents 등)은 그대로
 
 ```
 brainstorm → plan → issue → execute → verify → submit → [사용자 확인] → finish
-                               ↑ debug ↓
-                           review (리뷰 피드백 반영 시)
+                                        ↑ debug ↓
+                                    review (리뷰 피드백 반영 시)
+                               또는 ralph (bypass 자동화 모드)
 ```

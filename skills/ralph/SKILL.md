@@ -26,7 +26,7 @@ bash "${CLAUDE_PLUGIN_ROOT}/scripts/setup-ralph.sh"
 에러가 있으면 스크립트가 메시지와 함께 종료된다:
 - `session-plan.md 없음` → `plan` 스킬로 먼저 계획 작성
 - `worktree 밖` → `issue` 스킬로 worktree 생성
-- `활성 루프 존재` → `/cancel-ralph` 또는 cleanup 스크립트 실행
+- `활성 루프 존재` → cleanup 스크립트 실행
 
 ### 2. 첫 번째 반복 즉시 시작
 
@@ -35,17 +35,11 @@ Stop hook이 이후 반복을 자동 처리한다.
 
 ## 중단 방법
 
-```
-/cancel-ralph
-```
-
-또는 bypass 권한까지 함께 정리:
-
 ```bash
 bash "${CLAUDE_PLUGIN_ROOT}/scripts/cleanup-ralph.sh"
 ```
 
-`/cancel-ralph`는 상태 파일만 제거한다. bypass 권한까지 정리하려면 cleanup 스크립트를 직접 실행한다.
+상태 파일 제거 + bypass 권한 복구를 함께 처리한다.
 
 ## verify 통과 시 처리 (Ralph 루프 내 지침)
 
