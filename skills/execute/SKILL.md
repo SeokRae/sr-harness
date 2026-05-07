@@ -8,14 +8,26 @@ description: 구현 계획을 실행하는 스킬. "구현해줘", "만들어줘
 구현 시작 전 karpathy 체크포인트를 통과해야 한다.
 단계별로 실행하고, 각 단계가 끝나면 verify 후 다음으로 넘어간다.
 
-## 전제 조건 (Worktree 확인)
+## 전제 조건 (브랜치/Worktree 확인)
 
-현재 작업 디렉토리가 worktree(`.claude/worktrees/{description}`) 안인지 확인한다.
+먼저 프로젝트 유형을 감지한다:
+
+```bash
+ls .obsidian/ 2>/dev/null && echo "vault" || echo "code"
+```
+
+**코드 프로젝트**: 현재 디렉토리가 worktree(`.claude/worktrees/{description}`) 안인지 확인한다.
 - 맞으면 → 진행
 - 아니면 → `issue`로 돌아가서 worktree 생성
 
 ```bash
 git worktree list | grep "$(pwd)"
+```
+
+**Obsidian vault**: feature 브랜치에 있는지 확인한다. main이면 → `issue`로 돌아가서 브랜치 생성.
+
+```bash
+git branch --show-current  # feature/* 여야 함, main이면 안 됨
 ```
 
 ## 시작 전 체크포인트 (karpathy §1 Think Before Coding)
@@ -90,7 +102,7 @@ git commit -m "{type}: {설명} (#N)"
 
 ### 원칙
 
-- 동일 worktree + 동일 feature 브랜치 + 순차 dispatch → PR 충돌 없음
+- 동일 feature 브랜치 + 순차 dispatch → PR 충돌 없음 (코드 프로젝트는 동일 worktree에서)
 - 서브에이전트 병렬 dispatch 절대 금지
 - 각 태스크 완료 후 2단계 리뷰(스펙 → 코드 품질) 통과 시 다음 태스크 진행
 
@@ -121,7 +133,8 @@ git commit -m "{type}: {설명} (#N)"
 
 ### 충돌 방지 규칙 (서브에이전트에게 명시 전달)
 
-- 모든 파일 수정은 반드시 전달받은 worktree 경로 내에서 수행 — main 워크트리 파일 직접 수정 금지
+- 코드 프로젝트: 모든 파일 수정은 반드시 전달받은 worktree 경로 내에서 수행 — main 워크트리 파일 직접 수정 금지
+- Vault 프로젝트: feature 브랜치에서 직접 수정 (worktree 없음)
 - `git add .` 사용 금지 — 태스크 관련 파일만 명시적으로 지정
 - 커밋 전 `git pull --rebase origin {브랜치명}` 실행
 - 모든 커밋에 이슈 번호 포함: `feat: 설명 (#이슈번호)`
