@@ -28,6 +28,5 @@
     "./skills/abort",
     "./skills/pause",
     "./skills/ralph"
-  ],
-  "hooks": "./hooks/hooks.json"
+  ]
 }
