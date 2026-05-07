@@ -37,16 +37,17 @@ git pull origin main
 git worktree remove .claude/worktrees/{description}
 ```
 
-### 5. 완료 보고
+### 5. 플랜 파일 삭제
+```bash
+rm -f .claude/session-plan.md
+```
+파일이 없으면 그냥 넘어간다.
+
+### 6. 완료 보고
 ```
 ✅ PR #{PR-number} 머지 완료
 ✅ Issue #{issue-number} close
 ✅ 브랜치 삭제: feature/{N}-{description}
 ✅ main 동기화 완료
+✅ session-plan.md 삭제
 ```
-
-## session-plan.md 정리
-
-머지 완료 후:
-- 완료 → 파일 삭제
-- 다음 세션 작업이 남아 있으면 → 새 session-plan.md 작성 권장
