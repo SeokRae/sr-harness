@@ -117,6 +117,17 @@ start
 | `debug` | 진단 우선 디버깅 |
 | `dev-coding-principles` | 코딩 품질 체크리스트 — 네이밍·예외처리·테스트 |
 | `dev-architecture` | 아키텍처 체크리스트 — Hexagonal·레이어 분리·패키지 구조 |
+| `dev-stack-java` | Java/Spring Boot 관용구 — Spring·JPA·예외처리 (프로젝트별 활성화) |
+
+### 스택별 스킬 (프로젝트 CLAUDE.md 선언)
+
+`dev-stack-java`는 execute에 전역으로 연결되지 않는다 — 프로젝트 `CLAUDE.md`에 한 줄을 추가하여 활성화한다:
+
+```markdown
+execute 실행 시 `dev-stack-java` 스킬을 로드하고 Java/Spring Boot 관용구를 구현에 적용한다.
+```
+
+execute 체크포인트를 가볍게 유지하면서 프로젝트별 스택 커스터마이징이 가능하다.
 
 ---
 

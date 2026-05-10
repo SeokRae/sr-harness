@@ -133,6 +133,17 @@ start
 | `pause` | Suspend session · hand off to next session |
 | `dev-coding-principles` | Coding quality checklist — Naming, Exception Handling, Test |
 | `dev-architecture` | Architecture checklist — Hexagonal, Layer Separation, Package Structure |
+| `dev-stack-java` | Java/Spring Boot idioms — Spring, JPA, Exception & Response (project-scoped) |
+
+### Stack-specific skills (project CLAUDE.md)
+
+`dev-stack-java` is not wired into `execute` globally — activate it per project by adding one line to the project `CLAUDE.md`:
+
+```markdown
+execute 실행 시 `dev-stack-java` 스킬을 로드하고 Java/Spring Boot 관용구를 구현에 적용한다.
+```
+
+This keeps the execute checkpoint lean while allowing per-project stack customization.
 
 ---
 
