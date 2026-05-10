@@ -44,6 +44,12 @@ git branch --show-current  # feature/* 여야 함, main이면 안 됨
 코드 프로젝트인 경우 → `dev-coding-principles` 스킬을 로드하고 원칙(§1 Naming, §2 Exception Handling, §3 Test)을 구현에 적용한다.
 코드 프로젝트인 경우 → `dev-architecture` 스킬을 로드하고 아키텍처 원칙(§1 Hexagonal, §2 Layer Separation, §3 Package Structure)을 구현에 적용한다.
 
+코드 프로젝트인 경우 → 프로젝트 스택을 자동 감지한다:
+```bash
+ls build.gradle pom.xml 2>/dev/null
+```
+- `build.gradle` 또는 `pom.xml` 존재 → `dev-stack-java` 스킬을 로드하고 Spring Boot 관용구(§1 Spring Boot, §2 JPA, §3 Exception & Response)를 구현에 적용한다.
+
 ## 실행 모드 판단
 
 플랜 파일(`.claude/session-plan.md`)을 읽어 제외 조건을 체크한다.
