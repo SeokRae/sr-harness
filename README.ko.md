@@ -116,6 +116,7 @@ start
 | `finish` | push + PR (Closes #N) |
 | `debug` | 진단 우선 디버깅 |
 | `dev-coding-principles` | 코딩 품질 체크리스트 — 네이밍·예외처리·테스트 |
+| `dev-architecture` | 아키텍처 체크리스트 — Hexagonal·레이어 분리·패키지 구조 |
 
 ---
 

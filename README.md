@@ -132,6 +132,7 @@ start
 | `abort` | Cancel work · clean up branch |
 | `pause` | Suspend session · hand off to next session |
 | `dev-coding-principles` | Coding quality checklist — Naming, Exception Handling, Test |
+| `dev-architecture` | Architecture checklist — Hexagonal, Layer Separation, Package Structure |
 
 ---
 
