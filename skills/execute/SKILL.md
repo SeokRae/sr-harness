@@ -41,6 +41,8 @@ git branch --show-current  # feature/* 여야 함, main이면 안 됨
 [ ] 성공 기준이 정의되어 있는가? → plan의 verify 기준 확인
 ```
 
+코드 프로젝트인 경우 → `dev-coding-principles` 스킬을 로드하고 원칙(§1 Naming, §2 Exception Handling, §3 Test)을 구현에 적용한다.
+
 ## 실행 모드 판단
 
 플랜 파일(`.claude/session-plan.md`)을 읽어 제외 조건을 체크한다.
