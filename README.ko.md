@@ -115,6 +115,7 @@ start
 | `execute` | 구현 실행 · karpathy 체크포인트 |
 | `finish` | push + PR (Closes #N) |
 | `debug` | 진단 우선 디버깅 |
+| `dev-coding-principles` | 코딩 품질 체크리스트 — 네이밍·예외처리·테스트 |
 
 ---
 
