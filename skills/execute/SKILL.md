@@ -42,6 +42,7 @@ git branch --show-current  # feature/* 여야 함, main이면 안 됨
 ```
 
 코드 프로젝트인 경우 → `dev-coding-principles` 스킬을 로드하고 원칙(§1 Naming, §2 Exception Handling, §3 Test)을 구현에 적용한다.
+코드 프로젝트인 경우 → `dev-architecture` 스킬을 로드하고 아키텍처 원칙(§1 Hexagonal, §2 Layer Separation, §3 Package Structure)을 구현에 적용한다.
 
 ## 실행 모드 판단
 
