@@ -180,7 +180,7 @@ One rule: `Closes #N` in the **PR body** closes the Issue. `(#N)` in commit mess
 ## Updating Skills
 
 ```bash
-cd ~/IdeaProjects/sr-harness
+cd sr-harness
 # Edit skills/{skill-name}/SKILL.md
 
 git add . && git commit -m "fix: update skill" && git push
