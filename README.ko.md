@@ -118,6 +118,7 @@ start
 | `dev-coding-principles` | 코딩 품질 체크리스트 — 네이밍·예외처리·테스트 |
 | `dev-architecture` | 아키텍처 체크리스트 — Hexagonal·레이어 분리·패키지 구조 |
 | `dev-stack-java` | Java/Spring Boot 관용구 — Spring·JPA·예외처리 (자동 감지) |
+| `meta` | Meta-Harness 진화 루프 — 피진화체 스킬 분석 후 개선 후보 3개 제안·구현 |
 
 ### 스택 자동 감지
 
