@@ -162,7 +162,7 @@ Issue 생성 → 브랜치(origin/main) → 구현 → 커밋(#N) → PR(Closes 
 ## 스킬 수정 및 업데이트
 
 ```bash
-cd ~/IdeaProjects/sr-harness
+cd sr-harness
 # skills/{skill-name}/SKILL.md 편집 후
 
 git add . && git commit -m "fix: 스킬 내용 수정" && git push

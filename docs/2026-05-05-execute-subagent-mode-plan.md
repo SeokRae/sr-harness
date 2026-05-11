@@ -26,7 +26,7 @@
 - [ ] **Step 1: 현재 파일 읽기**
 
 ```bash
-head -5 /Users/sr/.claude/plugins/marketplaces/sr-harness/skills/execute/SKILL.md
+head -5 skills/execute/SKILL.md
 ```
 
 Expected output:
@@ -48,7 +48,7 @@ description: 구현 계획을 실행하는 스킬. "구현해줘", "만들어줘
 - [ ] **Step 3: 변경 확인**
 
 ```bash
-head -5 /Users/sr/.claude/plugins/marketplaces/sr-harness/skills/execute/SKILL.md
+head -5 skills/execute/SKILL.md
 ```
 
 Expected: description에 "서브에이전트 모드" 문구 포함.
@@ -70,7 +70,7 @@ git commit -m "chore: execute frontmatter — 서브에이전트 모드 언급 �
 - [ ] **Step 1: 삽입 위치 확인**
 
 ```bash
-grep -n "## 시작 전 체크포인트\|## 구현 원칙" /Users/sr/.claude/plugins/marketplaces/sr-harness/skills/execute/SKILL.md
+grep -n "## 시작 전 체크포인트\|## 구현 원칙" skills/execute/SKILL.md
 ```
 
 Expected: 21번 줄 `## 시작 전 체크포인트`, 32번 줄 `## 구현 원칙`
@@ -95,7 +95,7 @@ Expected: 21번 줄 `## 시작 전 체크포인트`, 32번 줄 `## 구현 원칙
 - [ ] **Step 3: 삽입 결과 확인**
 
 ```bash
-grep -n "## 실행 모드 판단\|## 구현 원칙" /Users/sr/.claude/plugins/marketplaces/sr-harness/skills/execute/SKILL.md
+grep -n "## 실행 모드 판단\|## 구현 원칙" skills/execute/SKILL.md
 ```
 
 Expected: `## 실행 모드 판단`이 `## 구현 원칙` 앞에 위치.
@@ -117,7 +117,7 @@ git commit -m "feat: execute — 실행 모드 판단 섹션 추가 (#이슈번�
 - [ ] **Step 1: 현재 섹션 구조 확인**
 
 ```bash
-grep -n "^##" /Users/sr/.claude/plugins/marketplaces/sr-harness/skills/execute/SKILL.md
+grep -n "^##" skills/execute/SKILL.md
 ```
 
 Expected:
@@ -145,7 +145,7 @@ XX:## 예외 상황
 - [ ] **Step 3: 결과 확인**
 
 ```bash
-grep -n "^##" /Users/sr/.claude/plugins/marketplaces/sr-harness/skills/execute/SKILL.md
+grep -n "^##" skills/execute/SKILL.md
 ```
 
 Expected: `## 단일 실행 모드`가 `## 구현 원칙` 바로 앞에 위치.
@@ -167,7 +167,7 @@ git commit -m "feat: execute — 단일 실행 모드 헤더로 기존 섹션 �
 - [ ] **Step 1: 삽입 위치 확인**
 
 ```bash
-grep -n "## 완료 조건" /Users/sr/.claude/plugins/marketplaces/sr-harness/skills/execute/SKILL.md
+grep -n "## 완료 조건" skills/execute/SKILL.md
 ```
 
 - [ ] **Step 2: `## 완료 조건` 바로 앞에 아래 전체 섹션 삽입**
@@ -227,7 +227,7 @@ grep -n "## 완료 조건" /Users/sr/.claude/plugins/marketplaces/sr-harness/ski
 - [ ] **Step 3: 삽입 결과 확인**
 
 ```bash
-grep -n "^##\|^###" /Users/sr/.claude/plugins/marketplaces/sr-harness/skills/execute/SKILL.md
+grep -n "^##\|^###" skills/execute/SKILL.md
 ```
 
 Expected: `## 서브에이전트 실행 모드` + 하위 `###` 4개가 `## 완료 조건` 앞에 위치.
@@ -235,7 +235,7 @@ Expected: `## 서브에이전트 실행 모드` + 하위 `###` 4개가 `## 완�
 - [ ] **Step 4: 전체 파일 읽어서 논리 흐름 검토**
 
 ```bash
-cat /Users/sr/.claude/plugins/marketplaces/sr-harness/skills/execute/SKILL.md
+cat skills/execute/SKILL.md
 ```
 
 흐름 확인: 전제 조건 → 체크포인트 → 모드 판단 → 단일 모드 → 서브에이전트 모드 → 완료 조건 → 예외
@@ -257,7 +257,7 @@ git commit -m "feat: execute — 서브에이전트 실행 모드 섹션 추가 
 - [ ] **Step 1: 현재 완료 조건 확인**
 
 ```bash
-grep -A3 "## 완료 조건" /Users/sr/.claude/plugins/marketplaces/sr-harness/skills/execute/SKILL.md
+grep -A3 "## 완료 조건" skills/execute/SKILL.md
 ```
 
 Expected:
@@ -288,7 +288,7 @@ plan의 모든 단계 verify 통과 → `verify` 호출 (통합 검증 후 submi
 - [ ] **Step 4: 최종 파일 전체 검토**
 
 ```bash
-cat /Users/sr/.claude/plugins/marketplaces/sr-harness/skills/execute/SKILL.md
+cat skills/execute/SKILL.md
 ```
 
 확인 항목:
