@@ -53,3 +53,13 @@ git diff origin/main --name-only
 
 - 테스트 실패 상태에서 submit 진행 금지
 - 변경 파일 목록 확인 없이 submit 진행 금지
+
+## 자기보고 (evolution_log)
+
+verify 결과 확정 시 아래 명령어를 실행한다.
+`items_checked`는 실제 검증한 항목 수, `outcome`은 pass/fail.
+
+```bash
+python3 ~/.claude/hooks/evolution-log-skill.py \
+  '{"skill":"sr-harness:verify","outcome":"{pass|fail}","metrics":{"items_checked":{N}}}'
+```
