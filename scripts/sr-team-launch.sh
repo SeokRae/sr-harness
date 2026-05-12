@@ -24,6 +24,7 @@ if [ "${#WORKTREES[@]}" -lt "$TOTAL" ]; then
 fi
 
 SESSION="sr-team"
+SCRIPT_DIR="$(mktemp -d /tmp/sr-team-XXXXX)"
 
 # 기존 세션 정리
 tmux kill-session -t "$SESSION" 2>/dev/null && echo "기존 sr-team 세션 종료" || true
@@ -31,50 +32,54 @@ tmux kill-session -t "$SESSION" 2>/dev/null && echo "기존 sr-team 세션 종�
 # 상태판 윈도우로 세션 시작
 tmux new-session -d -s "$SESSION" -n "status"
 
-STATUS_SCRIPT="$(cat <<'WATCH'
-while true; do
-  clear
-  echo "=== sr-team 상태 ($(date '+%H:%M:%S')) ==="
-  echo ""
-WATCH
-)"
-for i in $(seq 1 "$TOTAL"); do
-  STATUS_SCRIPT+="  f=\"$JOB_DIR/$i.status\"; [ -f \"\$f\" ] && echo \"  agent-$i: \$(cat \"\$f\")\" || echo \"  agent-$i: RUNNING...\""$'\n'
-done
-STATUS_SCRIPT+="  sleep 3
-done"
+# 상태판 스크립트 파일 작성
+STATUS_SCRIPT="$SCRIPT_DIR/status.sh"
+{
+  echo "#!/usr/bin/env bash"
+  echo "while true; do"
+  echo "  clear"
+  echo "  echo '=== sr-team 상태 (\$(date +%H:%M:%S)) ==='"
+  echo "  echo ''"
+  for i in $(seq 1 "$TOTAL"); do
+    echo "  f='$JOB_DIR/$i.status'"
+    echo "  [ -f \"\$f\" ] && echo \"  agent-$i: \$(cat \"\$f\")\" || echo '  agent-$i: RUNNING...'"
+  done
+  echo "  sleep 3"
+  echo "done"
+} > "$STATUS_SCRIPT"
+chmod +x "$STATUS_SCRIPT"
+tmux send-keys -t "$SESSION:status" "bash '$STATUS_SCRIPT'" Enter
 
-tmux send-keys -t "$SESSION:status" "bash -c '$STATUS_SCRIPT'" Enter
-
-# 각 에이전트 윈도우
+# 각 에이전트 스크립트 파일 작성 후 tmux 윈도우에서 실행
 for i in $(seq 1 "$TOTAL"); do
   WT="${WORKTREES[$((i-1))]}"
   TASK_FILE="$JOB_DIR/task-$i.md"
   RESULT_FILE="$JOB_DIR/result-$i.md"
   STATUS_FILE="$JOB_DIR/$i.status"
+  AGENT_SCRIPT="$SCRIPT_DIR/agent-$i.sh"
+
+  # 에이전트 스크립트 파일로 작성 — quoting 문제 없음
+  cat > "$AGENT_SCRIPT" << AGENT_EOF
+#!/usr/bin/env bash
+set -o pipefail
+echo "[agent-$i] 시작: \$(date)"
+cd '$WT'
+claude -p --permission-mode bypassPermissions < '$TASK_FILE' 2>&1 | tee '$RESULT_FILE'
+EXIT=\${PIPESTATUS[0]}
+[ \$EXIT -eq 0 ] && echo DONE > '$STATUS_FILE' || echo ERROR > '$STATUS_FILE'
+echo "[agent-$i] 완료: \$(cat '$STATUS_FILE') (exit: \$EXIT)"
+AGENT_EOF
+  chmod +x "$AGENT_SCRIPT"
 
   tmux new-window -t "$SESSION" -n "agent-$i"
-
-  AGENT_CMD="set -o pipefail
-echo '[agent-$i] 시작: \$(date)'
-cd '$WT'
-claude -p --permission-mode bypassPermissions \"\$(cat '$TASK_FILE')\" 2>&1 | tee '$RESULT_FILE'
-EXIT=\$?
-if [ \$EXIT -eq 0 ]; then
-  echo 'DONE' > '$STATUS_FILE'
-else
-  echo 'ERROR' > '$STATUS_FILE'
-fi
-echo '[agent-$i] 완료: '\$(cat '$STATUS_FILE')' (exit: '\$EXIT')'"
-
-  tmux send-keys -t "$SESSION:agent-$i" "bash -c \"$AGENT_CMD\"" Enter
+  tmux send-keys -t "$SESSION:agent-$i" "bash '$AGENT_SCRIPT'" Enter
 done
 
 # 상태판으로 포커스
 tmux select-window -t "$SESSION:status"
 
 echo ""
-echo "✅ sr-team 세션 시작됨"
+echo "✅ sr-team 세션 시작됨 (스크립트: $SCRIPT_DIR)"
 echo "👀 실시간 확인: tmux attach -t sr-team"
 echo "📁 job_dir: $JOB_DIR"
 echo "🤖 에이전트 수: $TOTAL"
