@@ -32,12 +32,27 @@ git diff origin/main --name-only
 {테스트 명령어 실행}
 ```
 
-### 4. 검증 결과 보고
+### 4. Completion Audit (goal 활성 시만 실행)
+
+```bash
+cat .claude/goal-state.json 2>/dev/null | jq -r 'select(.status == "active") | .goal'
+```
+
+`.claude/goal-state.json`이 존재하고 `status == "active"`이면:
+- goal 텍스트를 읽어 다음 질문에 답한다:
+  **"현재 코드/파일 상태가 goal에 기술된 목표를 완전히 달성했는가?"**
+  - YES → `<promise>GOAL_ACHIEVED</promise>` 출력 후 아래 보고에 포함
+  - NO → 미달성 이유 명시 + execute 재진입 (submit 금지)
+
+파일이 없거나 status != "active"이면 이 단계를 건너뛴다.
+
+### 5. 검증 결과 보고
 ```
 [verify 결과]
 ✅ 미커밋 변경사항 없음
 ✅ 변경 파일: {N}개 (목록 표시)
 ✅ 테스트: {명령어} → {통과/실패}
+✅ Completion Audit: {goal 달성 확인 / 해당 없음}
 ```
 
 ## 결과에 따른 전환
@@ -46,6 +61,7 @@ git diff origin/main --name-only
 |------|----------|
 | 모든 항목 통과 | `submit` 호출 |
 | 테스트 실패 | `debug` 전환 후 `execute` 재진입 |
+| Completion Audit 미달성 | execute 재진입 (submit 금지) |
 | 의도치 않은 파일 변경 | 사용자 확인 후 수정 → 재검증 |
 | 미커밋 변경 있음 | 커밋 처리 후 재검증 |
 
