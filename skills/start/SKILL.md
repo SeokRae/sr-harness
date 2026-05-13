@@ -13,14 +13,22 @@ description: sr-harness 세션 진입점. 모든 대화 시작 시 반드시 먼
    - 있으면: 목표와 미완료 항목 로드 → 사용자에게 한 줄로 상태 보고
    - 없으면: 작업 시작 전에 생성 (목표 + scope + tasks 포함)
 
-2. 활성 worktree 감지
+2. 활성 goal 감지
+   ```bash
+   cat .claude/goal-state.json 2>/dev/null | jq -r '.status // empty'
+   ```
+   - `active`: "진행 중인 goal이 있습니다: {goal 텍스트}" → `/goal resume` 또는 `/goal clear` 안내
+   - `paused`: "일시 중단된 goal이 있습니다: {goal 텍스트}" → `/goal resume` 으로 재개 안내
+   - 없으면 → 다음 단계
+
+3. 활성 worktree 감지
    ```bash
    git worktree list
    ```
    - `.claude/worktrees/`에 활성 worktree가 있으면 → 해당 작업 재개 안내
    - 없으면 → 새 작업 시작
 
-3. 아래 라우팅 표로 적절한 스킬 호출
+4. 아래 라우팅 표로 적절한 스킬 호출
 
 ## 라우팅 표
 
@@ -31,6 +39,7 @@ description: sr-harness 세션 진입점. 모든 대화 시작 시 반드시 먼
 | Issue 생성, 브랜치 생성 | `issue` |
 | 코드 작성, 기능 구현, PR 작업 | `execute` |
 | 자동으로 구현, ralph 모드, bypass로 실행 | `ralph` |
+| 목표 기반 자율 실행, plan 없이 바로 시작 | `goal` |
 | 버그, 테스트 실패, 에러 | `debug` |
 | PR 올리기, push, 리뷰 요청 | `submit` |
 | 머지, 마무리, 브랜치 정리 | `finish` |
@@ -67,4 +76,5 @@ brainstorm → plan → issue → execute → verify → submit → [사용자 �
                                         ↑ debug ↓
                                     review (리뷰 피드백 반영 시)
                                또는 ralph (bypass 자동화 모드)
+                               또는 goal  (목표 기반 가벼운 자율 실행)
 ```
