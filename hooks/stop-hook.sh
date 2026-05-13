@@ -1,21 +1,103 @@
 #!/bin/bash
 
-# Ralph Loop Stop Hook
-# Prevents session exit when a ralph-loop is active
-# Feeds Claude's output back as input to continue the loop
+# Loop Stop Hook
+# Handles both ralph-loop and goal-loop: prevents session exit while active,
+# feeds Claude's output back as input to continue the loop.
 
 set -euo pipefail
 
 # Read hook input from stdin (advanced stop hook API)
 HOOK_INPUT=$(cat)
 
-# Check if ralph-loop is active
 RALPH_STATE_FILE=".claude/ralph-loop.local.md"
+GOAL_STATE_FILE=".claude/goal-state.json"
 
-if [[ ! -f "$RALPH_STATE_FILE" ]]; then
-  # No active loop - allow exit
+# No active loop - allow exit
+if [[ ! -f "$RALPH_STATE_FILE" ]] && [[ ! -f "$GOAL_STATE_FILE" ]]; then
   exit 0
 fi
+
+# ── Goal loop ─────────────────────────────────────────────
+# Processed first so ralph (if also present) takes precedence below
+if [[ ! -f "$RALPH_STATE_FILE" ]] && [[ -f "$GOAL_STATE_FILE" ]]; then
+
+  GOAL_STATUS=$(jq -r '.status' "$GOAL_STATE_FILE" 2>/dev/null || echo "unknown")
+  if [[ "$GOAL_STATUS" != "active" ]]; then
+    exit 0
+  fi
+
+  # Session isolation
+  GOAL_SESSION=$(jq -r '.session_id // ""' "$GOAL_STATE_FILE")
+  HOOK_SESSION=$(echo "$HOOK_INPUT" | jq -r '.session_id // ""')
+  if [[ -n "$GOAL_SESSION" ]] && [[ "$GOAL_SESSION" != "$HOOK_SESSION" ]]; then
+    exit 0
+  fi
+
+  GOAL_ITER=$(jq -r '.iteration' "$GOAL_STATE_FILE")
+  GOAL_MAX=$(jq -r '.max_iterations' "$GOAL_STATE_FILE")
+  GOAL_TEXT=$(jq -r '.goal' "$GOAL_STATE_FILE")
+
+  if [[ ! "$GOAL_ITER" =~ ^[0-9]+$ ]] || [[ ! "$GOAL_MAX" =~ ^[0-9]+$ ]]; then
+    echo "⚠️  Goal loop: goal-state.json 손상됨 — 루프 중단" >&2
+    bash "${CLAUDE_PLUGIN_ROOT}/scripts/cleanup-goal.sh" 2>/dev/null || true
+    exit 0
+  fi
+
+  if [[ $GOAL_MAX -gt 0 ]] && [[ $GOAL_ITER -ge $GOAL_MAX ]]; then
+    echo "🛑 Goal loop: Max iterations ($GOAL_MAX) reached."
+    bash "${CLAUDE_PLUGIN_ROOT}/scripts/cleanup-goal.sh" 2>/dev/null || true
+    exit 0
+  fi
+
+  TRANSCRIPT_PATH=$(echo "$HOOK_INPUT" | jq -r '.transcript_path')
+  if [[ ! -f "$TRANSCRIPT_PATH" ]] || ! grep -q '"role":"assistant"' "$TRANSCRIPT_PATH"; then
+    exit 0
+  fi
+
+  LAST_LINES=$(grep '"role":"assistant"' "$TRANSCRIPT_PATH" | tail -n 100)
+  set +e
+  LAST_OUTPUT=$(echo "$LAST_LINES" | jq -rs '
+    map(.message.content[]? | select(.type == "text") | .text) | last // ""
+  ' 2>&1)
+  JQ_EXIT=$?
+  set -e
+
+  if [[ $JQ_EXIT -ne 0 ]]; then
+    exit 0
+  fi
+
+  PROMISE_TEXT=$(echo "$LAST_OUTPUT" | perl -0777 -pe 's/.*?<promise>(.*?)<\/promise>.*/$1/s; s/^\s+|\s+$//g; s/\s+/ /g' 2>/dev/null || echo "")
+  if [[ -n "$PROMISE_TEXT" ]] && [[ "$PROMISE_TEXT" = "GOAL_ACHIEVED" ]]; then
+    echo "✅ Goal loop: <promise>GOAL_ACHIEVED</promise> 감지 — 루프 종료"
+    bash "${CLAUDE_PLUGIN_ROOT}/scripts/cleanup-goal.sh" 2>/dev/null || true
+    exit 0
+  fi
+
+  # Not complete — increment iteration and re-inject goal prompt
+  NEXT_ITER=$((GOAL_ITER + 1))
+  TEMP_FILE="${GOAL_STATE_FILE}.tmp.$$"
+  jq --argjson n "$NEXT_ITER" '.iteration = $n' "$GOAL_STATE_FILE" > "$TEMP_FILE"
+  mv "$TEMP_FILE" "$GOAL_STATE_FILE"
+
+  GOAL_PROMPT="🎯 Goal: ${GOAL_TEXT}
+
+이 목표가 달성될 때까지 계속 작업한다.
+완료 조건에 도달하면 반드시 <promise>GOAL_ACHIEVED</promise> 를 출력한다.
+(완료 조건: 목표에 기술된 상태가 실제로 달성된 것을 확인한 경우에만. 거짓으로 탈출 금지)"
+
+  jq -n \
+    --arg prompt "$GOAL_PROMPT" \
+    --arg msg "🔄 Goal iteration $NEXT_ITER / $GOAL_MAX | 완료: <promise>GOAL_ACHIEVED</promise>" \
+    '{
+      "decision": "block",
+      "reason": $prompt,
+      "systemMessage": $msg
+    }'
+  exit 0
+fi
+
+# ── Ralph loop ────────────────────────────────────────────
+# Check if ralph-loop is active
 
 # Restore bypass permissions and remove state file on any termination path.
 # Called instead of bare `rm "$RALPH_STATE_FILE"` to avoid leaving
