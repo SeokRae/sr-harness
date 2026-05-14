@@ -110,81 +110,44 @@ git commit -m "{type}: {설명} (#N)"
 ## 팀모드 실행 모드
 
 제외 조건이 없을 때 기본으로 시도하는 병렬 실행 모드.
-각 에이전트는 별도 tmux pane에서 `claude -p` CLI로 실행되어 진행 상황을 실시간으로 확인할 수 있다.
+Agent 툴로 독립 태스크를 병렬 dispatch한다.
 
 ### 원칙
 
-- 독립 태스크를 각자의 tmux pane에서 `claude -p --permission-mode bypassPermissions`로 병렬 실행
-- 각 에이전트는 지정된 worktree에서 task 파일을 읽어 실행하고 결과를 result 파일에 기록
-- Monitor 툴로 완료를 자동 감지해 리뷰 단계 진행 — 사용자가 직접 트리거하지 않아도 됨
-- 커밋 전 `git pull --rebase origin {브랜치명}` 필수 — 병렬 작업 충돌 방지
+- 독립 태스크를 Agent 툴로 병렬 dispatch — 단일 메시지에 여러 Agent 호출
+- 각 에이전트는 focused/self-contained 프롬프트를 받아 독립 실행
+- 에이전트 완료 후 결과를 리뷰하고 통합
 
 ### 실행 흐름
 
 ```
 1. 플랜 파일에서 독립 태스크 목록 추출
-2. 태스크별 task-N.md 작성 → {job_dir}/task-N.md
-     (내용: 태스크 전문 + worktree 경로 + 브랜치명 + 커밋 규칙)
-3. Bash: sr-team-launch.sh {job_dir} {total} {worktree_1} ... {worktree_N}
-     → 사용자에게 안내: "tmux attach -t sr-team 으로 진행 상황 확인 가능"
-4. Monitor: sr-team-watch.sh {job_dir} {total}
-     → ALL_DONE            → 5단계로 진행
-     → DONE_WITH_ERRORS:N  → {job_dir}/result-N.md 읽어 원인 파악 후 해당 에이전트만 재실행
-5. result-N.md 읽어서 2단계 리뷰 진행
-     [태스크 N] 스펙 리뷰: 스펙 불일치 → 해당 에이전트만 재실행 → 재리뷰
-     [태스크 N] 코드 품질 리뷰: 이슈 → 해당 에이전트만 재실행 → 재리뷰
-6. 모든 태스크 리뷰 통과 → verify → submit
+2. 태스크별 에이전트 프롬프트 작성 (아래 형식)
+3. Agent 툴로 병렬 dispatch (한 메시지에 모든 에이전트)
+     - mode: "bypassPermissions" 또는 태스크 성격에 맞게
+     - model: 모델 선택 기준표 참조
+     - isolation: "worktree" (코드 프로젝트) — 충돌 방지
+4. 에이전트 결과 수신 → 2단계 리뷰
+     [태스크 N] 스펙 리뷰: 불일치 → 재dispatch
+     [태스크 N] 코드 품질 리뷰: 이슈 → 재dispatch
+5. 모든 리뷰 통과 → verify → submit
 ```
 
-### task-N.md 작성 형식
+### 에이전트 프롬프트 형식
 
-```markdown
-# Task {N}: {제목}
+Agent 호출 시 prompt에 포함할 내용:
+- 태스크 제목과 상세 설명
+- 작업 대상 파일 경로
+- 브랜치명, 이슈 번호
+- 커밋 규칙 (`git add .` 금지, `#이슈번호` 포함)
+- 성공 기준
 
-## 작업 위치
-- worktree: {worktree_path}
-- branch: {branch_name}
-- issue: #{issue_number}
+### 충돌 방지 규칙
 
-## 작업 내용
-{태스크 전문}
-
-## 관련 파일
-{관련 파일 경로 목록}
-
-## 커밋 규칙
-- `git pull --rebase origin {브랜치명}` 후 커밋
-- 커밋 메시지: `{type}: {설명} (#{issue_number})`
+- 코드 프로젝트: `isolation: "worktree"` 사용 — 에이전트별 독립 worktree 자동 생성
+- Vault 프로젝트: 동일 파일 수정 태스크는 순차 모드로 전환
 - `git add .` 금지 — 관련 파일만 명시 지정
-- 구현 완료 후 반드시 커밋까지 완료하고 종료
-```
-
-### 스크립트 실행
-
-```bash
-# 런처 — tmux 세션 생성 + 에이전트 실행
-LAUNCH=$(find ~/.claude/plugins/cache/sr-harness -name "sr-team-launch.sh" | head -1)
-bash "$LAUNCH" {job_dir} {total} {worktree_1} [{worktree_2} ...]
-
-# 감시 — Monitor 툴로 실행 (완료 시 ALL_DONE 또는 DONE_WITH_ERRORS:N 출력)
-WATCH=$(find ~/.claude/plugins/cache/sr-harness -name "sr-team-watch.sh" | head -1)
-# → Monitor 툴에 "bash $WATCH {job_dir} {total}" 전달
-```
-
-### 완료 상태 처리
-
-| 상태 | 처리 |
-|------|------|
-| `ALL_DONE` | 스펙 리뷰로 진행 |
-| `DONE_WITH_ERRORS:N` | result-N.md 확인 후 해당 태스크만 재실행 |
-
-### 충돌 방지 규칙 (task-N.md에 명시 전달)
-
-- 모든 파일 수정은 반드시 지정된 worktree 경로 내에서 수행 — main 워크트리 파일 직접 수정 금지
-- `git add .` 사용 금지 — 태스크 관련 파일만 명시적으로 지정
-- **커밋 전 `git pull --rebase origin {브랜치명}` 필수** — 병렬 작업 충돌 방지
 - 모든 커밋에 이슈 번호 포함: `feat: 설명 (#이슈번호)`
-- 구현 완료 후 반드시 커밋까지 완료하고 종료
 
 ### 모델 선택 기준
 
