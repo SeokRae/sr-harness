@@ -37,6 +37,16 @@ git pull origin main
 git worktree remove .claude/worktrees/{description}
 ```
 
+### 4.5. 로컬 브랜치 삭제
+```bash
+git branch -d feature/{N}-{description}
+```
+→ `-d` 는 머지된 브랜치만 삭제 (안전). 미머지 브랜치는 `-D` 를 쓰되 사용자 확인 필수.
+→ 머지된 브랜치 전체 일괄 정리:
+```bash
+git branch --merged main | grep -v '^\* main' | xargs git branch -d
+```
+
 ### 5. 플랜 파일 삭제
 ```bash
 rm -f .claude/session-plan.md
@@ -48,6 +58,7 @@ rm -f .claude/session-plan.md
 ✅ PR #{PR-number} 머지 완료
 ✅ Issue #{issue-number} close
 ✅ 브랜치 삭제: feature/{N}-{description}
+✅ 로컬 브랜치 삭제: feature/{N}-{description}
 ✅ main 동기화 완료
 ✅ session-plan.md 삭제
 ```
