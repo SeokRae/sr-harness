@@ -15,10 +15,19 @@ if [[ ! -f "$PLAN_FILE" ]]; then
   exit 1
 fi
 
-WORKTREE_CHECK=$(git worktree list | grep -F "$(pwd)" | grep -v "bare" || true)
-if [[ -z "$WORKTREE_CHECK" ]]; then
-  echo "❌ worktree 밖에서 실행됨. .claude/worktrees/ 안으로 이동하세요." >&2
-  exit 1
+if [[ -d ".obsidian" ]]; then
+  # Obsidian vault: worktree 없이 feature 브랜치에서 직접 작업
+  CURRENT_BRANCH=$(git branch --show-current)
+  if [[ "$CURRENT_BRANCH" == "main" ]]; then
+    echo "❌ vault 프로젝트는 feature 브랜치에서 실행하세요. (현재: main)" >&2
+    exit 1
+  fi
+else
+  WORKTREE_CHECK=$(git worktree list | grep -F "$(pwd)" | grep -v "bare" || true)
+  if [[ -z "$WORKTREE_CHECK" ]]; then
+    echo "❌ worktree 밖에서 실행됨. .claude/worktrees/ 안으로 이동하세요." >&2
+    exit 1
+  fi
 fi
 
 if [[ -f "$STATE_FILE" ]]; then
