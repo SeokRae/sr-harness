@@ -25,7 +25,8 @@ bash "${CLAUDE_PLUGIN_ROOT}/scripts/setup-ralph.sh"
 
 에러가 있으면 스크립트가 메시지와 함께 종료된다:
 - `session-plan.md 없음` → `plan` 스킬로 먼저 계획 작성
-- `worktree 밖` → `issue` 스킬로 worktree 생성
+- `worktree 밖` (코드 프로젝트) → `issue` 스킬로 worktree 생성
+- `main 브랜치` (vault 프로젝트) → `issue` 스킬로 feature 브랜치 생성
 - `활성 루프 존재` → cleanup 스크립트 실행
 
 ### 2. 첫 번째 반복 즉시 시작
@@ -64,6 +65,7 @@ bash "${CLAUDE_PLUGIN_ROOT}/scripts/cleanup-ralph.sh"
 ## 금지 사항
 
 - plan 없이 ralph 시작 금지
-- worktree 밖에서 실행 금지
+- 코드 프로젝트: worktree 밖에서 실행 금지
+- Obsidian vault (`.obsidian/` 있음): main 브랜치에서 실행 금지 (feature 브랜치 필요)
 - Tasks 미완료 상태에서 promise 출력 금지
 - 테스트 실패 상태에서 promise 출력 금지

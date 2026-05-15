@@ -21,11 +21,14 @@ description: sr-harness 세션 진입점. 모든 대화 시작 시 반드시 먼
    - `paused`: "일시 중단된 goal이 있습니다: {goal 텍스트}" → `/goal resume` 으로 재개 안내
    - 없으면 → 다음 단계
 
-3. 활성 worktree 감지
+3. 진행 중 작업 감지
    ```bash
+   ls .obsidian/ 2>/dev/null && echo "vault" || echo "code"
    git worktree list
+   git branch --show-current
    ```
-   - `.claude/worktrees/`에 활성 worktree가 있으면 → 해당 작업 재개 안내
+   - **코드 프로젝트**: `.claude/worktrees/`에 활성 worktree가 있으면 → 해당 작업 재개 안내
+   - **Obsidian vault** (`.obsidian/` 있음): 현재 브랜치가 `feature/`로 시작하면 → 해당 작업 재개 안내
    - 없으면 → 새 작업 시작
 
 4. 아래 라우팅 표로 적절한 스킬 호출
