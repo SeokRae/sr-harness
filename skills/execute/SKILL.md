@@ -8,23 +8,9 @@ description: 구현 계획을 실행하는 스킬. "구현해줘", "만들어줘
 구현 시작 전 karpathy 체크포인트를 통과해야 한다.
 단계별로 실행하고, 각 단계가 끝나면 verify 후 다음으로 넘어간다.
 
-## 전제 조건 (브랜치/Worktree 확인)
+## 전제 조건 (브랜치 확인)
 
-먼저 프로젝트 유형을 감지한다:
-
-```bash
-ls .obsidian/ 2>/dev/null && echo "vault" || echo "code"
-```
-
-**코드 프로젝트**: 현재 디렉토리가 worktree(`.claude/worktrees/{description}`) 안인지 확인한다.
-- 맞으면 → 진행
-- 아니면 → `issue`로 돌아가서 worktree 생성
-
-```bash
-git worktree list | grep "$(pwd)"
-```
-
-**Obsidian vault**: feature 브랜치에 있는지 확인한다. main이면 → `issue`로 돌아가서 브랜치 생성.
+feature 브랜치에 있는지 확인한다. main이면 → `issue`로 돌아가서 브랜치 생성.
 
 ```bash
 git branch --show-current  # feature/* 여야 함, main이면 안 됨

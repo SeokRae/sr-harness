@@ -32,17 +32,7 @@ git checkout main
 git pull origin main
 ```
 
-> **Obsidian vault**: `git checkout main`이 feature 브랜치 → main 전환을 겸한다.
-> pull 완료 시점에 Obsidian vault에 파일이 즉시 반영된다.
-
-### 4. Worktree 정리 (코드 프로젝트 + worktree 사용 시)
-```bash
-git worktree remove .claude/worktrees/{description}
-```
-
-> **Obsidian vault**: worktree 없이 작업했으므로 이 단계 생략.
-
-### 4.5. 로컬 브랜치 삭제
+### 4. 로컬 브랜치 삭제
 ```bash
 git branch -d feature/{N}-{description}
 ```
