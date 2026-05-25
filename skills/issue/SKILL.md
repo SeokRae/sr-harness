@@ -31,52 +31,24 @@ git checkout -b feature/{issue-number}-{short-description}
 - 다른 feature 브랜치에서 분기 (체인 브랜치 금지)
 - 한 브랜치에 여러 Issue 혼재
 
-### 3. 프로젝트 유형 감지 후 격리 방식 결정
+### 3. 프로젝트 유형 감지
 
 ```bash
 ls .obsidian/ 2>/dev/null && echo "vault" || echo "code"
 ```
 
-#### 코드 프로젝트 (`.obsidian/` 없음) → Worktree 생성
+브랜치가 이미 체크아웃된 상태이므로 별도 격리 작업은 없다.
+모든 파일 작업은 프로젝트 루트에서 수행한다.
 
-```bash
-git worktree add .claude/worktrees/{short-description} feature/{issue-number}-{short-description}
-```
-
-이후 모든 파일 작업은 worktree 안에서 수행한다.
-
-**컨벤션**:
-- 위치: `.claude/worktrees/` (프로젝트 `.gitignore`에 포함 확인)
-- 이름: 브랜치의 `{short-description}` 부분 그대로 사용
-- `.gitignore`에 `.claude/worktrees/` 없으면 추가 후 커밋
-
-#### Obsidian vault (`.obsidian/` 있음) → 브랜치에서 직접 작업
-
-worktree를 생성하지 않는다. Obsidian은 vault 루트 하나만 바라보기 때문에
-worktree 파일은 머지 전까지 Obsidian에서 보이지 않아 의미가 없다.
-feature 브랜치에서 직접 작업하고, 작업 결과를 바로 Obsidian에서 확인할 수 있다.
-
-```bash
-git checkout feature/{issue-number}-{short-description}
-```
+> **Worktree는 사용하지 않는다.** 단일 순차 개발에서 worktree를 쓰면
+> 메인 IDE에서 변경 내용이 보이지 않아 PR 리뷰 전 코드 확인이 불편하다.
+> 병렬 브랜치 작업이 필요한 경우에만 수동으로 worktree를 생성한다.
 
 ### 4. 확인 출력
 
-코드 프로젝트:
 ```
 ✅ Issue #N 생성: {제목}
-✅ 브랜치 생성: feature/{N}-{description}
-✅ Worktree 생성: .claude/worktrees/{description}
-✅ 현재 위치: .claude/worktrees/{description}
-
-다음 단계: execute
-```
-
-Obsidian vault:
-```
-✅ Issue #N 생성: {제목}
-✅ 브랜치 생성: feature/{N}-{description}
-ℹ️  Vault 프로젝트 — worktree 없이 브랜치에서 직접 작업
+✅ 브랜치 생성 및 체크아웃: feature/{N}-{description}
 
 다음 단계: execute
 ```
