@@ -98,13 +98,3 @@ cat .claude/goal-state.json 2>/dev/null | jq -r 'select(.status == "active") | .
 | "execute에서 통과하는 거 봤음" | 그건 다른 메시지다. verify는 이번 메시지의 출력으로만 통과. |
 
 ✅를 적기 전에 자문한다: **"이번 메시지에 이 명령의 출력이 실제로 있는가?"**
-
-## 자기보고 (evolution_log)
-
-verify 결과 확정 시 아래 명령어를 실행한다.
-`items_checked`는 실제 검증한 항목 수, `outcome`은 pass/fail.
-
-```bash
-python3 ~/.claude/hooks/evolution-log-skill.py \
-  '{"skill":"sr-harness:verify","outcome":"{pass|fail}","metrics":{"items_checked":{N}}}'
-```

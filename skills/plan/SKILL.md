@@ -76,19 +76,3 @@ scope:
   - {단계 목록}
 ---
 ```
-
-## 자기보고 (evolution_log)
-
-계획 확정 후 아래 명령어를 실행해 메트릭을 기록한다.
-`step_count`와 `has_verify_criteria`는 실제 작성한 계획 기준으로 채운다.
-
-```bash
-python3 ~/.claude/hooks/evolution-log-skill.py \
-  '{"skill":"sr-harness:plan","outcome":"completed","metrics":{"step_count":{N},"has_verify_criteria":{true|false}}}'
-```
-
-계획이 중단되거나 사용자가 승인하지 않은 경우:
-```bash
-python3 ~/.claude/hooks/evolution-log-skill.py \
-  '{"skill":"sr-harness:plan","outcome":"abandoned","metrics":{"step_count":{N},"has_verify_criteria":{true|false}}}'
-```
