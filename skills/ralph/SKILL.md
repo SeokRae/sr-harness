@@ -18,15 +18,14 @@ bash "${CLAUDE_PLUGIN_ROOT}/scripts/setup-ralph.sh"
 ```
 
 스크립트가 자동으로 처리하는 것:
-- `.claude/session-plan.md` 존재 + worktree 위치 확인
+- `.claude/session-plan.md` 존재 + feature 브랜치 확인
 - 기존 Ralph 루프 중복 실행 방지
 - `.claude/settings.local.json` 백업 → bypass 권한 추가
 - `.claude/ralph-loop.local.md` 상태 파일 생성 (session_id, max_iterations, karpathy 원칙 포함 프롬프트)
 
 에러가 있으면 스크립트가 메시지와 함께 종료된다:
 - `session-plan.md 없음` → `plan` 스킬로 먼저 계획 작성
-- `worktree 밖` (코드 프로젝트) → `issue` 스킬로 worktree 생성
-- `main 브랜치` (vault 프로젝트) → `issue` 스킬로 feature 브랜치 생성
+- `main 브랜치` 또는 `detached HEAD` → `issue` 스킬로 feature 브랜치 생성
 - `활성 루프 존재` → cleanup 스크립트 실행
 
 ### 2. 첫 번째 반복 즉시 시작
@@ -65,7 +64,6 @@ bash "${CLAUDE_PLUGIN_ROOT}/scripts/cleanup-ralph.sh"
 ## 금지 사항
 
 - plan 없이 ralph 시작 금지
-- 코드 프로젝트: worktree 밖에서 실행 금지
-- Obsidian vault (`.obsidian/` 있음): main 브랜치에서 실행 금지 (feature 브랜치 필요)
+- main 브랜치에서 실행 금지 (feature 브랜치 필요 — vault·code 공통)
 - Tasks 미완료 상태에서 promise 출력 금지
 - 테스트 실패 상태에서 promise 출력 금지
