@@ -57,7 +57,7 @@ Verify:
 ```bash
 claude plugins list
 #   ❯ sr-harness@sr-harness
-#     Version: 0.1.0
+#     Version: 0.16.1
 #     Scope: user
 #     Status: ✔ enabled
 ```
@@ -66,7 +66,7 @@ claude plugins list
 
 ## Lifecycle
 
-The full lifecycle — state transitions, gap analysis, and v0.2 roadmap — is documented in [`docs/LIFECYCLE.md`](./docs/LIFECYCLE.md).
+The full lifecycle — state transitions, the skill map, resolved gaps, and the remaining roadmap — is documented in [`docs/LIFECYCLE.md`](./docs/LIFECYCLE.md).
 
 ## Workflow
 
@@ -129,6 +129,9 @@ start
 | `submit` | push + PR (Closes #N) · stops for user review |
 | `review` | Receive review feedback → back to execute |
 | `finish` | Merge + delete branch + pull main |
+| `ralph` | Automated execute→verify loop until pass (bypass mode) |
+| `goal` | Goal-driven autonomous execution via Stop hook |
+| `release` | Create a GitHub Release (version + auto-generated notes) |
 | `abort` | Cancel work · clean up branch |
 | `pause` | Suspend session · hand off to next session |
 | `dev-coding-principles` | Coding quality checklist — Naming, Exception Handling, Test |
