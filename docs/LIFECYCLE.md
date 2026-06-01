@@ -1,154 +1,108 @@
 # sr-harness 라이프사이클 정의
 
-> v0.1.0 현황 분석 + v0.2.0 목표 사이클
+> v0.16 현재 사이클 — 19개 스킬로 구성된 완성형 워크플로우
 
 ---
 
-## As-Is: v0.1.0 현재 사이클
+## 현재 사이클 (v0.16)
 
-7개 스킬이 선형으로 연결된 단방향 파이프라인.
+`start`가 작업 유형을 라우팅하고, 핵심 워크플로우가 idea → PR → merge를 단일 흐름으로 잇는다.
+검증·리뷰·중단·자율 실행 경로가 모두 포함된 반복형 사이클이다.
 
 ```
-┌─────────────────────────────────────────────────────────────────┐
-│                     sr-harness v0.1 Lifecycle                   │
-│                                                                 │
-│   ┌──────────┐    ┌────────────┐    ┌──────────┐               │
-│   │  START   │───▶│ BRAINSTORM │───▶│   PLAN   │               │
-│   │ (라우터)  │    │ (구체화)    │    │ (설계)    │               │
-│   └──────────┘    └────────────┘    └──────────┘               │
-│        │                                  │                     │
-│        │ (계획 있으면)                      ▼                     │
-│        │                            ┌──────────┐               │
-│        └──────────────────────────▶ │  ISSUE   │               │
-│                                     │ (생성)    │               │
-│                                     └──────────┘               │
-│                                          │                     │
-│                                          ▼                     │
-│                                     ┌──────────┐    ┌────────┐ │
-│                                     │ EXECUTE  │◀──▶│ DEBUG  │ │
-│                                     │ (구현)    │    │ (진단)  │ │
-│                                     └──────────┘    └────────┘ │
-│                                          │                     │
-│                                          ▼                     │
-│                                     ┌──────────┐               │
-│                                     │  FINISH  │               │
-│                                     │  (PR)    │               │
-│                                     └──────────┘               │
-└─────────────────────────────────────────────────────────────────┘
+start ─ 라우팅 ─┐
+               ▼
+  brainstorm → plan → issue → execute → verify → submit →(사용자 확인)→ finish → DONE
+                                ▲▼                              ▲
+                              debug                review ──────┘
+                                                  (리뷰 피드백 → execute 재진입)
+
+  자율 실행:  ralph (execute→verify 자동 루프, bypass)  ·  goal (목표 기반 Stop-hook 루프)
+  중단·인계:  abort (어느 단계서든 정리)                 ·  pause (다음 세션 인계)
+  릴리즈:     release (머지 후 GitHub Release)
+  진화:       meta (스킬 1회 진화 루프)
+  보조 체크:  dev-coding-principles · dev-architecture · dev-stack-java (execute가 자동 로드)
 ```
 
-**특징**: `idea → plan → issue → execute → PR` — 단일 패스, 반복 없음
+**특징**: `idea → plan → issue → execute → verify → submit → finish` — 검증·리뷰·중단 경로를 갖춘 반복형 사이클 (v0.1의 단일 패스에서 진화)
 
 ---
 
-## As-Is 갭 분석
+## 스킬 맵 (19개)
 
-### Critical Gaps (사이클 단절)
-
-| # | Gap | 설명 | 영향 |
-|---|-----|------|------|
-| G1 | **코드 리뷰 단계 없음** | execute → finish 직행. PR 피드백 수신 시 재진입 경로 미정의 | 리뷰 피드백 반영 시 하네스 밖에서 작업 |
-| G2 | **검증(Verification) 단계 없음** | "완료" 선언 전 최종 통합 확인 없음 | 빠뜨린 케이스로 PR reject |
-| G3 | **중단/폐기 경로 없음** | 작업 도중 방향 전환/폐기 시 대응 미정의 | session-plan.md 좀비화 |
-
-### High Gaps (효율 저하)
-
-| # | Gap | 설명 |
-|---|-----|------|
-| G4 | **병렬 작업 미지원** | 한 번에 하나의 Issue만 처리 가능. worktree/subagent 패턴 없음 |
-| G5 | **TDD 명시적 단계 없음** | execute에 "테스트 먼저" 힌트만 존재, 강제 안 됨 |
-| G6 | **multi-Issue brainstorm** | brainstorm이 여러 Issue를 낳을 때 분할 루프 미정의 |
-
-### Medium Gaps (UX 마찰)
-
-| # | Gap | 설명 |
-|---|-----|------|
-| G7 | **stale session-plan 처리** | 오래된 plan 폐기 기준 없음 |
-| G8 | **스킬 간 상태 전달** | brainstorm → plan 전환 시 맥락 전달 방식 미정의 |
-| G9 | **에러 메시지 가이드** | debug의 "에러 전문 확인" 지시에 출력 포맷 없음 |
-
----
-
-## To-Be: v0.2.0 목표 사이클
-
-리뷰 피드백 루프 + 통합 검증 + 중단 경로를 추가한 완성형 사이클.
-
-```
-┌─────────────────────────────────────────────────────────────────────────┐
-│                    sr-harness v0.2 Full Cycle                            │
-│                                                                         │
-│  ① IDEATE ─────▶ ② PLAN ─────▶ ③ ISSUE ─────▶ ④ EXECUTE               │
-│  (brainstorm)     (설계+TDD)     (생성)         (구현)                   │
-│       ▲                                           │  ▲                  │
-│       │                                    fail ──┘  │                  │
-│       │                                    ▼         │                  │
-│       │                               ④-b DEBUG ─────┘                  │
-│       │                                                                 │
-│       │            ⑤ VERIFY ◀──────────── (execute 완료)                 │
-│       │            (통합 검증)                                            │
-│       │                │                                                │
-│       │         pass   │   fail ──────────▶ ④ EXECUTE                   │
-│       │                ▼                                                │
-│       │           ⑥ REVIEW ─────────▶ ⑦ FINISH                          │
-│       │           (코드 리뷰)          (push+PR)                         │
-│       │                │                    │                           │
-│       │         feedback│                    ▼                           │
-│       │                ▼               ⑧ CLEANUP                        │
-│       │           ④ EXECUTE            (session-plan 정리)               │
-│       │           (피드백 반영)               │                           │
-│       │                                     ▼                           │
-│       └──────────────── (새 작업 시작) ◀─── DONE                         │
-│                                                                         │
-│  ⑨ ABORT: 어느 단계에서든 → Deviations 기록 + 브랜치 정리                 │
-└─────────────────────────────────────────────────────────────────────────┘
-```
+| 분류 | 스킬 | 역할 |
+|------|------|------|
+| **진입** | `start` | 작업 유형 라우팅 · karpathy 즉시 체크 |
+| **핵심 흐름** | `brainstorm` | 아이디어 → Issue 단위로 구체화 |
+| | `plan` | step → verify 형식 계획 |
+| | `issue` | GitHub Issue + feature 브랜치 (1 Issue = 1 Branch = 1 PR) |
+| | `execute` | karpathy 체크포인트 구현 (단일/팀/순차 모드) |
+| | `debug` | 진단 우선 디버깅 (진단 게이트) |
+| | `verify` | 증거 기반 통합 검증 (Iron Law) |
+| | `review` | 리뷰 피드백 → execute 재진입 |
+| | `submit` | push + PR (Closes #N) · 사용자 확인 대기 |
+| | `finish` | 머지 + 브랜치 정리 + main pull |
+| **자율 실행** | `ralph` | execute→verify 자동 루프 (bypass) |
+| | `goal` | 목표 기반 자율 실행 (Stop hook) |
+| **중단·인계** | `abort` | 작업 중단 · 브랜치 정리 |
+| | `pause` | 세션 중단 · 다음 세션 인계 |
+| **릴리즈** | `release` | GitHub Release 생성 (버전 + 자동 노트) |
+| **진화** | `meta` | 스킬 진화 루프 (메커니즘이 다른 후보 3개 제안) |
+| **보조 체크리스트** | `dev-coding-principles` | 네이밍·예외처리·테스트 |
+| | `dev-architecture` | Hexagonal·레이어·패키지 구조 |
+| | `dev-stack-java` | Spring Boot·JPA·예외 (스택 자동 감지) |
 
 ---
 
 ## 상태 전이 테이블
 
-| From | To | 트리거 | 담당 스킬 |
-|------|----|--------|----------|
+| From | To | 트리거 | 담당 |
+|------|----|--------|------|
 | START | BRAINSTORM | 아이디어 탐색 의도 | start → brainstorm |
-| START | PLAN | 구체적인 요구사항 이미 있음 | start → plan |
+| START | PLAN | 구체적 요구사항 존재 | start → plan |
 | START | EXECUTE | session-plan + Issue 존재 | start → execute |
 | BRAINSTORM | PLAN | 종료 조건 3가지 충족 | brainstorm → plan |
 | PLAN | ISSUE | 사용자 승인 | plan → issue |
 | ISSUE | EXECUTE | 브랜치 생성 완료 | issue → execute |
 | EXECUTE | DEBUG | 테스트 실패 / 예상 밖 에러 | execute → debug |
 | DEBUG | EXECUTE | 원인 확인 + 수정 완료 | debug → execute |
-| EXECUTE | VERIFY | 모든 step verify 통과 | execute → **verify** *(v0.2)* |
-| VERIFY | REVIEW | 통합 검증 통과 | verify → **review** *(v0.2)* |
-| VERIFY | EXECUTE | 검증 실패 → 추가 수정 필요 | verify → execute |
-| REVIEW | SUBMIT | solo 진행 또는 approve | review → submit |
-| REVIEW | EXECUTE | 리뷰 피드백 수신 → 반영 | review → execute |
-| SUBMIT | FINISH | 사용자가 PR 확인 후 머지 요청 | finish |
-| FINISH | DONE | 머지 + 브랜치 정리 + main pull 완료 | finish |
+| EXECUTE | VERIFY | 모든 step verify 통과 | execute → verify |
+| VERIFY | SUBMIT | 통합 검증 통과 | verify → submit |
+| VERIFY | EXECUTE | 검증 실패 → 추가 수정 | verify → execute |
+| SUBMIT | (사용자 확인) | PR 생성 후 정지 | submit |
+| (리뷰 수신) | REVIEW | PR 리뷰 피드백 도착 | review |
+| REVIEW | EXECUTE | 피드백 반영 | review → execute |
+| (확인 후) | FINISH | 사용자 머지 요청 | finish |
+| FINISH | DONE | 머지 + 브랜치 정리 + main pull | finish |
 | ANY | ABORT | 방향 전환 / 폐기 결정 | abort |
-
-> **볼드** 표시: v0.2에서 신규 추가 예정 스킬
-
----
-
-## v0.2 신규 스킬 명세 (예고)
-
-| 우선순위 | 스킬명 | 역할 | 해소하는 Gap |
-|---------|--------|------|-------------|
-| P0 | `verify` | 빌드+테스트+lint 실행, 변경 파일 전수 확인 | G2 |
-| P0 | `review` | PR 리뷰 피드백 수신 → execute 재진입 루프 | G1 |
-| P1 | `abort` | session-plan 정리, 브랜치 삭제 여부 확인, deviation 기록 | G3 |
-| P2 | `harness-test` | TDD Red→Green→Refactor 강제 루프 | G5 |
-| P2 | `harness-parallel` | worktree 기반 다중 Issue 병렬 처리 | G4 |
+| ANY | PAUSE | 세션 중단 / 다음 세션 인계 | pause |
+| PLAN 이후 | RALPH / GOAL | 자율 실행 요청 | ralph / goal |
+| DONE 이후 | RELEASE | 릴리즈 태깅 | release |
 
 ---
 
-## v0.1.1 Quick Wins (기존 스킬 보강)
+## 해소된 갭 (v0.1 → v0.16)
 
-기존 7개 스킬에서 발견된 개선 포인트:
+v0.1.0 분석에서 식별한 갭의 현재 상태.
 
-| 스킬 | 문제 | 개선 방향 |
-|------|------|----------|
-| start | 의도 모호 시 판단 기준 부재 | AskUserQuestion 호출 패턴 추가 |
-| brainstorm | 종료 판단을 Claude에게 위임 | 종료 전 사용자 확인 강제 |
-| execute | 커밋 크기 판단 가이드 없음 | "커밋 크기 = 하나의 verify 통과 단위" 명시 |
-| finish | 테스트 명령어 추상화 | session-plan.md의 `test-command` 필드에서 읽기 |
+| # | 갭 | 상태 | 해소 |
+|---|----|------|------|
+| G1 | 코드 리뷰 단계 없음 | ✅ 해소 | `review` 스킬 |
+| G2 | 통합 검증 단계 없음 | ✅ 해소 | `verify` 스킬 (증거 기반 Iron Law) |
+| G3 | 중단/폐기 경로 없음 | ✅ 해소 | `abort` · `pause` |
+| G4 | 병렬 작업 미지원 | ◐ 부분 | `execute` 팀모드 (Agent 병렬 dispatch) |
+| G5 | TDD 명시적 단계 없음 | ◐ 부분 | `execute`·`debug`에 재현 테스트 우선 원칙 (전용 스킬은 미구현) |
+| G6 | multi-Issue brainstorm | ✗ 미구현 | — |
+| G7 | stale session-plan 처리 | ✅ 해소 | `pause`·`abort`의 session-plan 정리 |
+| G8 | 스킬 간 상태 전달 | ✅ 해소 | `.claude/session-plan.md` 공유 |
+| G9 | 에러 메시지 가이드 | ✅ 해소 | `debug` 진단 게이트 (출력 필수) |
+
+---
+
+## 남은 로드맵
+
+| 우선순위 | 항목 | 해소할 갭 |
+|---------|------|----------|
+| P2 | TDD Red→Green→Refactor 강제 스킬 | G5 |
+| P2 | 다중 Issue 병렬 처리 정식 스킬 (현재는 `execute` 팀모드로 일부 대체) | G4 |
+| P3 | multi-Issue brainstorm 분할 루프 | G6 |
