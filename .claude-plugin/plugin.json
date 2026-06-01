@@ -1,7 +1,7 @@
 {
   "name": "sr-harness",
   "description": "karpathy-guidelines와 issue-driven development가 구조적으로 통합된 커스텀 개발 워크플로우 하네스",
-  "version": "0.16.2",
+  "version": "0.16.3",
   "author": {
     "name": "SeokRae",
     "email": "kslbsh@gmail.com"
