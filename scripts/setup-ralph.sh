@@ -15,19 +15,12 @@ if [[ ! -f "$PLAN_FILE" ]]; then
   exit 1
 fi
 
-if [[ -d ".obsidian" ]]; then
-  # Obsidian vault: worktree 없이 feature 브랜치에서 직접 작업
-  CURRENT_BRANCH=$(git branch --show-current)
-  if [[ "$CURRENT_BRANCH" == "main" ]]; then
-    echo "❌ vault 프로젝트는 feature 브랜치에서 실행하세요. (현재: main)" >&2
-    exit 1
-  fi
-else
-  WORKTREE_CHECK=$(git worktree list | grep -F "$(pwd)" | grep -v "bare" || true)
-  if [[ -z "$WORKTREE_CHECK" ]]; then
-    echo "❌ worktree 밖에서 실행됨. .claude/worktrees/ 안으로 이동하세요." >&2
-    exit 1
-  fi
+# feature 브랜치 확인 (vault·code 공통 — worktree 미사용, v0.15.1+)
+CURRENT_BRANCH=$(git branch --show-current)
+if [[ "$CURRENT_BRANCH" == "main" ]] || [[ -z "$CURRENT_BRANCH" ]]; then
+  echo "❌ feature 브랜치에서 실행하세요. (현재: ${CURRENT_BRANCH:-detached HEAD})" >&2
+  echo "   issue 스킬로 feature 브랜치를 먼저 생성하세요." >&2
+  exit 1
 fi
 
 if [[ -f "$STATE_FILE" ]]; then
@@ -131,7 +124,6 @@ cat >> "$STATE_FILE" <<PROMPT_MID
 
 - Read before Write: 수정 전 대상 파일 반드시 먼저 읽기
 - git add . 사용 금지 — 관련 파일만 명시적으로 지정
-- worktree 경로 내에서만 파일 수정 (main 워크트리 직접 수정 금지)
 - 요청한 것만 구현 — 추가 기능·리팩터 금지
 
 ## 매 반복 실행 순서
