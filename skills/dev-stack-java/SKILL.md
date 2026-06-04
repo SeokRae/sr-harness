@@ -1,6 +1,6 @@
 ---
 name: dev-stack-java
-description: Java/Spring Boot 관용구 체크리스트. Java 프로젝트의 execute 시 참조. Spring Boot·JPA·예외처리 패턴 세 섹션으로 구성. 프로젝트 CLAUDE.md에 선언하여 활성화. Keywords: Java, Spring Boot, JPA, 스프링, 관용구, spring idioms, dependency injection, transaction, exception handler
+description: "Java/Spring Boot 관용구 체크리스트. Java 프로젝트의 execute 시 참조. Spring Boot·JPA·예외처리 패턴 세 섹션으로 구성. 프로젝트 CLAUDE.md에 선언하여 활성화. Keywords: Java, Spring Boot, JPA, 스프링, 관용구, spring idioms, dependency injection, transaction, exception handler"
 ---
 
 # dev-stack-java

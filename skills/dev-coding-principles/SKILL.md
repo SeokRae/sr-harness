@@ -1,6 +1,6 @@
 ---
 name: dev-coding-principles
-description: 코딩 품질 원칙 체크리스트. execute 시작 전 또는 코드 작성 중 참조. 네이밍·예외 처리·테스트 세 섹션으로 구성. Keywords: 코딩 원칙, 네이밍, 예외처리, 테스트, 품질, coding standards, naming, exception, test
+description: "코딩 품질 원칙 체크리스트. execute 시작 전 또는 코드 작성 중 참조. 네이밍·예외 처리·테스트 세 섹션으로 구성. Keywords: 코딩 원칙, 네이밍, 예외처리, 테스트, 품질, coding standards, naming, exception, test"
 ---
 
 # dev-coding-principles

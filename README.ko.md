@@ -1,9 +1,10 @@
 # sr-harness
 
-Claude Code의 작업 방식을 직접 설계하는 하네스
+코딩 에이전트의 작업 방식을 직접 설계하는 하네스
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Claude Code](https://img.shields.io/badge/Claude%20Code-Plugin-blueviolet)](https://claude.ai/code)
+[![Codex](https://img.shields.io/badge/Codex-Plugin-2563eb)](.codex-plugin/plugin.json)
 [![Status](https://img.shields.io/badge/Status-Early%20Stage-orange)](.)
 [![Workflow Cycle](https://img.shields.io/badge/워크플로우-인터랙티브%20다이어그램-68b6ff)](https://seokrae.github.io/sr-harness/)
 
@@ -13,7 +14,7 @@ Claude Code의 작업 방식을 직접 설계하는 하네스
 
 ## 왜 만들었나
 
-Claude Code로 개발하다 보면 반복적으로 겪는 패턴이 있다.
+코딩 에이전트로 개발하다 보면 반복적으로 겪는 패턴이 있다.
 
 - 원칙은 알고 있는데, 막상 구현할 때 지켜지지 않는다
 - "Issue 먼저 만들고 브랜치 생성"이 규칙인데, 흐름이 끊기면 건너뛰게 된다
@@ -45,6 +46,13 @@ execute 기존 코드 수정 시:
 
 ## 설치
 
+sr-harness는 Claude Code와 Codex manifest를 모두 제공한다:
+
+- Claude Code: `.claude-plugin/plugin.json`
+- Codex: `.codex-plugin/plugin.json`
+
+### Claude Code
+
 ```bash
 # 마켓플레이스 추가
 claude plugins marketplace add https://github.com/SeokRae/sr-harness.git
@@ -57,10 +65,16 @@ claude plugins install sr-harness@sr-harness
 ```bash
 claude plugins list
 #   ❯ sr-harness@sr-harness
-#     Version: 0.1.0
+#     Version: 0.17.0
 #     Scope: user
 #     Status: ✔ enabled
 ```
+
+### Codex
+
+Codex 지원은 `.codex-plugin/plugin.json` manifest 기준으로 준비되어 있다. Codex plugin marketplace 또는 local plugin source 설정을 통해 설치하면, 동일한 `skills/*/SKILL.md` 스킬을 Codex에서 사용할 수 있다.
+
+런타임별 차이는 [`docs/RUNTIME-COMPATIBILITY.md`](./docs/RUNTIME-COMPATIBILITY.md)에 정리되어 있다.
 
 ---
 
@@ -170,6 +184,8 @@ cd sr-harness
 git add . && git commit -m "fix: 스킬 내용 수정" && git push
 claude plugins marketplace update sr-harness
 ```
+
+스킬 목록이나 버전을 변경할 때는 `.claude-plugin/plugin.json`과 `.codex-plugin/plugin.json`을 함께 갱신한다.
 
 ---
 

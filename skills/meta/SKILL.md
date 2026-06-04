@@ -1,6 +1,6 @@
 ---
 name: meta
-description: 지정한 스킬을 피진화체로 삼아 Meta-Harness 방식의 1회 진화 루프를 실행한다. 실행 로그·결과물을 분석하고 개선 후보 3개를 제안·구현. Keywords: meta, evolve, 스킬 진화, 개선, evolution
+description: "지정한 스킬을 피진화체로 삼아 Meta-Harness 방식의 1회 진화 루프를 실행한다. 실행 로그·결과물을 분석하고 개선 후보 3개를 제안·구현. Keywords: meta, evolve, 스킬 진화, 개선, evolution"
 ---
 
 # sr-harness:meta — 스킬 진화 루프
