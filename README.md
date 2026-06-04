@@ -1,9 +1,10 @@
 # sr-harness
 
-> A custom Claude Code harness for designing how your AI assistant works — not the other way around.
+> A custom coding-agent harness for designing how your AI assistant works — not the other way around.
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 [![Claude Code](https://img.shields.io/badge/Claude%20Code-Plugin-blueviolet)](https://claude.ai/code)
+[![Codex](https://img.shields.io/badge/Codex-Plugin-2563eb)](.codex-plugin/plugin.json)
 [![Status](https://img.shields.io/badge/Status-Early%20Stage-orange)](.)
 [![Workflow Cycle](https://img.shields.io/badge/Workflow-Interactive%20Diagram-68b6ff)](https://seokrae.github.io/sr-harness/)
 
@@ -13,10 +14,10 @@
 
 ## Why
 
-When working with Claude Code day-to-day, the same patterns keep breaking down:
+When working with coding agents day-to-day, the same patterns keep breaking down:
 
 - Principles exist as background rules — they load into context but don't get enforced when it matters
-- Issue-Driven Development lives in a CLAUDE.md file, disconnected from the actual workflow
+- Issue-Driven Development lives in a project memory file, disconnected from the actual workflow
 - Brainstorming, planning, and implementation feel like separate sessions, not one continuous flow
 
 sr-harness structures these into a single workflow where each stage enforces the right behavior automatically.
@@ -45,6 +46,13 @@ From idea to PR, each skill hands off naturally to the next.
 
 ## Installation
 
+sr-harness ships manifests for both Claude Code and Codex:
+
+- Claude Code: `.claude-plugin/plugin.json`
+- Codex: `.codex-plugin/plugin.json`
+
+### Claude Code
+
 ```bash
 # Add marketplace
 claude plugins marketplace add https://github.com/SeokRae/sr-harness.git
@@ -57,10 +65,16 @@ Verify:
 ```bash
 claude plugins list
 #   ❯ sr-harness@sr-harness
-#     Version: 0.16.1
+#     Version: 0.17.0
 #     Scope: user
 #     Status: ✔ enabled
 ```
+
+### Codex
+
+Codex support is manifest-ready through `.codex-plugin/plugin.json`. Install it through your Codex plugin marketplace or local plugin source configuration. Once installed, the shared `skills/*/SKILL.md` files are available to Codex.
+
+Runtime-specific behavior is documented in [`docs/RUNTIME-COMPATIBILITY.md`](./docs/RUNTIME-COMPATIBILITY.md).
 
 ---
 
@@ -130,7 +144,7 @@ start
 | `review` | Receive review feedback → back to execute |
 | `finish` | Merge + delete branch + pull main |
 | `ralph` | Automated execute→verify loop until pass (bypass mode) |
-| `goal` | Goal-driven autonomous execution via Stop hook |
+| `goal` | Goal-driven autonomous execution via Stop hook in Claude Code; workflow guidance in Codex until a Codex-native loop is added |
 | `release` | Create a GitHub Release (version + auto-generated notes) |
 | `abort` | Cancel work · clean up branch |
 | `pause` | Suspend session · hand off to next session |
@@ -190,6 +204,8 @@ cd sr-harness
 git add . && git commit -m "fix: update skill" && git push
 claude plugins marketplace update sr-harness
 ```
+
+When changing the skill list or version, update both `.claude-plugin/plugin.json` and `.codex-plugin/plugin.json`.
 
 ---
 

@@ -1,6 +1,6 @@
 ---
 name: goal
-description: plan/worktree 없이 자율 실행. /goal "목표" → Stop hook 기반으로 목표 달성까지 반복. pause/resume/clear/status 지원. Keywords: goal, 목표, 자율 실행, 자동 반복, ralph 대안
+description: "plan/worktree 없이 자율 실행. /goal \"목표\" → Stop hook 기반으로 목표 달성까지 반복. pause/resume/clear/status 지원. Keywords: goal, 목표, 자율 실행, 자동 반복, ralph 대안"
 allowed-tools: ["Bash(${CLAUDE_PLUGIN_ROOT}/scripts/setup-goal.sh:*)", "Bash(${CLAUDE_PLUGIN_ROOT}/scripts/cleanup-goal.sh:*)"]
 ---
 

@@ -1,6 +1,6 @@
 ---
 name: dev-architecture
-description: 아키텍처 설계 원칙 체크리스트. execute 시작 전 또는 설계 중 참조. Hexagonal Architecture·레이어 분리·패키지 구조 세 섹션으로 구성. Keywords: 아키텍처, hexagonal, 레이어, 패키지, 설계, architecture, layer, package, ports and adapters
+description: "아키텍처 설계 원칙 체크리스트. execute 시작 전 또는 설계 중 참조. Hexagonal Architecture·레이어 분리·패키지 구조 세 섹션으로 구성. Keywords: 아키텍처, hexagonal, 레이어, 패키지, 설계, architecture, layer, package, ports and adapters"
 ---
 
 # dev-architecture

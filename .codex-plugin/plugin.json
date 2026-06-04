@@ -1,0 +1,44 @@
+{
+  "name": "sr-harness",
+  "version": "0.17.0",
+  "description": "A structured development workflow harness with issue-driven planning, verification gates, and surgical implementation checkpoints.",
+  "author": {
+    "name": "SeokRae",
+    "email": "kslbsh@gmail.com",
+    "url": "https://github.com/SeokRae"
+  },
+  "homepage": "https://github.com/SeokRae/sr-harness",
+  "repository": "https://github.com/SeokRae/sr-harness",
+  "license": "MIT",
+  "keywords": [
+    "harness",
+    "workflow",
+    "issue-driven",
+    "verification",
+    "tdd",
+    "codex",
+    "claude"
+  ],
+  "skills": "./skills/",
+  "interface": {
+    "displayName": "sr-harness",
+    "shortDescription": "Issue-driven workflow and verification gates for coding agents",
+    "longDescription": "Use sr-harness to guide work through brainstorming, planning, issue creation, implementation, debugging, verification, review, release, and finish workflows. The shared skills are designed to run in both Claude Code and Codex, with runtime-specific behavior documented separately.",
+    "developerName": "SeokRae",
+    "category": "Coding",
+    "capabilities": [
+      "Interactive",
+      "Read",
+      "Write"
+    ],
+    "defaultPrompt": [
+      "Use sr-harness to plan and implement this change with verification gates.",
+      "Start an issue-driven workflow for this repository."
+    ],
+    "websiteURL": "https://github.com/SeokRae/sr-harness",
+    "privacyPolicyURL": "https://docs.github.com/en/site-policy/privacy-policies/github-general-privacy-statement",
+    "termsOfServiceURL": "https://docs.github.com/en/site-policy/github-terms/github-terms-of-service",
+    "brandColor": "#2563EB",
+    "screenshots": []
+  }
+}
