@@ -9,8 +9,11 @@ sr-harness is a dual-runtime plugin. Claude Code and Codex share the same skill 
 | Claude Code | `.claude-plugin/plugin.json` | Claude plugin metadata and skill registration |
 | Claude Code | `.claude-plugin/marketplace.json` | Claude marketplace metadata |
 | Codex | `.codex-plugin/plugin.json` | Codex plugin metadata and skill registration |
+| Codex | `.agents/plugins/marketplace.json` | Codex marketplace metadata |
+| Codex | `plugins/sr-harness/` | Installable Codex plugin copy used by the marketplace entry |
 
 Version bumps must keep both manifests in sync.
+The installable Codex wrapper under `plugins/sr-harness/` must keep its `.codex-plugin/` and `skills/` contents in sync with the root `.codex-plugin/` and `skills/` directories.
 
 ## Shared Contract
 
