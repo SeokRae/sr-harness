@@ -65,7 +65,7 @@ Verify:
 ```bash
 claude plugins list
 #   ❯ sr-harness@sr-harness
-#     Version: 0.17.2
+#     Version: 0.17.3
 #     Scope: user
 #     Status: ✔ enabled
 ```
