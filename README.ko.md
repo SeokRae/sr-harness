@@ -65,7 +65,7 @@ claude plugins install sr-harness@sr-harness
 ```bash
 claude plugins list
 #   ❯ sr-harness@sr-harness
-#     Version: 0.17.1
+#     Version: 0.17.2
 #     Scope: user
 #     Status: ✔ enabled
 ```
@@ -111,9 +111,19 @@ start
       │    코드 수정 전 원인 진단 필수
       │    같은 방법 두 번 시도 금지
       │
+      ├─ verify
+      │    제출 전 통합 검증
+      │    git status · 변경 파일 · 테스트 스위트
+      │
+      ├─ submit
+      │    push → PR (body에 "Closes #N" 필수)
+      │    여기서 멈춤 — 사용자가 PR 리뷰
+      │
+      ├─ review
+      │    리뷰 피드백 수신 → execute 복귀
+      │
       └─ finish
-           push → PR (body에 "Closes #N" 필수)
-           다른 마무리 방식 없음
+           머지 + 브랜치 삭제 + main pull
 ```
 
 ---
@@ -127,8 +137,15 @@ start
 | `plan` | step → verify 형식 계획 수립 |
 | `issue` | GitHub Issue + 브랜치 생성 |
 | `execute` | 구현 실행 · karpathy 체크포인트 |
-| `finish` | push + PR (Closes #N) |
 | `debug` | 진단 우선 디버깅 |
+| `verify` | PR 제출 전 통합 검증 |
+| `submit` | push + PR (Closes #N) · 사용자 리뷰 대기 |
+| `review` | 리뷰 피드백 수신 → execute 복귀 |
+| `finish` | 머지 + 브랜치 삭제 + main pull |
+| `ralph` | verify 통과까지 execute→verify 자동 반복 (bypass 모드) |
+| `goal` | Stop hook 기반 목표 주도 자율 실행 (Claude Code) · Codex는 워크플로우 가이드 제공 |
+| `abort` | 작업 취소 · 브랜치 정리 |
+| `pause` | 세션 중단 · 다음 세션 인계 |
 | `dev-coding-principles` | 코딩 품질 체크리스트 — 네이밍·예외처리·테스트 |
 | `dev-architecture` | 아키텍처 체크리스트 — Hexagonal·레이어 분리·패키지 구조 |
 | `dev-stack-java` | Java/Spring Boot 관용구 — Spring·JPA·예외처리 (자동 감지) |
