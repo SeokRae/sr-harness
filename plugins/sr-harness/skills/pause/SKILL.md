@@ -19,13 +19,13 @@ git status
 - 커밋하려면 `execute`의 커밋 단계로 안내
 - 커밋 안 해도 된다면 → 그대로 진행 (WIP 상태임을 session-plan에 기록)
 
-### 2. 활성 worktree 확인
+### 2. 활성 feature 브랜치 확인
 
 ```bash
-git worktree list
+git branch --show-current
 ```
 
-활성 worktree가 있으면 브랜치명과 Issue 번호를 session-plan에 기록한다.
+현재 브랜치가 `feature/{N}-{description}`이면 브랜치명과 Issue 번호를 session-plan에 기록한다.
 
 ### 3. session-plan.md 생성 또는 업데이트
 
@@ -38,8 +38,8 @@ git worktree list
 ---
 session: YYYY-MM-DD
 goal: {이번 세션에서 한 일 한 줄 요약}
-branch: feature/{N}-{description}   # 활성 worktree가 있을 때만
-issue: {N}                           # 활성 worktree가 있을 때만
+branch: feature/{N}-{description}   # feature 브랜치 작업 중일 때만
+issue: {N}                           # feature 브랜치 작업 중일 때만
 scope:
   - {완료한 작업 항목}
   - {남은 작업 항목}
@@ -73,6 +73,6 @@ session-plan.md 저장됨 → 다음 세션에서 start가 자동으로 이어�
 
 ## 주의
 
-- worktree는 제거하지 않는다 — 다음 세션에서 start가 감지해 재개 안내
+- feature 브랜치는 닫지 않는다 — 다음 세션에서 start가 감지해 재개 안내
 - session-plan.md는 프로젝트 루트 `.claude/` 아래에 저장 (vault는 `.claude/session-plan.md`)
 - 미완료 항목이 0개면 → finish로 안내 (브랜치를 완전히 닫을 수 있는 상태)
