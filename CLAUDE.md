@@ -52,3 +52,19 @@ gh issue create → git checkout -b feature/{N}-{desc} → 구현 + 버전 bump
 ```
 
 커밋 prefix: `feat:` (스킬 추가), `fix:` (버그), `chore:` (설정·버전 bump), `docs:` (문서)
+
+## Git 훅
+
+`.githooks/commit-msg`가 이슈 드리븐 워크플로우를 강제한다 (#85 후속):
+
+- main 직접 커밋 차단 (feature 브랜치 필수)
+- 커밋 메시지에 이슈번호 `(#N)` 필수
+- prefix(`feat:|fix:|chore:|docs:`) 필수
+- `Merge`/`Revert`/`fixup!`/`squash!` 커밋은 예외
+
+클론 후 1회 활성화:
+
+```bash
+chmod +x .githooks/commit-msg
+git config core.hooksPath .githooks
+```

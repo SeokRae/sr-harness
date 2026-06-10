@@ -1,0 +1,35 @@
+#!/bin/sh
+# commit-msg 훅 — 이슈 드리븐 워크플로우 강제 (#85 후속)
+# 검사: (1) main 직접 커밋 차단 (2) 이슈번호(#N) 필수 (3) prefix 필수
+# 활성화: git config core.hooksPath .githooks
+
+msg_file="$1"
+first_line=$(head -n1 "$msg_file")
+
+# merge / revert / fixup / squash 커밋은 통과
+case "$first_line" in
+  Merge*|Revert*|fixup!*|squash!*) exit 0 ;;
+esac
+
+# 1. main 직접 커밋 차단
+branch=$(git rev-parse --abbrev-ref HEAD 2>/dev/null)
+if [ "$branch" = "main" ]; then
+  echo "✖ main 직접 커밋 금지 — feature/{이슈번호}-{설명} 브랜치를 사용하세요" >&2
+  echo "  (CLAUDE.md 작업 흐름: gh issue create → git checkout -b feature/{N}-{desc})" >&2
+  exit 1
+fi
+
+# 2. 이슈번호(#N) 필수
+if ! grep -qE '(^|[^A-Za-z0-9&])#[0-9]+' "$msg_file"; then
+  echo "✖ 커밋 메시지에 이슈번호(#N)가 없습니다" >&2
+  echo "  예: chore: 설정 변경 (#123)" >&2
+  exit 1
+fi
+
+# 3. 커밋 prefix 필수 (feat|fix|chore|docs)
+if ! echo "$first_line" | grep -qE '^(feat|fix|chore|docs)(\([^)]+\))?: '; then
+  echo "✖ 커밋 prefix가 없습니다 — feat: | fix: | chore: | docs: 중 하나 필요" >&2
+  exit 1
+fi
+
+exit 0
