@@ -108,7 +108,7 @@ bash "${CLAUDE_PLUGIN_ROOT}/scripts/cleanup-goal.sh"
 
 | | ralph | goal |
 |---|---|---|
-| 시작 조건 | session-plan.md + worktree 필수 | 목표 텍스트만 필요 |
+| 시작 조건 | session-plan.md + feature 브랜치 필수 | 목표 텍스트만 필요 |
 | 권한 변경 | bypass 권한 추가 | 변경 없음 |
 | 종료 조건 | verify 통과 | 목표 달성 선언 |
 | 재개 | 불가 | pause/resume 지원 |
