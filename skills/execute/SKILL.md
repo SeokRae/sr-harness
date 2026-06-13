@@ -116,7 +116,7 @@ Agent 툴로 독립 태스크를 병렬 dispatch한다.
 4. 에이전트 결과 수신 → 2단계 리뷰
      [태스크 N] 스펙 리뷰: 불일치 → 재dispatch
      [태스크 N] 코드 품질 리뷰: 이슈 → 재dispatch
-5. 모든 리뷰 통과 → verify → submit
+5. 모든 리뷰 통과 → analyze → verify → submit
 ```
 
 ### 에이전트 프롬프트 형식
@@ -165,7 +165,7 @@ Agent 호출 시 prompt에 포함할 내용:
 4. [태스크 N] 코드 품질 리뷰 서브에이전트 dispatch
      ❌ 이슈 → 구현 서브에이전트 재dispatch → 재리뷰
      ✅ 통과 → 다음 태스크
-5. 모든 태스크 완료 → verify → submit
+5. 모든 태스크 완료 → analyze → verify → submit
 ```
 
 ### 서브에이전트 상태 처리
@@ -196,9 +196,9 @@ Agent 호출 시 prompt에 포함할 내용:
 
 ## 완료 조건
 
-**단일 모드**: plan의 모든 단계 verify 통과 → `verify` 호출 (통합 검증 후 submit)
-**팀모드**: 모든 에이전트 완료 + 2단계 리뷰 통과 → `verify` 호출 → `submit` (PR 1개)
-**순차 서브에이전트 모드**: 모든 태스크 2단계 리뷰 통과 → `verify` 호출 → `submit` (PR 1개)
+**단일 모드**: plan의 모든 단계 verify 통과 → `analyze` 호출 (정합성 게이트 → verify → submit)
+**팀모드**: 모든 에이전트 완료 + 2단계 리뷰 통과 → `analyze` 호출 → verify → submit (PR 1개)
+**순차 서브에이전트 모드**: 모든 태스크 2단계 리뷰 통과 → `analyze` 호출 → verify → submit (PR 1개)
 
 ## 예외 상황
 

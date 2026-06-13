@@ -39,6 +39,7 @@ description: sr-harness 세션 진입점. 모든 대화 시작 시 반드시 먼
 | 구현 계획 수립, 설계 | `plan` |
 | Issue 생성, 브랜치 생성 | `issue` |
 | 코드 작성, 기능 구현, PR 작업 | `execute` |
+| 계획↔구현 정합성 검증, 이슈대로 만들었는지 확인 | `analyze` |
 | 자동으로 구현, ralph 모드, bypass로 실행 | `ralph` |
 | 목표 기반 자율 실행, plan 없이 바로 시작 | `goal` |
 | 버그, 테스트 실패, 에러 | `debug` |
@@ -73,7 +74,7 @@ superpowers의 유틸리티 스킬(dispatching-parallel-agents 등)은 그대로
 ## 워크플로우 전체 흐름
 
 ```
-brainstorm → plan → issue → execute → verify → submit → [사용자 확인] → finish
+brainstorm → plan → issue → execute → analyze → verify → submit → [사용자 확인] → finish
                                         ↑ debug ↓
                                     review (리뷰 피드백 반영 시)
                                또는 ralph (bypass 자동화 모드)
