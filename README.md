@@ -65,7 +65,7 @@ Verify:
 ```bash
 claude plugins list
 #   ❯ sr-harness@sr-harness
-#     Version: 0.17.3
+#     Version: 0.18.0
 #     Scope: user
 #     Status: ✔ enabled
 ```
@@ -111,6 +111,10 @@ start
       │    Diagnose before touching code
       │    Never retry the same failing approach twice
       │
+      ├─ analyze
+      │    Intent check: Issue requirements ↔ git diff
+      │    coverage gap · scope creep · contradiction
+      │
       ├─ verify
       │    Integration check before submitting
       │    git status · changed files · test suite
@@ -139,6 +143,7 @@ start
 | `issue` | GitHub Issue + branch creation |
 | `execute` | Implementation with Karpathy checkpoints |
 | `debug` | Diagnose-first debugging |
+| `analyze` | Intent-consistency gate (Issue ↔ diff) before verify |
 | `verify` | Integration check before PR |
 | `submit` | push + PR (Closes #N) · stops for user review |
 | `review` | Receive review feedback → back to execute |

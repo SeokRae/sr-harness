@@ -1,10 +1,10 @@
 # sr-harness 라이프사이클 정의
 
-> v0.16 현재 사이클 — 19개 스킬로 구성된 완성형 워크플로우
+> v0.18 현재 사이클 — 20개 스킬로 구성된 완성형 워크플로우
 
 ---
 
-## 현재 사이클 (v0.16)
+## 현재 사이클 (v0.18)
 
 `start`가 작업 유형을 라우팅하고, 핵심 워크플로우가 idea → PR → merge를 단일 흐름으로 잇는다.
 검증·리뷰·중단·자율 실행 경로가 모두 포함된 반복형 사이클이다.
@@ -12,7 +12,7 @@
 ```
 start ─ 라우팅 ─┐
                ▼
-  brainstorm → plan → issue → execute → verify → submit →(사용자 확인)→ finish → DONE
+  brainstorm → plan → issue → execute → analyze → verify → submit →(사용자 확인)→ finish → DONE
                                 ▲▼                              ▲
                               debug                review ──────┘
                                                   (리뷰 피드백 → execute 재진입)
@@ -28,7 +28,7 @@ start ─ 라우팅 ─┐
 
 ---
 
-## 스킬 맵 (19개)
+## 스킬 맵 (20개)
 
 | 분류 | 스킬 | 역할 |
 |------|------|------|
@@ -38,6 +38,7 @@ start ─ 라우팅 ─┐
 | | `issue` | GitHub Issue + feature 브랜치 (1 Issue = 1 Branch = 1 PR) |
 | | `execute` | karpathy 체크포인트 구현 (단일/팀/순차 모드) |
 | | `debug` | 진단 우선 디버깅 (진단 게이트) |
+| | `analyze` | 의도 정합성 게이트 (Issue ↔ diff, verify 전) |
 | | `verify` | 증거 기반 통합 검증 (Iron Law) |
 | | `review` | 리뷰 피드백 → execute 재진입 |
 | | `submit` | push + PR (Closes #N) · 사용자 확인 대기 |
@@ -66,7 +67,9 @@ start ─ 라우팅 ─┐
 | ISSUE | EXECUTE | 브랜치 생성 완료 | issue → execute |
 | EXECUTE | DEBUG | 테스트 실패 / 예상 밖 에러 | execute → debug |
 | DEBUG | EXECUTE | 원인 확인 + 수정 완료 | debug → execute |
-| EXECUTE | VERIFY | 모든 step verify 통과 | execute → verify |
+| EXECUTE | ANALYZE | 모든 step verify 통과 | execute → analyze |
+| ANALYZE | VERIFY | 정합성 게이트 통과 | analyze → verify |
+| ANALYZE | EXECUTE | 누락/모순 발견 | analyze → execute |
 | VERIFY | SUBMIT | 통합 검증 통과 | verify → submit |
 | VERIFY | EXECUTE | 검증 실패 → 추가 수정 | verify → execute |
 | SUBMIT | (사용자 확인) | PR 생성 후 정지 | submit |

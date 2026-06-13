@@ -65,7 +65,7 @@ claude plugins install sr-harness@sr-harness
 ```bash
 claude plugins list
 #   ❯ sr-harness@sr-harness
-#     Version: 0.17.3
+#     Version: 0.18.0
 #     Scope: user
 #     Status: ✔ enabled
 ```
@@ -111,6 +111,10 @@ start
       │    코드 수정 전 원인 진단 필수
       │    같은 방법 두 번 시도 금지
       │
+      ├─ analyze
+      │    의도 정합성 검증: Issue 요구사항 ↔ git diff
+      │    누락 · 범위 이탈 · 모순
+      │
       ├─ verify
       │    제출 전 통합 검증
       │    git status · 변경 파일 · 테스트 스위트
@@ -138,6 +142,7 @@ start
 | `issue` | GitHub Issue + 브랜치 생성 |
 | `execute` | 구현 실행 · karpathy 체크포인트 |
 | `debug` | 진단 우선 디버깅 |
+| `analyze` | 의도 정합성 게이트 (Issue ↔ diff) · verify 전 |
 | `verify` | PR 제출 전 통합 검증 |
 | `submit` | push + PR (Closes #N) · 사용자 리뷰 대기 |
 | `review` | 리뷰 피드백 수신 → execute 복귀 |
