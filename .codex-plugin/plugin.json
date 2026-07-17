@@ -1,6 +1,6 @@
 {
   "name": "sr-harness",
-  "version": "0.18.0",
+  "version": "0.19.0",
   "description": "A structured development workflow harness with issue-driven planning, verification gates, and surgical implementation checkpoints.",
   "author": {
     "name": "SeokRae",

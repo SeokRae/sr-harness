@@ -156,6 +156,7 @@ start
 | `dev-coding-principles` | Coding quality checklist — Naming, Exception Handling, Test |
 | `dev-architecture` | Architecture checklist — Hexagonal, Layer Separation, Package Structure |
 | `dev-stack-java` | Java/Spring Boot idioms — Spring, JPA, Exception & Response (auto-detected) |
+| `dev-monitoring-design` | Anomaly/spike monitoring dashboard & report info-design checklist — Measure, Diagnose, Detect, Present |
 | `meta` | Meta-Harness evolution loop — analyze a target skill and propose 3 improved candidates |
 
 ### Stack auto-detection
