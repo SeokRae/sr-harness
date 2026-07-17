@@ -30,6 +30,8 @@ git branch --show-current  # feature/* 여야 함, main이면 안 됨
 코드 프로젝트인 경우 → `dev-coding-principles` 스킬을 로드하고 원칙(§1 Naming, §2 Exception Handling, §3 Test)을 구현에 적용한다.
 코드 프로젝트인 경우 → `dev-architecture` 스킬을 로드하고 아키텍처 원칙(§1 Hexagonal, §2 Layer Separation, §3 Package Structure)을 구현에 적용한다.
 
+이상탐지·급증(spike) 모니터링 대시보드/리포트를 만드는 태스크인 경우 → `dev-monitoring-design` 스킬을 로드하고 정보설계 원칙(§1 측정, §2 진단, §3 탐지, §4 표현)을 구현에 적용한다.
+
 코드 프로젝트인 경우 → 프로젝트 스택을 자동 감지한다:
 ```bash
 ls build.gradle pom.xml 2>/dev/null
