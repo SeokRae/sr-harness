@@ -157,6 +157,7 @@ start
 | `dev-architecture` | Architecture checklist — Hexagonal, Layer Separation, Package Structure |
 | `dev-stack-java` | Java/Spring Boot idioms — Spring, JPA, Exception & Response (auto-detected) |
 | `dev-monitoring-design` | Anomaly/spike monitoring dashboard & report info-design checklist — Measure, Diagnose, Detect, Present |
+| `ownership-principles` | Agent-era ownership checklist — Inner/outer loop, verdict, cognitive debt/surrender, orchestration tax |
 | `meta` | Meta-Harness evolution loop — analyze a target skill and propose 3 improved candidates |
 
 ### Stack auto-detection

@@ -36,6 +36,7 @@ Stop hook이 `<promise>GOAL_ACHIEVED</promise>` 를 감지할 때까지 반복�
 - 목표가 달성됐다고 판단하면 반드시 `<promise>GOAL_ACHIEVED</promise>` 출력
 - 달성되지 않은 상태에서 promise 출력 금지
 - 각 반복에서 `verify` 스킬의 completion audit 기준으로 달성 여부 판단
+- 사람 개입 없이 반복되는 루프이므로 `ownership-principles`(§1 outer loop 체크포인트, §2 설명 가능 게이트) 원칙이 매 반복 stop-hook 프롬프트에 포함돼 적용된다
 
 ### 완료 처리
 
