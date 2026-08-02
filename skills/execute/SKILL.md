@@ -100,6 +100,8 @@ git commit -m "{type}: {설명} (#N)"
 제외 조건이 없을 때 기본으로 시도하는 병렬 실행 모드.
 Agent 툴로 독립 태스크를 병렬 dispatch한다.
 
+다중 에이전트를 동시에 돌리기 전 `ownership-principles`(§3 오케스트레이션 세금)를 확인한다 — 결과를 전부 검토할 수 있는 규모인지 판단한 뒤 dispatch 수를 정한다.
+
 ### 원칙
 
 - 독립 태스크를 Agent 툴로 병렬 dispatch — 단일 메시지에 여러 Agent 호출

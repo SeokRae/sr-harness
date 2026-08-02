@@ -83,7 +83,9 @@ if [[ ! -f "$RALPH_STATE_FILE" ]] && [[ -f "$GOAL_STATE_FILE" ]]; then
 
 이 목표가 달성될 때까지 계속 작업한다.
 완료 조건에 도달하면 반드시 <promise>GOAL_ACHIEVED</promise> 를 출력한다.
-(완료 조건: 목표에 기술된 상태가 실제로 달성된 것을 확인한 경우에만. 거짓으로 탈출 금지)"
+(완료 조건: 목표에 기술된 상태가 실제로 달성된 것을 확인한 경우에만. 거짓으로 탈출 금지)
+
+ownership: 이번 반복 변경을 한 문장으로 설명할 수 없으면 GOAL_ACHIEVED 선언 금지 (설명할 수 없다면 출시하지 마라)"
 
   jq -n \
     --arg prompt "$GOAL_PROMPT" \
