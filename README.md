@@ -155,6 +155,7 @@ start
 | `pause` | Suspend session · hand off to next session |
 | `dev-coding-principles` | Coding quality checklist — Naming, Exception Handling, Test |
 | `dev-architecture` | Architecture checklist — Hexagonal, Layer Separation, Package Structure |
+| `dev-documentation-principles` | Documentation checklist — Decision Recording, Drift Handling, Existing Convention First |
 | `dev-stack-java` | Java/Spring Boot idioms — Spring, JPA, Exception & Response (auto-detected) |
 | `dev-monitoring-design` | Anomaly/spike monitoring dashboard & report info-design checklist — Measure, Diagnose, Detect, Present |
 | `ownership-principles` | Agent-era ownership checklist — Inner/outer loop, verdict, cognitive debt/surrender, orchestration tax |

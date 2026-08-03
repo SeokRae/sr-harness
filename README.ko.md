@@ -153,6 +153,7 @@ start
 | `pause` | 세션 중단 · 다음 세션 인계 |
 | `dev-coding-principles` | 코딩 품질 체크리스트 — 네이밍·예외처리·테스트 |
 | `dev-architecture` | 아키텍처 체크리스트 — Hexagonal·레이어 분리·패키지 구조 |
+| `dev-documentation-principles` | 문서화 체크리스트 — 결정 기록·드리프트 처리·기존 컨벤션 우선 |
 | `dev-stack-java` | Java/Spring Boot 관용구 — Spring·JPA·예외처리 (자동 감지) |
 | `dev-monitoring-design` | 이상탐지·스파이크 모니터링 대시보드/리포트 정보설계 체크리스트 — 측정·진단·탐지·표현 |
 | `ownership-principles` | 에이전트 시대 소유권 체크리스트 — inner/outer loop·판결·인지적 부채/굴복·오케스트레이션 세금 |
