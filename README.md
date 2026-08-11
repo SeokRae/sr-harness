@@ -157,6 +157,8 @@ start
 | `dev-architecture` | Architecture checklist — Hexagonal, Layer Separation, Package Structure |
 | `dev-documentation-principles` | Documentation checklist — Decision Recording, Drift Handling, Existing Convention First |
 | `dev-stack-java` | Java/Spring Boot idioms — Spring, JPA, Exception & Response (auto-detected) |
+| `dev-testing-strategy` | Spring test context strategy: Runner vs Autowired, context scope, property management |
+| `dev-testing-conventions` | Test authoring conventions: tier suffixes, assertion library, parameterization, live test isolation |
 | `dev-monitoring-design` | Anomaly/spike monitoring dashboard & report info-design checklist — Measure, Diagnose, Detect, Present |
 | `ownership-principles` | Agent-era ownership checklist — Inner/outer loop, verdict, cognitive debt/surrender, orchestration tax |
 | `meta` | Meta-Harness evolution loop — analyze a target skill and propose 3 improved candidates |

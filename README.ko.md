@@ -155,6 +155,8 @@ start
 | `dev-architecture` | 아키텍처 체크리스트 — Hexagonal·레이어 분리·패키지 구조 |
 | `dev-documentation-principles` | 문서화 체크리스트 — 결정 기록·드리프트 처리·기존 컨벤션 우선 |
 | `dev-stack-java` | Java/Spring Boot 관용구 — Spring·JPA·예외처리 (자동 감지) |
+| `dev-testing-strategy` | Spring 테스트 컨텍스트 구성 전략: 구성 방식(Runner vs Autowired), 컨텍스트 스코프, 프로퍼티 값 관리 |
+| `dev-testing-conventions` | 테스트 코드 작성 컨벤션: 티어 구분(접미사), 단언 라이브러리, 파라미터화, 라이브 테스트 분리 |
 | `dev-monitoring-design` | 이상탐지·스파이크 모니터링 대시보드/리포트 정보설계 체크리스트 — 측정·진단·탐지·표현 |
 | `ownership-principles` | 에이전트 시대 소유권 체크리스트 — inner/outer loop·판결·인지적 부채/굴복·오케스트레이션 세금 |
 | `meta` | Meta-Harness 진화 루프 — 피진화체 스킬 분석 후 개선 후보 3개 제안·구현 |
