@@ -74,9 +74,12 @@ superpowers의 유틸리티 스킬(dispatching-parallel-agents 등)은 그대로
 ## 워크플로우 전체 흐름
 
 ```
-brainstorm → plan → issue → execute → analyze → verify → submit → [사용자 확인] → finish
+brainstorm → plan → issue → execute → analyze → verify → submit → [사용자 확인] → /finish
                                         ↑ debug ↓
                                     review (리뷰 피드백 반영 시)
-                               또는 ralph (bypass 자동화 모드)
+                               또는 /ralph (bypass 자동화 모드)
+
+`/`가 붙은 단계는 사용자가 직접 입력해야 진입한다 (모델 자동 호출 비활성).
+체인이 그 앞에서 멈추면 해당 슬래시 커맨드를 안내하고 대기한다.
                                또는 goal  (목표 기반 가벼운 자율 실행)
 ```

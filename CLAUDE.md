@@ -17,6 +17,23 @@ evals/
   rubric.md         # 진화 후보 채점 계약 + 릴리즈 게이트 (meta 스킬이 참조)
 ```
 
+## 모델 자동 호출 차단 기준
+
+다음 넷 중 하나에 해당하는 스킬은 frontmatter에 `disable-model-invocation: true`를 단다.
+현재 대상: `ralph`, `goal`, `release`, `finish`, `abort`, `meta`.
+
+| 기준 | 예 |
+|------|-----|
+| 세션 전체를 자율 루프로 바꾼다 | `ralph`, `goal` (Stop hook 설치) |
+| 저장소 밖으로 나간다 | `release` (태그 push, GitHub Release) |
+| 되돌리는 데 별도 작업이 필요하다 | `finish` (머지, 브랜치 삭제), `abort` (브랜치 삭제) |
+| 하네스 자신을 고친다 | `meta` |
+
+되돌리기 쉽고 워크플로우 체인의 핵심인 스킬(`submit`, `issue`)에는 달지 않는다.
+
+이 플래그는 **다른 스킬 본문이 호출을 지시하는 경로까지** 막는다. 체인이 그 앞에서 멈추는 자리에서는
+슬래시 커맨드를 안내하고 대기하도록 해당 스킬 문구를 함께 고친다 (`submit`, `pause`, `start`).
+
 ## 진화 후보 채택 기준
 
 `meta` 스킬이 만든 개선 후보는 `evals/rubric.md`의 릴리즈 게이트를 통과해야 채택된다.

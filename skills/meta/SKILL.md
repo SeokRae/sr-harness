@@ -1,6 +1,7 @@
 ---
 name: meta
-description: "지정한 스킬을 피진화체로 삼아 Meta-Harness 방식의 1회 진화 루프를 실행한다. 실행 로그·결과물을 분석하고 개선 후보 3개를 제안·구현한 뒤, evals/rubric.md 릴리즈 게이트를 통과한 후보만 채택한다. Keywords: meta, evolve, 스킬 진화, 개선, evolution, 루브릭, 게이트"
+description: "지정한 스킬을 피진화체로 삼아 Meta-Harness 방식의 1회 진화 루프를 실행한다. 실행 로그·결과물을 분석하고 개선 후보 3개를 제안·구현한 뒤, evals/rubric.md 릴리즈 게이트를 통과한 후보만 채택한다. 하네스 스킬 파일을 직접 고치므로 모델 자동 호출을 막았다. /meta 로만 진입한다. Keywords: meta, evolve, 스킬 진화, 개선, evolution, 루브릭, 게이트"
+disable-model-invocation: true
 ---
 
 # sr-harness:meta — 스킬 진화 루프

@@ -1,6 +1,7 @@
 ---
 name: finish
-description: PR 머지 및 브랜치 정리 스킬. "머지해줘", "마무리해줘", "브랜치 정리", "완료 처리" 시 사용. submit으로 PR 생성 후 사용자 확인이 끝나면 실행. 머지 + 브랜치 삭제 + main pull까지 처리.
+description: PR 머지 및 브랜치 정리 스킬. "머지해줘", "마무리해줘", "브랜치 정리", "완료 처리" 시 사용. submit으로 PR 생성 후 사용자 확인이 끝나면 실행. 머지 + 브랜치 삭제 + main pull까지 처리. 머지와 브랜치 삭제는 되돌리기 어려우므로 모델 자동 호출을 막았다. /finish 로만 진입한다.
+disable-model-invocation: true
 ---
 
 # finish

@@ -147,11 +147,11 @@ start
 | `verify` | Integration check before PR |
 | `submit` | push + PR (Closes #N) · stops for user review |
 | `review` | Receive review feedback → back to execute |
-| `finish` | Merge + delete branch + pull main |
-| `ralph` | Automated execute→verify loop until pass (bypass mode) |
-| `goal` | Goal-driven autonomous execution via Stop hook in Claude Code; workflow guidance in Codex until a Codex-native loop is added |
-| `release` | Create a GitHub Release (version + auto-generated notes) |
-| `abort` | Cancel work · clean up branch |
+| `finish` 🔒 | Merge + delete branch + pull main |
+| `ralph` 🔒 | Automated execute→verify loop until pass (bypass mode) |
+| `goal` 🔒 | Goal-driven autonomous execution via Stop hook in Claude Code; workflow guidance in Codex until a Codex-native loop is added |
+| `release` 🔒 | Create a GitHub Release (version + auto-generated notes) |
+| `abort` 🔒 | Cancel work · clean up branch |
 | `pause` | Suspend session · hand off to next session |
 | `dev-coding-principles` | Coding quality checklist — Naming, Exception Handling, Test |
 | `dev-architecture` | Architecture checklist — Hexagonal, Layer Separation, Package Structure |
@@ -161,7 +161,9 @@ start
 | `dev-testing-conventions` | Test authoring conventions: tier suffixes, assertion library, parameterization, live test isolation |
 | `dev-monitoring-design` | Anomaly/spike monitoring dashboard & report info-design checklist — Measure, Diagnose, Detect, Present |
 | `ownership-principles` | Agent-era ownership checklist — Inner/outer loop, verdict, cognitive debt/surrender, orchestration tax |
-| `meta` | Meta-Harness evolution loop — analyze a target skill, propose 3 improved candidates, adopt only those passing the `evals/rubric.md` release gate |
+| `meta` 🔒 | Meta-Harness evolution loop — analyze a target skill, propose 3 improved candidates, adopt only those passing the `evals/rubric.md` release gate |
+
+🔒 = `disable-model-invocation`. Entered only by typing `/{skill}`; the model cannot invoke it on its own. Applied to skills that turn the session into an autonomous loop (`ralph`, `goal`), reach outside the repo (`release`), are hard to undo (`finish`, `abort`), or edit the harness itself (`meta`). This also blocks another skill from invoking them mid-chain, so when the chain stops there, the skill surfaces the slash command and waits.
 
 ### Stack auto-detection
 
