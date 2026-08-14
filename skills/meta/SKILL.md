@@ -1,6 +1,6 @@
 ---
 name: meta
-description: "지정한 스킬을 피진화체로 삼아 Meta-Harness 방식의 1회 진화 루프를 실행한다. 실행 로그·결과물을 분석하고 개선 후보 3개를 제안·구현. Keywords: meta, evolve, 스킬 진화, 개선, evolution"
+description: "지정한 스킬을 피진화체로 삼아 Meta-Harness 방식의 1회 진화 루프를 실행한다. 실행 로그·결과물을 분석하고 개선 후보 3개를 제안·구현한 뒤, evals/rubric.md 릴리즈 게이트를 통과한 후보만 채택한다. Keywords: meta, evolve, 스킬 진화, 개선, evolution, 루브릭, 게이트"
 ---
 
 # sr-harness:meta — 스킬 진화 루프
@@ -9,7 +9,8 @@ Meta-Harness 방식으로 **1회 iteration**을 실행한다.
 매 호출 = 분석 → 프로토타이핑 → 후보 3개 구현.
 
 **벤치마크는 직접 실행하지 않는다.** 기존 실행 결과·로그·validator 출력을 읽어 분석한다.
-외부 평가 루프(훅, CI, 수동 실행)가 측정을 담당한다.
+
+채택 판정은 [`evals/rubric.md`](../../evals/rubric.md)의 릴리즈 게이트를 따른다. 근거가 될 실행 결과가 하나도 없으면 후보를 **미검증**으로 표시하고 채택하지 않는다. 근거 없이 "개선으로 보인다"고 채택하는 것이 이 게이트가 막으려는 실패다.
 
 ---
 
@@ -19,6 +20,7 @@ Meta-Harness 방식으로 **1회 iteration**을 실행한다.
 - "이미 최적"이라고 판단해 조기 종료 금지.
 - Step 2 프로토타이핑 **필수** — 생략 시 버그 확률 급증.
 - 후보는 **메커니즘**이 달라야 한다. 문구·순서만 바꾸는 변형은 무효.
+- **후보 3개 생성은 의무, 채택은 아니다.** Step 4 게이트를 통과한 후보만 피진화체를 대체한다. 셋 다 탈락하면 그 iteration은 채택 없음으로 종료한다. 억지로 하나 고르지 않는다.
 
 ### 안티패턴 (금지)
 
@@ -125,7 +127,47 @@ EOF
 
 ---
 
-### Step 4: 요약 리포트
+### Step 4: 게이트 판정 — 필수
+
+[`evals/rubric.md`](../../evals/rubric.md)로 후보를 채점한다. **이 단계를 건너뛰고 채택하지 않는다.**
+
+#### 4-1. 근거 확인
+
+채점할 실행 결과가 있는지 먼저 본다.
+
+| 상태 | 처리 |
+|---|---|
+| baseline과 후보 양쪽 실행 결과 있음 | 4-2로 진행 |
+| 한쪽만 있음 | 없는 쪽을 측정하거나, 불가하면 미검증 처리 |
+| 양쪽 다 없음 | **전원 미검증** — 채택 금지, 4-4로 |
+
+#### 4-2. 채점
+
+`condition` 필드를 가린 상태로 다섯 차원을 1~5점으로 매긴다. 가중치는 계약 준수 35%, 자율성 25%, 안전성 20%, 실행가능성 10%, 간결성 10%.
+
+메커니즘 참신함은 채점하지 않는다. 안티패턴 표에 걸리는 후보는 채점 이전에 무효다.
+
+#### 4-3. 게이트 적용
+
+네 조건을 **모두** 만족해야 채택한다.
+
+1. blocker 없음
+2. 계약 준수와 안전성이 각각 baseline 대비 0.1점 이내이거나 더 높음 (총점으로 상쇄 불가)
+3. 가중 총점이 baseline보다 높음
+4. 같은 케이스, 같은 모델, 같은 시행 횟수, 같은 루브릭으로 산출
+
+**baseline 격리 확인.** 피진화체가 이미 설치본으로 로드된 세션에서 잰 baseline은 오염된 값이다. 그 상태의 개선폭은 측정 오차이므로 조건 4 위반으로 본다. 상세는 rubric.md의 baseline 격리 절을 따른다.
+
+#### 4-4. 미검증 후보 처리
+
+채점 근거가 없으면 후보마다 다음을 남긴다. 채택은 하지 않는다.
+
+- 확인하려면 어떤 케이스를 어떤 조건으로 돌려야 하는가
+- 그 결과에서 어떤 차원이 움직여야 개선으로 볼 것인가
+
+---
+
+### Step 5: 요약 리포트
 
 ```
 ## Iteration N 리포트
@@ -135,10 +177,23 @@ EOF
 - B ({축}): [변경 내용] → 예상 효과: [...]
 - C ({축}): [변경 내용] → 예상 효과: [...]
 
+### 게이트 판정
+| 후보 | 계약 | 자율 | 안전 | 실행 | 간결 | 가중합 | blocker | 판정 |
+|---|---:|---:|---:|---:|---:|---:|---|---|
+| baseline | | | | | | | | 기준 |
+| A | | | | | | | | 채택 / 탈락 / 미검증 |
+| B | | | | | | | | |
+| C | | | | | | | | |
+
+- 채택: {후보 또는 "없음"}
+- 탈락 사유: {게이트 몇 번 조건 위반인지 명시}
+- 격리 조건: {설정 격리 여부, 고정 모델 ID}
+
 ### evolution_log 업데이트 필요 항목
 - skill: {피진화체}
 - version: N
 - candidates: [A, B, C]
+- adopted: {후보 또는 null}
 - timestamp: {now}
 ```
 
@@ -163,6 +218,14 @@ EOF
 훅이나 수동으로 append한다.
 
 ```jsonl
-{"skill":"sr-obsidian:daily","version":1,"score":0.72,"validator":"note_validator","timestamp":"2026-05-11T10:00:00Z","notes":"baseline"}
-{"skill":"sr-obsidian:daily","version":2,"score":0.81,"validator":"note_validator","timestamp":"2026-05-12T10:00:00Z","notes":"출력 구조 변경(축 B)"}
+{"skill":"sr-obsidian:daily","version":1,"score":0.72,"validator":"note_validator","gate":"baseline","adopted":null,"model":"claude-opus-5","isolated":true,"timestamp":"2026-05-11T10:00:00Z","notes":"baseline"}
+{"skill":"sr-obsidian:daily","version":2,"score":0.81,"validator":"note_validator","gate":"pass","adopted":"B","model":"claude-opus-5","isolated":true,"timestamp":"2026-05-12T10:00:00Z","notes":"출력 구조 변경(축 B)"}
+{"skill":"sr-obsidian:daily","version":3,"score":0.79,"validator":"note_validator","gate":"fail:2","adopted":null,"model":"claude-opus-5","isolated":true,"timestamp":"2026-05-13T10:00:00Z","notes":"축 C 후보 3개 전원 탈락 — 안전성 -0.4 회귀"}
 ```
+
+| 필드 | 의미 |
+|---|---|
+| `gate` | `pass` / `fail:{조건번호}` / `unverified` / `baseline` |
+| `adopted` | 채택된 후보 라벨, 채택 없으면 `null` |
+| `model` | 측정에 고정한 모델 ID (미기록 시 다음 iteration과 비교 불가) |
+| `isolated` | baseline 격리 여부. `false`면 그 행은 비교 근거로 쓰지 않는다 |
