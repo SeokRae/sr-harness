@@ -13,7 +13,16 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 skills/
   {skill-name}/
     SKILL.md        # 스킬 정의 (frontmatter + 실행 절차)
+evals/
+  rubric.md         # 진화 후보 채점 계약 + 릴리즈 게이트 (meta 스킬이 참조)
 ```
+
+## 진화 후보 채택 기준
+
+`meta` 스킬이 만든 개선 후보는 `evals/rubric.md`의 릴리즈 게이트를 통과해야 채택된다.
+후보 3개 생성은 의무지만 채택은 아니다 — 셋 다 탈락하면 채택 없음으로 종료한다.
+
+측정 근거가 없으면 채점하지 않고 미검증으로 표시한다. 근거 없이 채택하지 않는다.
 
 ## 스킬 추가 체크리스트
 

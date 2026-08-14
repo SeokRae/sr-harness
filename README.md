@@ -161,7 +161,7 @@ start
 | `dev-testing-conventions` | Test authoring conventions: tier suffixes, assertion library, parameterization, live test isolation |
 | `dev-monitoring-design` | Anomaly/spike monitoring dashboard & report info-design checklist — Measure, Diagnose, Detect, Present |
 | `ownership-principles` | Agent-era ownership checklist — Inner/outer loop, verdict, cognitive debt/surrender, orchestration tax |
-| `meta` | Meta-Harness evolution loop — analyze a target skill and propose 3 improved candidates |
+| `meta` | Meta-Harness evolution loop — analyze a target skill, propose 3 improved candidates, adopt only those passing the `evals/rubric.md` release gate |
 
 ### Stack auto-detection
 
