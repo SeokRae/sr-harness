@@ -146,10 +146,10 @@ start
 | `verify` | PR 제출 전 통합 검증 |
 | `submit` | push + PR (Closes #N) · 사용자 리뷰 대기 |
 | `review` | 리뷰 피드백 수신 → execute 복귀 |
-| `finish` | 머지 + 브랜치 삭제 + main pull |
-| `ralph` | verify 통과까지 execute→verify 자동 반복 (bypass 모드) |
-| `goal` | Stop hook 기반 목표 주도 자율 실행 (Claude Code) · Codex는 워크플로우 가이드 제공 |
-| `abort` | 작업 취소 · 브랜치 정리 |
+| `finish` 🔒 | 머지 + 브랜치 삭제 + main pull |
+| `ralph` 🔒 | verify 통과까지 execute→verify 자동 반복 (bypass 모드) |
+| `goal` 🔒 | Stop hook 기반 목표 주도 자율 실행 (Claude Code) · Codex는 워크플로우 가이드 제공 |
+| `abort` 🔒 | 작업 취소 · 브랜치 정리 |
 | `pause` | 세션 중단 · 다음 세션 인계 |
 | `dev-coding-principles` | 코딩 품질 체크리스트 — 네이밍·예외처리·테스트 |
 | `dev-architecture` | 아키텍처 체크리스트 — Hexagonal·레이어 분리·패키지 구조 |
@@ -159,8 +159,10 @@ start
 | `dev-testing-conventions` | 테스트 코드 작성 컨벤션: 티어 구분(접미사), 단언 라이브러리, 파라미터화, 라이브 테스트 분리 |
 | `dev-monitoring-design` | 이상탐지·스파이크 모니터링 대시보드/리포트 정보설계 체크리스트 — 측정·진단·탐지·표현 |
 | `ownership-principles` | 에이전트 시대 소유권 체크리스트 — inner/outer loop·판결·인지적 부채/굴복·오케스트레이션 세금 |
-| `meta` | Meta-Harness 진화 루프 — 피진화체 스킬 분석 후 개선 후보 3개 제안·구현, `evals/rubric.md` 게이트 통과분만 채택 |
-| `release` | GitHub Release 생성 — 버전 결정·릴리즈 노트 작성·태그 생성 자동화 |
+| `meta` 🔒 | Meta-Harness 진화 루프 — 피진화체 스킬 분석 후 개선 후보 3개 제안·구현, `evals/rubric.md` 게이트 통과분만 채택 |
+| `release` 🔒 | GitHub Release 생성 — 버전 결정·릴리즈 노트 작성·태그 생성 자동화 |
+
+🔒 = `disable-model-invocation`. 사용자가 `/{스킬명}`을 직접 입력해야 진입하며, 모델이 자율적으로 호출하지 못합니다. 세션 전체를 자율 루프로 바꾸거나(`ralph`, `goal`), 외부로 나가거나(`release`), 되돌리기 어렵거나(`finish`, `abort`), 하네스 자신을 고치는(`meta`) 스킬이 대상입니다. 다른 스킬이 본문에서 지시하는 경로까지 막히므로, 체인이 그 앞에서 멈추면 슬래시 커맨드를 안내하고 대기합니다.
 
 ### 스택 자동 감지
 

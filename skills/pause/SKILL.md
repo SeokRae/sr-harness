@@ -75,4 +75,4 @@ session-plan.md 저장됨 → 다음 세션에서 start가 자동으로 이어�
 
 - feature 브랜치는 닫지 않는다 — 다음 세션에서 start가 감지해 재개 안내
 - session-plan.md는 프로젝트 루트 `.claude/` 아래에 저장 (vault는 `.claude/session-plan.md`)
-- 미완료 항목이 0개면 → finish로 안내 (브랜치를 완전히 닫을 수 있는 상태)
+- 미완료 항목이 0개면 → `/finish` 실행을 사용자에게 안내 (브랜치를 완전히 닫을 수 있는 상태). finish는 모델이 직접 호출할 수 없다

@@ -1,6 +1,7 @@
 ---
 name: ralph
-description: execute + verify 단계를 Ralph Loop bypass 모드로 자동화. plan 확정 후 사용. verify 통과까지 반복 → READY_FOR_PR 출력 → submit 안내.
+description: execute + verify 단계를 Ralph Loop bypass 모드로 자동화. plan 확정 후 사용. verify 통과까지 반복 → READY_FOR_PR 출력 → submit 안내. Stop hook을 설치해 세션을 자율 루프로 바꾸므로 모델 자동 호출을 막았다. /ralph 로만 진입한다.
+disable-model-invocation: true
 allowed-tools: ["Bash(${CLAUDE_PLUGIN_ROOT}/scripts/setup-ralph.sh:*)", "Bash(${CLAUDE_PLUGIN_ROOT}/scripts/cleanup-ralph.sh:*)"]
 ---
 

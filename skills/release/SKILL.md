@@ -1,6 +1,7 @@
 ---
 name: release
-description: GitHub Release 생성 스킬. "릴리즈 만들어줘", "release 올려줘", "배포해줘", "태그 만들어줘", "v1.x.x 릴리즈", "릴리즈 노트 작성", "배포 태그" 시 사용. 버전 결정 → 태그 → 릴리즈 노트 → GitHub Release 생성까지 자동 처리.
+description: GitHub Release 생성 스킬. "릴리즈 만들어줘", "release 올려줘", "배포해줘", "태그 만들어줘", "v1.x.x 릴리즈", "릴리즈 노트 작성", "배포 태그" 시 사용. 버전 결정 → 태그 → 릴리즈 노트 → GitHub Release 생성까지 자동 처리. 태그 push와 Release는 외부로 나가므로 모델 자동 호출을 막았다. /release 로만 진입한다.
+disable-model-invocation: true
 ---
 
 # release
