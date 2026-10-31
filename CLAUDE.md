@@ -13,6 +13,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 skills/
   {skill-name}/
     SKILL.md        # 스킬 정의 (frontmatter + 실행 절차)
+    references/     # (선택) 서브에이전트에 넘기는 고정 프롬프트 등 본문 밖 자료
 evals/
   rubric.md         # 진화 후보 채점 계약 + 릴리즈 게이트 (meta 스킬이 참조)
 ```

@@ -142,7 +142,7 @@ start
 | `issue` | GitHub Issue + 브랜치 생성 |
 | `execute` | 구현 실행 · karpathy 체크포인트 |
 | `debug` | 진단 우선 디버깅 |
-| `analyze` | 의도 정합성 게이트 (Issue ↔ diff) · verify 전 |
+| `analyze` | 의도 정합성 게이트 (Issue ↔ diff), verify 전, 구현 맥락 없는 새 에이전트가 판정 |
 | `verify` | PR 제출 전 통합 검증 |
 | `submit` | push + PR (Closes #N) · 사용자 리뷰 대기 |
 | `review` | 리뷰 피드백 수신 → execute 복귀 |
