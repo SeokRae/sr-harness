@@ -143,7 +143,7 @@ start
 | `issue` | GitHub Issue + branch creation |
 | `execute` | Implementation with Karpathy checkpoints |
 | `debug` | Diagnose-first debugging |
-| `analyze` | Intent-consistency gate (Issue ↔ diff) before verify |
+| `analyze` | Intent-consistency gate (Issue ↔ diff) before verify, judged by a fresh agent with no implementation context |
 | `verify` | Integration check before PR |
 | `submit` | push + PR (Closes #N) · stops for user review |
 | `review` | Receive review feedback → back to execute |
