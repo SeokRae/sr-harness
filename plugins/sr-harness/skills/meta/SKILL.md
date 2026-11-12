@@ -136,6 +136,7 @@ EOF
 #### 4-1. 근거 확인
 
 채점할 실행 결과가 있는지 먼저 본다.
+sr-harness 스킬의 실행 결과는 `evals/plugin/results/{timestamp}/aggregate-result.json`이다. baseline과 후보를 같은 케이스, 같은 `--model`, 같은 `--runs`로 돌린 결과만 비교한다(`evals/README.md` 수정 전후 비교).
 
 | 상태 | 처리 |
 |---|---|
