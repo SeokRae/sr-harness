@@ -1,6 +1,6 @@
 ---
 name: start
-description: sr-harness 세션 진입점. 모든 대화 시작 시 반드시 먼저 실행. 작업 유형(아이디어 탐색/계획/구현/디버깅/마무리)을 파악하고 적절한 harness 스킬로 라우팅. 코딩 작업 전 karpathy 체크 강제 실행.
+description: sr-harness 세션 진입점. 모든 대화 시작 시 반드시 먼저 실행. 작업 유형(아이디어 탐색/계획/구현/디버깅/마무리)을 파악하고 적절한 harness 스킬로 라우팅. 코딩 작업 전 karpathy 체크 강제 실행. 머지나 마무리 요청이면 직접 머지하지 말고 `/finish` 입력을 안내한다.
 ---
 
 # sr-harness 진입점
