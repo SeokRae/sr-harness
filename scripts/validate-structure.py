@@ -4,7 +4,7 @@
 실패한 항목을 모두 출력하고, 하나라도 있으면 exit 1로 끝난다. 표준 라이브러리만 쓴다.
 
 1. 버전 5곳 일치 (Claude 매니페스트 3곳, 루트와 사본의 Codex 매니페스트)
-2. Codex 설치용 사본 plugins/sr-harness/가 루트 skills/, .codex-plugin/plugin.json과 같은지
+2. Codex 설치용 사본 plugins/sr-harness/가 루트 skills/, .codex-plugin/과 같은지
 3. skills/ 폴더 목록과 .claude-plugin/plugin.json의 skills 배열 일치
 4. README.md, README.ko.md 스킬 표에 모든 스킬이 있는지
 5. SKILL.md 안의 상대 경로 링크가 가리키는 파일이 있는지
@@ -65,21 +65,17 @@ def check_versions():
 
 
 def check_wrapper():
-    src = files_under(ROOT / "skills")
-    dst = files_under(WRAPPER / "skills")
-    missing = sorted(src.keys() - dst.keys())
-    extra = sorted(dst.keys() - src.keys())
-    differ = sorted(k for k in src.keys() & dst.keys() if src[k].read_bytes() != dst[k].read_bytes())
-    manifest_differs = (ROOT / ".codex-plugin/plugin.json").read_bytes() != (
-        WRAPPER / ".codex-plugin/plugin.json"
-    ).read_bytes()
-
     problems = []
-    problems += [f"    사본에 없음: skills/{k}" for k in missing]
-    problems += [f"    사본에만 있음: skills/{k}" for k in extra]
-    problems += [f"    내용 다름: skills/{k}" for k in differ]
-    if manifest_differs:
-        problems.append("    내용 다름: .codex-plugin/plugin.json")
+    for folder in ("skills", ".codex-plugin"):
+        src = files_under(ROOT / folder)
+        dst = files_under(WRAPPER / folder)
+        problems += [f"    사본에 없음: {folder}/{k}" for k in sorted(src.keys() - dst.keys())]
+        problems += [f"    사본에만 있음: {folder}/{k}" for k in sorted(dst.keys() - src.keys())]
+        problems += [
+            f"    내용 다름: {folder}/{k}"
+            for k in sorted(src.keys() & dst.keys())
+            if src[k].read_bytes() != dst[k].read_bytes()
+        ]
     if problems:
         errors.append("Codex 설치용 사본 plugins/sr-harness/가 루트와 다릅니다:\n" + "\n".join(problems) + f"\n    → {SYNC_HINT}")
 

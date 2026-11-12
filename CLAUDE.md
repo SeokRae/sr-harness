@@ -69,9 +69,9 @@ evals/
 
 스킬 추가가 아니어도 버전을 올리거나 `skills/`를 고치는 PR은 같은 PR에서 다음을 맞춘다.
 
-1. 버전 5곳을 같은 값으로 올린다: `.claude-plugin/plugin.json`, `marketplace.json`의 `metadata.version`과 `plugins[0].version`, `.codex-plugin/plugin.json`, 사본 `plugins/sr-harness/.codex-plugin/plugin.json`
-2. `scripts/sync-codex-wrapper.sh`로 사본을 다시 만든다 (사본 매니페스트 버전도 이때 맞춰진다)
-3. `python3 scripts/validate-structure.py`로 확인한다
+1. 버전 4곳을 같은 값으로 손으로 올린다: `.claude-plugin/plugin.json`, `marketplace.json`의 `metadata.version`과 `plugins[0].version`, `.codex-plugin/plugin.json`
+2. `scripts/sync-codex-wrapper.sh`로 사본을 다시 만든다. 사본 `plugins/sr-harness/`는 손으로 고치지 않는다. 사본 매니페스트 `plugins/sr-harness/.codex-plugin/plugin.json`의 버전도 이때 루트와 같아진다
+3. `python3 scripts/validate-structure.py`로 사본 매니페스트까지 버전 5곳이 같은지 확인한다
 
 Codex는 `.agents/plugins/marketplace.json`이 가리키는 `plugins/sr-harness/` 사본에서 설치한다.
 사본을 갱신하지 않으면 Codex 설치본만 옛 판에 남는다 (v0.17.3에서 v0.27.0까지 사본이 멈춰 있었다).
@@ -86,6 +86,9 @@ PR마다 CI(`.github/workflows/validate.yml`)가 같은 검사를 돌린다.
 | 스킬 제거 / 인터페이스 변경 | MAJOR |
 
 ## 릴리즈 절차 (PR 머지 후)
+
+Codex 매니페스트 버전과 Codex 설치용 사본은 머지 전 PR에서 맞춘다(위 "버전 bump와 Codex 사본" 절).
+main에 직접 커밋하지 않으므로, 릴리즈 단계에서는 검사만 다시 돌린다. 검사가 실패하면 태그를 만들지 않고 고치는 PR을 낸다.
 
 ```bash
 git checkout main && git pull origin main
