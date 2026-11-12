@@ -75,14 +75,14 @@ claude plugin eval . --case debug-fires-on-pasted-error --runs 1 --model claude-
 
 | 날짜 | CLI | 모델 | runs | 케이스 | 켠 쪽 | 끈 쪽 | Δ | 비용 |
 |------|-----|------|-----:|--------|------:|------:|--:|-----:|
-| 2026-11-12 | 2.1.322 | claude-opus-5-5 | 1 | debug-fires-on-pasted-error | 1.00 | 0.00 | +1.00 | 6케이스 합계 $1.46 |
-| 2026-11-12 | 2.1.322 | claude-opus-5-5 | 1 | debug-stays-quiet-on-rename | 1.00 | 1.00 | 0 | |
+| 2026-11-12 | 2.1.322 | claude-opus-5-5 | 1 | debug-fires-on-pasted-error | 1.00 | 0.00 | +1.00 | $0.19 (5칸 기준 그레이더로 다시 잼) |
+| 2026-11-12 | 2.1.322 | claude-opus-5-5 | 1 | debug-stays-quiet-on-rename | 1.00 | 1.00 | 0 | 나머지 4케이스 합계는 6케이스 실행 $1.46에 포함 |
 | 2026-11-12 | 2.1.322 | claude-opus-5-5 | 1 | submit-stays-quiet-on-review-request | 1.00 | 1.00 | 0 | |
-| 2026-11-12 | 2.1.322 | claude-opus-5-5 | 1 | read-only-status | 1.00 | 1.00 | 0 | |
+| 2026-11-12 | 2.1.322 | claude-opus-5-5 | 1 | read-only-status | 1.00 | 1.00 | 0 | $0.21 (보강한 정규식으로 다시 잼) |
 | 2026-11-12 | 2.1.322 | claude-opus-5-5 | 1 | merge-request-guides-finish | 0.50 | 0.50 | 0 | |
 | 2026-11-12 | 2.1.322 | claude-opus-5-5 | 1 | verify-pressure-skip-tests | 1.00 | 1.00 | 0 | |
 
-위 표는 그레이더를 지금 판으로 고친 뒤의 실행입니다. 그 전 판(진단 2가지, 테스트 실행 점수 포함)으로 같은 날 한 번 더 돌렸고, 아래 관찰에는 두 실행과 trace를 남긴 재실행을 함께 적었습니다. 모두 runs 1이라 경향이 아니라 관찰입니다.
+위 표는 모두 지금 판 그레이더로 잰 값입니다. debug 발화와 읽기 요청은 그레이더를 고친 뒤 그 케이스만 다시 쟀어요. 그 전 판(진단 2가지, 테스트 실행 점수 포함)으로도 같은 날 6케이스를 한 번 돌렸고, 아래 관찰에는 두 실행과 trace를 남긴 재실행을 함께 적었습니다. 모두 runs 1이라 경향이 아니라 관찰입니다.
 
 - `debug-fires-on-pasted-error`: 켠 쪽은 pilot까지 3번 모두 `sr-harness:debug`가 발화했습니다. 진단 게이트 5칸이 수정 코드보다 먼저 나온 것은 지금 판 그레이더 실행과 pilot 응답에서 확인했어요(첫 본 실행 응답은 5칸 기준으로 보지 않았습니다). 끈 쪽은 pilot에서 원인과 수정만 내놓고 확인 방법이 없어 실패했고, 첫 본 실행에서는 옛 판 그레이더를 통과했으며, 지금 판 그레이더에서는 실패했습니다.
 - 비발화 케이스 2개: 양쪽 모두 해당 스킬이 발화하지 않았습니다. `submit-stays-quiet-on-review-request`에서 `sr-harness:review`도 발화하지 않았어요.
