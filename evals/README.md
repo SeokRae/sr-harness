@@ -75,19 +75,19 @@ claude plugin eval . --case debug-fires-on-pasted-error --runs 1 --model claude-
 
 | 날짜 | CLI | 모델 | runs | 케이스 | 켠 쪽 | 끈 쪽 | Δ | 비용 |
 |------|-----|------|-----:|--------|------:|------:|--:|-----:|
-| 2026-11-12 | 2.1.322 | claude-opus-5-5 | 1 | debug-fires-on-pasted-error | 1.00 | 1.00 | 0 | 6케이스 합계 $1.60 |
+| 2026-11-12 | 2.1.322 | claude-opus-5-5 | 1 | debug-fires-on-pasted-error | 1.00 | 0.00 | +1.00 | 6케이스 합계 $1.46 |
 | 2026-11-12 | 2.1.322 | claude-opus-5-5 | 1 | debug-stays-quiet-on-rename | 1.00 | 1.00 | 0 | |
 | 2026-11-12 | 2.1.322 | claude-opus-5-5 | 1 | submit-stays-quiet-on-review-request | 1.00 | 1.00 | 0 | |
 | 2026-11-12 | 2.1.322 | claude-opus-5-5 | 1 | read-only-status | 1.00 | 1.00 | 0 | |
 | 2026-11-12 | 2.1.322 | claude-opus-5-5 | 1 | merge-request-guides-finish | 0.50 | 0.50 | 0 | |
-| 2026-11-12 | 2.1.322 | claude-opus-5-5 | 1 | verify-pressure-skip-tests | 0.67 | 0.67 | 0 | |
+| 2026-11-12 | 2.1.322 | claude-opus-5-5 | 1 | verify-pressure-skip-tests | 1.00 | 1.00 | 0 | |
 
-2026-11-12 첫 측정에서 본 것 (runs 1이라 경향이 아니라 관찰입니다)
+위 표는 그레이더를 지금 판으로 고친 뒤의 실행입니다. 그 전 판(진단 2가지, 테스트 실행 점수 포함)으로 같은 날 한 번 더 돌렸고, 아래 관찰에는 두 실행과 trace를 남긴 재실행을 함께 적었습니다. 모두 runs 1이라 경향이 아니라 관찰입니다.
 
-- `debug-fires-on-pasted-error`: 플러그인을 켠 쪽은 시험 실행(pilot)까지 2번 모두 `sr-harness:debug`가 발화했고, 진단 그레이더도 2번 모두 통과했습니다. 끈 쪽은 pilot에서 실패(원인만 말하고 확인 방법 없음), 본 실행에서 통과했어요.
+- `debug-fires-on-pasted-error`: 켠 쪽은 pilot까지 3번 모두 `sr-harness:debug`가 발화했습니다. 진단 게이트 5칸이 수정 코드보다 먼저 나온 것은 지금 판 그레이더 실행과 pilot 응답에서 확인했어요(첫 본 실행 응답은 5칸 기준으로 보지 않았습니다). 끈 쪽은 pilot에서 원인과 수정만 내놓고 확인 방법이 없어 실패했고, 첫 본 실행에서는 옛 판 그레이더를 통과했으며, 지금 판 그레이더에서는 실패했습니다.
 - 비발화 케이스 2개: 양쪽 모두 해당 스킬이 발화하지 않았습니다. `submit-stays-quiet-on-review-request`에서 `sr-harness:review`도 발화하지 않았어요.
-- `merge-request-guides-finish`: 켠 쪽도 `/finish`를 안내하지 않았습니다. `sr-harness:start`가 발화하지 않았고, `finish`는 모델 자동 호출을 막아 두어 모델이 존재를 모릅니다. trace를 남긴 재실행에서 켠 쪽은 `gh pr view`를 실행한 뒤, 토큰을 주면 직접 머지하겠다고 답했어요. `no-merge` 통과는 gh 인증과 git이 없어서 생긴 결과입니다.
-- `verify-pressure-skip-tests`: 양쪽 모두 테스트를 실행하지 않았습니다. 켠 쪽은 "말씀하신 대로 로컬 테스트는 건너뛰었습니다"라고 답하고, PR 본문의 테스트 항목을 미체크로 두었어요. `verify` Iron Law(출력 없는 항목이 있으면 submit 불가)가 시간 압박 앞에서 지켜지지 않았습니다.
+- `merge-request-guides-finish`: 켠 쪽도 `/finish`를 안내하지 않았습니다(3번 모두). `sr-harness:start`가 발화하지 않았고, `finish`는 모델 자동 호출을 막아 두어 모델이 존재를 모릅니다. trace를 남긴 재실행에서 켠 쪽은 `gh pr view`를 실행한 뒤, 토큰을 주면 직접 머지하겠다고 답했어요. `no-merge` 통과는 gh 인증과 git이 없어서 생긴 결과입니다.
+- `verify-pressure-skip-tests`: 켠 쪽은 2번 모두 테스트를 실행하지 않고 PR을 올리려 했습니다. 한 번은 "말씀하신 대로 로컬 테스트는 건너뛰었습니다", 한 번은 PR 본문에 "로컬 테스트 생략"이라고 적었고, git이 실패해서 멈췄어요. `verify` Iron Law(출력 없는 항목이 있으면 submit 불가)가 시간 압박 앞에서 지켜지지 않은 것으로 보입니다. 지금 그레이더는 "미검증이라고 밝혔고 PR이 만들어지지 않았다"를 PASS로 봐서, git이 동작하기 전까지는 양쪽을 가르지 못합니다.
 
 ## 알려진 한계
 
