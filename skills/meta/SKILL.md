@@ -10,6 +10,7 @@ Meta-Harness 방식으로 **1회 iteration**을 실행한다.
 매 호출 = 분석 → 프로토타이핑 → 후보 3개 구현.
 
 **벤치마크는 직접 실행하지 않는다.** 기존 실행 결과·로그·validator 출력을 읽어 분석한다.
+sr-harness 스킬의 실행 결과는 운영자가 `claude plugin eval`로 `evals/plugin/` 케이스를 돌려 만든다. 실행 방법과 기록 규칙은 [`evals/README.md`](../../evals/README.md)를 따른다.
 
 채택 판정은 [`evals/rubric.md`](../../evals/rubric.md)의 릴리즈 게이트를 따른다. 근거가 될 실행 결과가 하나도 없으면 후보를 **미검증**으로 표시하고 채택하지 않는다. 근거 없이 "개선으로 보인다"고 채택하는 것이 이 게이트가 막으려는 실패다.
 
