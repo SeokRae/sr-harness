@@ -1,6 +1,7 @@
 ---
 name: abort
-description: 작업 중단 및 브랜치 정리 스킬. "그만할게", "방향 바꿀게", "이 작업 취소", "브랜치 정리" 시 사용. session-plan Deviations 기록 + 브랜치 삭제 여부 확인. 어느 단계에서든 진입 가능.
+description: 작업 중단 및 브랜치 정리 스킬. "그만할게", "방향 바꿀게", "이 작업 취소", "브랜치 정리" 시 사용. session-plan Deviations 기록 + 브랜치 삭제 여부 확인. 워크플로우 어느 단계에서든 진입 가능하되, 브랜치 삭제가 포함되므로 모델 자동 호출을 막았다. /abort 로만 진입한다.
+disable-model-invocation: true
 ---
 
 # abort

@@ -1,0 +1,18 @@
+name: Validate structure
+
+# 매니페스트 버전, Codex 설치용 사본, 스킬 목록, README 표, 링크, disable-model-invocation 목록 검사 (#119)
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: python3 scripts/validate-structure.py

@@ -53,7 +53,7 @@ Closes #{N}"
 ✅ Closes #{issue-number}
 브랜치: feature/{N}-{description}
 
-PR을 확인하고 머지할 준비가 되면 finish를 실행하세요.
+PR을 확인하고 머지할 준비가 되면 /finish 를 실행하세요.
 ```
 
 ## session-plan.md 정리
