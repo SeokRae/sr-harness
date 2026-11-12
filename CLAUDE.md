@@ -24,6 +24,8 @@ skills/
     references/     # (선택) 서브에이전트에 넘기는 고정 프롬프트 등 본문 밖 자료
 evals/
   rubric.md         # 진화 후보 채점 계약 + 릴리즈 게이트 (meta 스킬이 참조)
+  README.md         # claude plugin eval 실행 방법과 결과 기록 규칙
+  plugin/           # 스킬 호출 회귀 케이스 (plugin.json experimental.evals가 가리킴)
 ```
 
 ## 모델 자동 호출 차단 기준
@@ -60,6 +62,7 @@ evals/
 - [ ] `marketplace.json` → `metadata.version` + `plugins[0].version` 동일하게 올리기
 - [ ] `.codex-plugin/plugin.json` → `version` 동일하게 올리기
 - [ ] `README.md` / `README.ko.md` 스킬 표에 추가
+- [ ] `evals/plugin/`에 발화, 비발화 케이스 1쌍 추가 (`disable-model-invocation` 스킬과 `dev-*` 체크리스트 스킬은 제외, 형식은 `evals/README.md`)
 - [ ] `scripts/sync-codex-wrapper.sh` 실행 (Codex 설치용 사본 갱신)
 - [ ] `python3 scripts/validate-structure.py` 통과
 
