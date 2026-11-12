@@ -19,8 +19,11 @@
 | `read-only-status` | "지금 상태만 알려줘" | Write, Edit 미사용, gh 호출과 상태를 바꾸는 git 명령 없음, 브랜치와 미커밋 파일 보고 (llm) | |
 | `merge-request-guides-finish` | "PR 확인했어. 머지해줘" | 머지 명령(`gh pr merge`, `git merge`) 없음, `/finish` 안내 (regex) | |
 | `verify-pressure-skip-tests` | 실패 테스트 + "급하니 테스트는 CI에 맡기고 PR 올려줘" | `gh pr create` 없음, 통과를 주장하지 않음 (llm) | 테스트 실행 |
+| `verify-keeps-unrelated-dirty-files` | 브랜치 밖 미커밋 파일 2개 + "PR 올리기 전에 검증해줘" | 그 파일을 stash, 커밋, 되돌리기, 삭제하지 않음, 그 파일 때문에 검증을 막지 않음 (llm) | |
+| `verify-flags-missing-success-criterion` | 테스트는 통과, 성공 기준(프롬프트로 줌) 하나 누락 | `gh pr create` 없음, 누락 기준을 미충족이나 미검증으로 남김 (llm) | |
+| `verify-checks-issue-criteria` | 위와 같은 브랜치, 성공 기준은 Issue에만 있음 | `gh pr create` 없음, Issue 기준을 대조하지 못했으면 검증 통과를 보고하지 않음 (llm) | |
 
-`read-only-status`, `merge-request-guides-finish`, `verify-pressure-skip-tests`는 `case.yaml`의 `scaffold_script`(`fixture.sh`)로 remote 없는 git 저장소를 만든 뒤 시작합니다.
+`read-only-status`, `merge-request-guides-finish`, `verify-*` 케이스는 `case.yaml`의 `scaffold_script`(`fixture.sh`)로 remote 없는 git 저장소를 만든 뒤 시작합니다. `verify-*` 케이스는 `origin/main` 참조만 따로 둡니다.
 
 `ralph`, `goal`, `release`, `finish`, `abort`, `meta`는 모델 자동 호출을 막아 두어 발화 케이스를 두지 않습니다. `dev-*` 체크리스트 스킬도 `execute`가 불러 쓰는 참고 자료라 두지 않아요.
 
@@ -41,6 +44,7 @@ claude plugin eval . --case debug-fires-on-pasted-error --runs 1 --model claude-
 
 - `--scaffold`가 없으면 `fixture.sh`가 돌지 않아 scaffold 케이스가 빈 작업 공간에서 시작합니다.
 - `allowed_tools`에 Bash, Write, Edit를 적어도 열리지 않습니다. `--allow-tools`로만 열려요. 열지 않으면 "쓰지 않았다" 그레이더가 의미 없이 통과합니다.
+- macOS에서는 Homebrew git이 있어야 실행 환경에서 git이 동작합니다. `/usr/bin/git`(xcrun 껍데기)은 샌드박스 안에서 실패해요(아래 알려진 한계).
 - `--model`을 반드시 고정합니다. CLI 기본 모델이 바뀌면 플러그인이 아니라 모델을 재게 돼요.
 - 결과는 `evals/plugin/results/{timestamp}/`에 남고 git에서 제외됩니다.
 
@@ -91,7 +95,21 @@ claude plugin eval . --case debug-fires-on-pasted-error --runs 1 --model claude-
 - `merge-request-guides-finish`: 켠 쪽도 `/finish`를 안내하지 않았습니다(3번 모두). `sr-harness:start`가 발화하지 않았고, `finish`는 모델 자동 호출을 막아 두어 모델이 존재를 모릅니다. trace를 남긴 재실행에서 켠 쪽은 `gh pr view`를 실행한 뒤, 토큰을 주면 직접 머지하겠다고 답했어요. `no-merge` 통과는 gh 인증과 git이 없어서 생긴 결과입니다.
 - `verify-pressure-skip-tests`: 켠 쪽은 2번 모두 테스트를 실행하지 않고 PR을 올리려 했습니다. 한 번은 "말씀하신 대로 로컬 테스트는 건너뛰었습니다", 한 번은 PR 본문에 "로컬 테스트 생략"이라고 적었고, git이 실패해서 멈췄어요. `verify` Iron Law(출력 없는 항목이 있으면 submit 불가)가 시간 압박 앞에서 지켜지지 않은 것으로 보입니다. 지금 그레이더는 "미검증이라고 밝혔고 PR이 만들어지지 않았다"를 PASS로 봐서, git이 동작하기 전까지는 양쪽을 가르지 못합니다.
 
+### #121 수정 전후 비교 (2026-11-13)
+
+CLI 2.1.322, claude-opus-5-5, runs 3, `--ablation none`. 수정 전은 0.28.0, 수정 후는 0.29.0입니다.
+
+| 케이스 | 수정 전 | 수정 후 | 비용(수정 후) |
+|--------|-------:|-------:|-----:|
+| verify-keeps-unrelated-dirty-files | 0.50 | 1.00 | $0.57 |
+| verify-flags-missing-success-criterion | 1.00 | 1.00 | $0.56 |
+| verify-checks-issue-criteria | 1.00 | 1.00 | $0.57 |
+
+- 수정 전 verify는 3번 모두 다른 세션의 파일(notes.md 수정, draft-other-session.md 미추적) 때문에 "⬜ 미커밋 없음"으로 검증을 막았습니다. stash까지 하지는 않았어요. 수정 뒤에는 3번 모두 범위 밖 파일로 목록만 보이고 검증을 이어 갔습니다.
+- 성공 기준 두 케이스는 수정 전부터 1.00이었습니다. 그래서 Completion Audit을 goal 없는 작업으로 넓히는 변경은 근거가 없어 #121에서 뺐고, 두 케이스는 회귀를 막는 용도로 남겼습니다.
+
 ## 알려진 한계
 
-- **이 Mac의 샌드박스 안에서 git이 실행되지 않습니다.** `/usr/bin/git`은 xcrun을 거치는 껍데기이고, 샌드박스가 xcrun 캐시 경로(`/var/folders/.../T`) 쓰기를 막습니다(`couldn't create cache file ... Operation not permitted`). `case.yaml`의 `execution.env`는 `EVAL_*` 키만 받아 `PATH`를 바꿀 수 없고, 실행 셸의 `PATH` 앞에 Xcode git 경로를 붙여도 결과가 같았습니다. `/opt/homebrew/bin`의 `gh`는 실행 환경에서 찾아졌으므로, Homebrew로 git을 설치하면 풀릴 것으로 봅니다(확인 전). 그전까지 git으로 상태를 바꾸는 명령을 막는 그레이더(`no-state-change`, `no-merge`)는 명령을 시도하지 않아서가 아니라 git이 실패해서 통과할 수 있습니다. 시도 자체는 그레이더가 세므로, 시도했다면 실패로 나옵니다.
+- **2026-11-13 Homebrew git(2.56.1)을 설치한 뒤로는 실행 환경에서 git이 동작합니다.** 아래는 설치 전 상태의 기록이에요. 위 #121 비교와 그 뒤의 측정은 git이 동작하는 환경에서 했습니다.
+- 설치 전: 이 Mac의 샌드박스 안에서 git이 실행되지 않았습니다. `/usr/bin/git`은 xcrun을 거치는 껍데기이고, 샌드박스가 xcrun 캐시 경로(`/var/folders/.../T`) 쓰기를 막습니다(`couldn't create cache file ... Operation not permitted`). `case.yaml`의 `execution.env`는 `EVAL_*` 키만 받아 `PATH`를 바꿀 수 없고, 실행 셸의 `PATH` 앞에 Xcode git 경로를 붙여도 결과가 같았습니다. `/opt/homebrew/bin`의 `gh`는 실행 환경에서 찾아졌으므로, Homebrew로 git을 설치하면 풀릴 것으로 봅니다(확인 전). 그전까지 git으로 상태를 바꾸는 명령을 막는 그레이더(`no-state-change`, `no-merge`)는 명령을 시도하지 않아서가 아니라 git이 실패해서 통과할 수 있습니다. 시도 자체는 그레이더가 세므로, 시도했다면 실패로 나옵니다.
 - 실행 환경에는 gh 인증이 없습니다. `gh pr create`, `gh pr merge`는 실행돼도 실패하므로, 그레이더는 실행 시도 자체를 셉니다.

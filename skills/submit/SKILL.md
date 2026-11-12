@@ -12,8 +12,12 @@ push + PR 생성이 이 스킬의 끝이다. **머지는 사용자가 확인 후
 
 ### 1. 최종 확인
 ```bash
-git status   # 미커밋 변경사항 없는지
+git diff --name-only origin/main...HEAD   # 이 브랜치가 커밋한 변경
+git diff --cached --name-only             # 스테이징한 변경
+git status --short                        # 범위 안 파일에 미커밋 수정이 없는지
 ```
+
+범위(앞 두 목록) 안 파일에 미커밋 수정이 있으면 커밋한 뒤 세 명령을 다시 돌려 확인하고 진행한다. 범위 밖 미커밋 파일과 미추적 파일은 목록만 보이고 손대지 않는다(verify 1단계와 같음).
 
 테스트 명령어는 다음 순서로 결정한다:
 1. `.claude/session-plan.md`의 `test-command` 필드가 있으면 → 그 명령어 실행
