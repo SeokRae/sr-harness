@@ -10,6 +10,14 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 .claude-plugin/
   plugin.json       # 스킬 목록, 버전 (설치 시 사용)
   marketplace.json  # 마켓플레이스 메타데이터 + 버전
+.codex-plugin/
+  plugin.json       # Codex 매니페스트 (버전은 Claude 매니페스트와 같은 값)
+.agents/plugins/
+  marketplace.json  # Codex 마켓플레이스. 설치 경로가 plugins/sr-harness/
+plugins/sr-harness/ # Codex 설치용 사본. 생성물이라 손으로 고치지 않음 (scripts/sync-codex-wrapper.sh)
+scripts/
+  sync-codex-wrapper.sh   # 루트 skills/와 .codex-plugin/으로 Codex 설치용 사본을 다시 만든다
+  validate-structure.py   # 구조 검사 (CI: .github/workflows/validate.yml)
 skills/
   {skill-name}/
     SKILL.md        # 스킬 정의 (frontmatter + 실행 절차)
@@ -50,9 +58,24 @@ evals/
 - [ ] `plugin.json` → `skills` 배열에 `"./skills/{name}"` 추가
 - [ ] `plugin.json` → `version` MINOR 올리기
 - [ ] `marketplace.json` → `metadata.version` + `plugins[0].version` 동일하게 올리기
+- [ ] `.codex-plugin/plugin.json` → `version` 동일하게 올리기
 - [ ] `README.md` / `README.ko.md` 스킬 표에 추가
+- [ ] `scripts/sync-codex-wrapper.sh` 실행 (Codex 설치용 사본 갱신)
+- [ ] `python3 scripts/validate-structure.py` 통과
 
 버전 bump 누락 시 설치본과 소스가 불일치한다 — 버전 bump는 별도 PR 금지.
+
+## 버전 bump와 Codex 사본 (#119)
+
+스킬 추가가 아니어도 버전을 올리거나 `skills/`를 고치는 PR은 같은 PR에서 다음을 맞춘다.
+
+1. 버전 5곳을 같은 값으로 올린다: `.claude-plugin/plugin.json`, `marketplace.json`의 `metadata.version`과 `plugins[0].version`, `.codex-plugin/plugin.json`, 사본 `plugins/sr-harness/.codex-plugin/plugin.json`
+2. `scripts/sync-codex-wrapper.sh`로 사본을 다시 만든다 (사본 매니페스트 버전도 이때 맞춰진다)
+3. `python3 scripts/validate-structure.py`로 확인한다
+
+Codex는 `.agents/plugins/marketplace.json`이 가리키는 `plugins/sr-harness/` 사본에서 설치한다.
+사본을 갱신하지 않으면 Codex 설치본만 옛 판에 남는다 (v0.17.3에서 v0.27.0까지 사본이 멈춰 있었다).
+PR마다 CI(`.github/workflows/validate.yml`)가 같은 검사를 돌린다.
 
 ## 버전 규칙 (semver)
 
@@ -66,6 +89,7 @@ evals/
 
 ```bash
 git checkout main && git pull origin main
+python3 scripts/validate-structure.py   # 실패하면 태그를 만들지 않는다
 git tag -a v{version} -m "v{version}: {한 줄 요약}"
 git push origin v{version}
 gh release create v{version} --title "v{version}" --generate-notes

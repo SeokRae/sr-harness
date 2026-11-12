@@ -1,6 +1,7 @@
 ---
 name: ralph
-description: execute + verify 단계를 Ralph Loop bypass 모드로 자동화. plan 확정 후 사용. verify 통과까지 반복 → READY_FOR_PR 출력 → submit 안내.
+description: execute + verify 단계를 Ralph Loop bypass 모드로 자동화. plan 확정 후 사용. verify 통과까지 반복 → READY_FOR_PR 출력 → submit 안내. Stop hook을 설치해 세션을 자율 루프로 바꾸므로 모델 자동 호출을 막았다. /ralph 로만 진입한다.
+disable-model-invocation: true
 allowed-tools: ["Bash(${CLAUDE_PLUGIN_ROOT}/scripts/setup-ralph.sh:*)", "Bash(${CLAUDE_PLUGIN_ROOT}/scripts/cleanup-ralph.sh:*)"]
 ---
 
@@ -21,7 +22,7 @@ bash "${CLAUDE_PLUGIN_ROOT}/scripts/setup-ralph.sh"
 - `.claude/session-plan.md` 존재 + feature 브랜치 확인
 - 기존 Ralph 루프 중복 실행 방지
 - `.claude/settings.local.json` 백업 → bypass 권한 추가
-- `.claude/ralph-loop.local.md` 상태 파일 생성 (session_id, max_iterations, karpathy 원칙 포함 프롬프트)
+- `.claude/ralph-loop.local.md` 상태 파일 생성 (session_id, max_iterations, karpathy·ownership 원칙 포함 프롬프트 — `ownership-principles` §1 outer loop 체크·§2 설명 가능 게이트가 매 반복 재주입됨)
 
 에러가 있으면 스크립트가 메시지와 함께 종료된다:
 - `session-plan.md 없음` → `plan` 스킬로 먼저 계획 작성

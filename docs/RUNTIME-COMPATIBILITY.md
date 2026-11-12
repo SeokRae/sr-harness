@@ -14,6 +14,8 @@ sr-harness is a dual-runtime plugin. Claude Code and Codex share the same skill 
 
 Version bumps must keep both manifests in sync.
 The installable Codex wrapper under `plugins/sr-harness/` must keep its `.codex-plugin/` and `skills/` contents in sync with the root `.codex-plugin/` and `skills/` directories.
+Do not edit the wrapper by hand. Run `scripts/sync-codex-wrapper.sh` to rebuild it from the root.
+`scripts/validate-structure.py` runs in CI and fails when the wrapper or any of the five version fields drifts.
 
 ## Shared Contract
 
@@ -52,5 +54,5 @@ When adding or changing a skill:
 1. Keep the shared behavior in `skills/<name>/SKILL.md`.
 2. Put Claude-only behavior in a clearly labeled `Claude Code` subsection.
 3. Put Codex-only behavior in a clearly labeled `Codex` subsection.
-4. Update `.claude-plugin/plugin.json` and `.codex-plugin/plugin.json` together when the skill list or version changes.
+4. Update `.claude-plugin/plugin.json` and `.codex-plugin/plugin.json` together when the skill list or version changes, then run `scripts/sync-codex-wrapper.sh` and `python3 scripts/validate-structure.py`.
 5. Validate the Codex manifest with the Codex plugin validator before release.

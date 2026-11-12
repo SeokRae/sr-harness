@@ -1,6 +1,6 @@
 ---
 name: issue
-description: GitHub Issue 생성 및 feature 브랜치 생성 스킬. plan 완료 후 자동 실행. "이슈 만들어줘", "브랜치 생성", "작업 시작" 시 사용. 1 Issue = 1 Branch = 1 PR 규칙 강제.
+description: GitHub Issue 생성 및 feature 브랜치 생성 스킬. plan 완료 후 자동 실행 — Plan Mode(opusplan)로 계획했다면 ExitPlanMode 승인이 곧 이 실행 신호다. "이슈 만들어줘", "브랜치 생성", "작업 시작" 시 사용. 1 Issue = 1 Branch = 1 PR 규칙 강제.
 ---
 
 # issue
@@ -16,6 +16,9 @@ gh issue create \
   --title "{feat|fix|refactor}: {설명}" \
   --body "{계획 내용 또는 배경 설명}"
 ```
+
+`plan` 단계가 Plan Mode(opusplan)로 진행됐다면 `--body`는 그 계획 파일(`~/.claude/plans/{slug}.md`)의
+목표·성공 기준·단계 요약을 요약해 채운다 — 계획을 다시 쓰지 않고 그대로 옮긴다.
 
 생성된 Issue 번호를 기억한다 (이후 모든 단계에서 사용).
 

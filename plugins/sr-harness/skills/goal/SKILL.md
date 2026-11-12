@@ -1,6 +1,7 @@
 ---
 name: goal
-description: "plan/worktree 없이 자율 실행. /goal \"목표\" → Stop hook 기반으로 목표 달성까지 반복. pause/resume/clear/status 지원. Keywords: goal, 목표, 자율 실행, 자동 반복, ralph 대안"
+description: "plan/worktree 없이 자율 실행. /goal \"목표\" → Stop hook 기반으로 목표 달성까지 반복. pause/resume/clear/status 지원. Stop hook 기반 자율 반복이라 모델 자동 호출을 막았다. /goal 로만 진입한다. Keywords: goal, 목표, 자율 실행, 자동 반복, ralph 대안"
+disable-model-invocation: true
 allowed-tools: ["Bash(${CLAUDE_PLUGIN_ROOT}/scripts/setup-goal.sh:*)", "Bash(${CLAUDE_PLUGIN_ROOT}/scripts/cleanup-goal.sh:*)"]
 ---
 
@@ -36,6 +37,7 @@ Stop hook이 `<promise>GOAL_ACHIEVED</promise>` 를 감지할 때까지 반복�
 - 목표가 달성됐다고 판단하면 반드시 `<promise>GOAL_ACHIEVED</promise>` 출력
 - 달성되지 않은 상태에서 promise 출력 금지
 - 각 반복에서 `verify` 스킬의 completion audit 기준으로 달성 여부 판단
+- 사람 개입 없이 반복되는 루프이므로 `ownership-principles`(§1 outer loop 체크포인트, §2 설명 가능 게이트) 원칙이 매 반복 stop-hook 프롬프트에 포함돼 적용된다
 
 ### 완료 처리
 

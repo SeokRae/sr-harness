@@ -30,6 +30,10 @@ git branch --show-current  # feature/* 여야 함, main이면 안 됨
 코드 프로젝트인 경우 → `dev-coding-principles` 스킬을 로드하고 원칙(§1 Naming, §2 Exception Handling, §3 Test)을 구현에 적용한다.
 코드 프로젝트인 경우 → `dev-architecture` 스킬을 로드하고 아키텍처 원칙(§1 Hexagonal, §2 Layer Separation, §3 Package Structure)을 구현에 적용한다.
 
+문서를 작성·수정하는 태스크이거나 되돌리기 어려운 설계 결정을 포함하는 태스크인 경우 → `dev-documentation-principles` 스킬을 로드하고 문서화 원칙(§1 결정 기록, §2 드리프트 처리, §3 기존 컨벤션 우선)을 구현에 적용한다.
+
+이상탐지·급증(spike) 모니터링 대시보드/리포트를 만드는 태스크인 경우 → `dev-monitoring-design` 스킬을 로드하고 정보설계 원칙(§1 측정, §2 진단, §3 탐지, §4 표현)을 구현에 적용한다.
+
 코드 프로젝트인 경우 → 프로젝트 스택을 자동 감지한다:
 ```bash
 ls build.gradle pom.xml 2>/dev/null
@@ -98,6 +102,8 @@ git commit -m "{type}: {설명} (#N)"
 제외 조건이 없을 때 기본으로 시도하는 병렬 실행 모드.
 Agent 툴로 독립 태스크를 병렬 dispatch한다.
 
+다중 에이전트를 동시에 돌리기 전 `ownership-principles`(§3 오케스트레이션 세금)를 확인한다 — 결과를 전부 검토할 수 있는 규모인지 판단한 뒤 dispatch 수를 정한다.
+
 ### 원칙
 
 - 독립 태스크를 Agent 툴로 병렬 dispatch — 단일 메시지에 여러 Agent 호출
@@ -116,7 +122,7 @@ Agent 툴로 독립 태스크를 병렬 dispatch한다.
 4. 에이전트 결과 수신 → 2단계 리뷰
      [태스크 N] 스펙 리뷰: 불일치 → 재dispatch
      [태스크 N] 코드 품질 리뷰: 이슈 → 재dispatch
-5. 모든 리뷰 통과 → verify → submit
+5. 모든 리뷰 통과 → analyze → verify → submit
 ```
 
 ### 에이전트 프롬프트 형식
@@ -165,7 +171,7 @@ Agent 호출 시 prompt에 포함할 내용:
 4. [태스크 N] 코드 품질 리뷰 서브에이전트 dispatch
      ❌ 이슈 → 구현 서브에이전트 재dispatch → 재리뷰
      ✅ 통과 → 다음 태스크
-5. 모든 태스크 완료 → verify → submit
+5. 모든 태스크 완료 → analyze → verify → submit
 ```
 
 ### 서브에이전트 상태 처리
@@ -196,9 +202,11 @@ Agent 호출 시 prompt에 포함할 내용:
 
 ## 완료 조건
 
-**단일 모드**: plan의 모든 단계 verify 통과 → `verify` 호출 (통합 검증 후 submit)
-**팀모드**: 모든 에이전트 완료 + 2단계 리뷰 통과 → `verify` 호출 → `submit` (PR 1개)
-**순차 서브에이전트 모드**: 모든 태스크 2단계 리뷰 통과 → `verify` 호출 → `submit` (PR 1개)
+**단일 모드**: plan의 모든 단계 verify 통과 → `analyze` 호출 (정합성 게이트 → verify → submit)
+**팀모드**: 모든 에이전트 완료 + 2단계 리뷰 통과 → `analyze` 호출 → verify → submit (PR 1개)
+**순차 서브에이전트 모드**: 모든 태스크 2단계 리뷰 통과 → `analyze` 호출 → verify → submit (PR 1개)
+
+세 모드 모두 `analyze` 판정은 구현 맥락이 없는 새 에이전트가 하고(analyze의 "실행 주체" 절), verify부터는 이 세션이 이어서 실행한다. 단일 모드도 예외가 아니다. 구현한 세션이 자기 diff를 판정하게 되는 모드라서 이 위임이 가장 필요하다.
 
 ## 예외 상황
 
