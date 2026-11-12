@@ -16,15 +16,20 @@ description: 구현 완료 후 PR 생성 전 통합 검증 스킬. execute 모�
 
 ## 검증 체크리스트
 
-### 1. 미커밋 변경사항 없는지
+### 1. 변경 범위 안 미커밋 변경사항 없는지
 ```bash
-git status
+git diff --name-only origin/main...HEAD   # 이 브랜치가 커밋한 변경
+git diff --cached --name-only             # 스테이징한 변경
+git status --short                        # 작업 트리 전체
 ```
-→ `nothing to commit` 이어야 통과. 아니면 커밋 또는 stash 후 재확인.
+변경 범위는 앞 두 목록을 합친 것이다.
+- 범위 안 파일에 커밋하지 않은 수정이 있으면 → 커밋한 뒤 다시 확인한다.
+- 범위 밖 미커밋 파일과 미추적 파일은 → 목록만 보이고 손대지 않는다. stash, 커밋, 되돌리기, 삭제하지 않는다. 여러 세션이 워킹트리를 공유하면 다른 세션의 작업일 수 있다. 이 파일들 때문에 검증을 막지 않는다.
+- `git diff origin/main --name-only`(점 세 개 없음)는 작업 트리의 미커밋 수정까지 섞으므로 범위 판정에 쓰지 않는다.
 
 ### 2. 변경 파일 목록 확인
 ```bash
-git diff origin/main --name-only
+git diff --name-only origin/main...HEAD
 ```
 → 목록을 사용자에게 보여준다. 의도하지 않은 파일이 있으면 멈추고 확인한다.
 
@@ -58,14 +63,14 @@ cat .claude/goal-state.json 2>/dev/null | jq -r 'select(.status == "active") | .
 
 | 주장 | 통과로 인정되는 증거 |
 |------|---------------------|
-| 미커밋 없음 | `git status` 출력에 `nothing to commit` 포함 |
-| 변경 파일 의도대로 | `git diff --name-only` 출력 전체 |
+| 범위 안 미커밋 없음 | 1단계 세 명령의 출력. 범위 밖 파일은 목록으로 함께 적는다 |
+| 변경 파일 의도대로 | `git diff --name-only origin/main...HEAD` 출력 전체 |
 | 테스트 통과 | 테스트 출력 요약줄 (`N passed, 0 failed` 등) |
 | Completion Audit | goal 문장과 1:1 대응하는 달성 근거 |
 
 ```
 [verify 결과]
-✅ 미커밋 없음 — `nothing to commit, working tree clean`
+✅ 범위 안 미커밋 없음: 범위 밖 {N}개는 손대지 않음: {파일 목록 / 없음}
 ✅ 변경 {N}개 — {파일 목록}
 ✅ 테스트 {명령어} — `{출력 요약줄}`
 ✅ Completion Audit — {달성 근거 / 해당 없음}
@@ -80,7 +85,8 @@ cat .claude/goal-state.json 2>/dev/null | jq -r 'select(.status == "active") | .
 | 테스트 실패 | `debug` 전환 후 `execute` 재진입 |
 | Completion Audit 미달성 | execute 재진입 (submit 금지) |
 | 의도치 않은 파일 변경 | 사용자 확인 후 수정 → 재검증 |
-| 미커밋 변경 있음 | 커밋 처리 후 재검증 |
+| 범위 안 미커밋 변경 있음 | 커밋 처리 후 재검증 |
+| 범위 밖 미커밋 파일 있음 | 목록만 보이고 다음 항목으로 진행 (손대지 않음) |
 
 ## 금지 사항
 
