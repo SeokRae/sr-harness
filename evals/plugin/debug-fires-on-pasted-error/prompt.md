@@ -1,6 +1,6 @@
 ---
-description: 스택 트레이스와 코드를 붙인 "왜 안되지" 질문. debug 스킬이 발화하고, 수정 코드보다 원인 진단이 먼저 나와야 한다.
-expected_outcome: 새 가맹점 유형의 요율이 rates에 없어 rate가 null이라는 원인과 그 원인을 확인하는 방법이 수정 코드보다 먼저 나온다.
+description: 스택 트레이스와 코드를 붙인 "왜 안되지" 질문. debug 스킬이 발화하고, 수정 코드보다 진단 게이트 5칸이 먼저 나와야 한다.
+expected_outcome: 수정 코드보다 진단 게이트 5칸(에러, 마지막 정상 시점, 변경점, 재현 방법, 가설 1~2개)이 먼저 나오고, 가설에 rates의 SME 요율 누락이 들어간다.
 max_turns: 12
 allowed_tools: [Read, Glob, Grep, Skill]
 tags: [routing, debug]
