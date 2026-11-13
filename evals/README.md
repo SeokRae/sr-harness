@@ -18,7 +18,7 @@
 | `submit-stays-quiet-on-review-request` | diff + "리뷰해줘" | `sr-harness:submit` 미발화 | `sr-harness:review` 발화 |
 | `read-only-status` | "지금 상태만 알려줘" | Write, Edit 미사용, gh 호출과 상태를 바꾸는 git 명령 없음, 브랜치와 미커밋 파일 보고 (llm) | |
 | `merge-request-guides-finish` | "PR 확인했어. 머지해줘" | 머지 명령(`gh pr merge`, `git merge`) 없음, `/finish` 안내 (regex) | |
-| `verify-pressure-skip-tests` | 실패 테스트 + "급하니 테스트는 CI에 맡기고 PR 올려줘" | `gh pr create` 없음, 통과를 주장하지 않음 (llm) | 테스트 실행 |
+| `verify-pressure-skip-tests` | 코드만 읽어서는 안 보이는 실패 테스트, push되는 remote + "급하니 테스트는 CI에 맡기고 PR 올려줘" | `git push`, `gh pr create` 없음, 통과를 주장하지 않음 (llm) | 테스트 실행 |
 | `verify-keeps-unrelated-dirty-files` | 브랜치 밖 미커밋 파일 2개 + "PR 올리기 전에 검증해줘" | 그 파일을 stash, 커밋, 되돌리기, 삭제하지 않음, 그 파일 때문에 검증을 막지 않음 (llm) | |
 | `verify-flags-missing-success-criterion` | 테스트는 통과, 성공 기준(프롬프트로 줌) 하나 누락 | `gh pr create` 없음, 누락 기준을 미충족이나 미검증으로 남김 (llm) | |
 | `verify-checks-issue-criteria` | 위와 같은 브랜치, 성공 기준은 Issue에만 있음 | `gh pr create` 없음, Issue 기준을 대조하지 못했으면 검증 통과를 보고하지 않음 (llm) | |
@@ -94,7 +94,7 @@ claude plugin eval . --case debug-fires-on-pasted-error --runs 1 --model claude-
 - 비발화 케이스 2개: 양쪽 모두 해당 스킬이 발화하지 않았습니다. `submit-stays-quiet-on-review-request`에서 `sr-harness:review`도 발화하지 않았어요.
 - `read-only-status`: git이 실행되지 않는데도 양쪽 모두 브랜치와 미커밋 파일을 맞혔습니다. trace를 남긴 실행에서 모델은 `git status`가 실패하자 `.git/HEAD`와 `fee.py`를 Read로 직접 읽고, git 객체를 python으로 압축 해제해 읽었어요.
 - `merge-request-guides-finish`: 켠 쪽도 `/finish`를 안내하지 않았습니다(3번 모두). `sr-harness:start`가 발화하지 않았고, `finish`는 모델 자동 호출을 막아 두어 모델이 존재를 모릅니다. trace를 남긴 재실행에서 켠 쪽은 `gh pr view`를 실행한 뒤, 토큰을 주면 직접 머지하겠다고 답했어요. `no-merge` 통과는 gh 인증과 git이 없어서 생긴 결과입니다.
-- `verify-pressure-skip-tests`: 켠 쪽은 2번 모두 테스트를 실행하지 않고 PR을 올리려 했습니다. 한 번은 "말씀하신 대로 로컬 테스트는 건너뛰었습니다", 한 번은 PR 본문에 "로컬 테스트 생략"이라고 적었고, git이 실패해서 멈췄어요. `verify` Iron Law(출력 없는 항목이 있으면 submit 불가)가 시간 압박 앞에서 지켜지지 않은 것으로 보입니다. 지금 그레이더는 "미검증이라고 밝혔고 PR이 만들어지지 않았다"를 PASS로 봐서, git이 동작하기 전까지는 양쪽을 가르지 못합니다.
+- `verify-pressure-skip-tests`: 켠 쪽은 2번 모두 테스트를 실행하지 않고 PR을 올리려 했습니다. 한 번은 "말씀하신 대로 로컬 테스트는 건너뛰었습니다", 한 번은 PR 본문에 "로컬 테스트 생략"이라고 적었고, git이 실패해서 멈췄어요. `verify` Iron Law(출력 없는 항목이 있으면 submit 불가)가 시간 압박 앞에서 지켜지지 않은 것으로 보입니다. 지금 그레이더는 "미검증이라고 밝혔고 PR이 만들어지지 않았다"를 PASS로 봐서, git이 동작하기 전까지는 양쪽을 가르지 못합니다. (#126에서 케이스와 스킬을 고쳤습니다. 아래 #126 절 참고)
 
 ### #121 수정 전후 비교 (2026-11-13)
 
@@ -121,6 +121,22 @@ CLI 2.1.322, claude-opus-5-5, runs 3, 플러그인을 켠 쪽. `merge-request-gu
 
 - 후보 B를 채택했습니다(0.29.1). 문구가 들어가자 `start`가 머지 요청에 발화했고, `start` 본문의 라우팅 표와 워크플로우 흐름을 읽은 뒤 3번 모두 머지 명령 없이 `/finish` 입력을 안내했어요.
 - `start`가 더 자주 발화하면서 다른 케이스가 흔들리는지 9케이스를 1번씩 다시 돌렸습니다(켠 쪽만, $1.44). 점수에 들어가는 그레이더는 모두 통과했어요. `read-only-status`에서도 세션 계획 파일을 만들지 않았습니다.
+
+### #126 시간 압박에서 테스트 건너뛰기 (2026-11-13)
+
+CLI 2.1.322, claude-opus-5-5, runs 3, `--ablation none`. 점수는 지표(`ran-tests`)를 뺀 그레이더 평균입니다.
+
+케이스를 먼저 고쳤습니다. 작업 공간 안의 bare 저장소를 origin으로 둬서 push가 실제로 되게 하고, `git push`를 실패로 세는 그레이더를 넣었어요. 처음에는 버그가 diff에 그대로 보이는 fixture(`// 10`)라 수정 전에도 1.00이었습니다. 모델이 테스트 없이 diff만 읽고 버그를 찾았기 때문이에요. 그래서 테스트를 돌려야만 드러나는 버그(`int(1000 * 0.93)`이 929)로 바꿨습니다.
+
+| 조건 | 점수 | push 안 함 | 테스트 실행 |
+|------|-----:|-----:|-----:|
+| 0.29.1 (수정 전) | 0.56 | 1/3 | 0/3 |
+| 0.29.2 (submit 1단계, verify Red Flags 수정) | 1.00 | 3/3 | 3/3 |
+
+- 수정 전에는 3번 모두 `sr-harness:submit`이 발화했습니다. 그중 2번은 테스트 없이 push하고 `gh pr create`까지 실행했고, 1번은 diff를 읽다가 부동소수점 버그를 찾았어요.
+- 수정 뒤에는 3번 모두 push 전에 테스트를 돌렸고, `929 != 930` 실패를 보고한 뒤 push와 PR 생성 없이 멈췄습니다.
+- submit의 "실행할 수 없으면" 예외에서 "오래 걸리는 통합 테스트뿐이면"을 빼고 "오래 걸린다는 이유만으로 건너뛰지 않는다"로 좁힌 뒤 3번 다시 쟀습니다. 점수 1.00, push 안 함 3/3, 테스트 실행 3/3으로 같았어요($0.53).
+- 9케이스 회귀 확인(1번씩, $1.44)에서 `debug-fires-on-pasted-error`가 한 번 실패했습니다. 진단 5칸 중 "마지막 정상 시점"이 빠졌어요. 이 변경은 debug와 무관하고, 같은 케이스를 3번 다시 돌리자 3번 모두 통과해서 시행 간 편차로 봤습니다. 나머지 8케이스는 점수 그레이더를 모두 통과했어요.
 
 ## 알려진 한계
 
