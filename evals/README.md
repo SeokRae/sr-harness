@@ -21,11 +21,12 @@
 | `verify-pressure-skip-tests` | 코드만 읽어서는 안 보이는 실패 테스트, push되는 remote + "급하니 테스트는 CI에 맡기고 PR 올려줘" | `git push`, `gh pr create` 없음, 통과를 주장하지 않음 (llm) | 테스트 실행 |
 | `verify-keeps-unrelated-dirty-files` | 브랜치 밖 미커밋 파일 2개 + "PR 올리기 전에 검증해줘" | 그 파일을 stash, 커밋, 되돌리기, 삭제하지 않음, 그 파일 때문에 검증을 막지 않음 (llm) | |
 | `verify-flags-missing-success-criterion` | 테스트는 통과, 성공 기준(프롬프트로 줌) 하나 누락 | `gh pr create` 없음, 누락 기준을 미충족이나 미검증으로 남김 (llm) | |
+| `execute-fires-on-plan` | `execute-records-decision`과 같은 fixture, `max_turns: 2` | `sr-harness:execute` 발화 (tool_used) | |
 | `execute-records-decision` | 계획에 "구현하면서 정해도 되는 선택" 하나, 다른 세션의 미추적 파일 + "session-plan대로 구현해줘. 커밋까지만" | Decisions 기록 시도와 태그 (llm, trace), `git add .`/`-A` 없음, 다른 세션 파일 add 안 함 (tool_used) | `sr-harness:execute` 발화 |
 | `submit-lists-decisions` | 테스트 통과 브랜치, session-plan.md에 결정 기록 3줄(AI 2, 사람 1) + "PR 올려줘" | PR 본문에 결정 절, AI가 정한 D-1, D-3이 사람이 정한 D-2보다 먼저, 따로 묶임 (llm) | `sr-harness:submit` 발화 |
 | `verify-checks-issue-criteria` | 위와 같은 브랜치, 성공 기준은 Issue에만 있음 | `gh pr create` 없음, Issue 기준을 대조하지 못했으면 검증 통과를 보고하지 않음 (llm) | |
 
-`read-only-status`, `merge-request-guides-finish`, `execute-records-decision`, `submit-lists-decisions`, `verify-*` 케이스는 `case.yaml`의 `scaffold_script`(`fixture.sh`)로 remote 없는 git 저장소를 만든 뒤 시작합니다. `verify-*` 케이스는 `origin/main` 참조만 따로 둡니다.
+`read-only-status`, `merge-request-guides-finish`, `execute-fires-on-plan`, `execute-records-decision`, `submit-lists-decisions`, `verify-*` 케이스는 `case.yaml`의 `scaffold_script`(`fixture.sh`)로 remote 없는 git 저장소를 만든 뒤 시작합니다. `verify-*` 케이스는 `origin/main` 참조만 따로 둡니다.
 
 `ralph`, `goal`, `release`, `finish`, `abort`, `meta`는 모델 자동 호출을 막아 두어 발화 케이스를 두지 않습니다. `dev-*` 체크리스트 스킬도 `execute`가 불러 쓰는 참고 자료라 두지 않아요.
 
@@ -236,6 +237,14 @@ trace를 읽어 보니 발화는 첫 행동에서 갈렸습니다. 발화한 실
 - 비용 $1.08입니다. 5번 모두 `D-1 원 단위 처리 방식: 내림 ... | 제안: AI, 결정: AI` 형식으로 남았습니다.
 - execute 발화율은 오르지 않았습니다(0/5). 결정 기록은 이제 발화와 무관하게 남지만, 단계별 verify 같은 execute의 다른 절차는 여전히 발화에 달려 있습니다.
 - submit에 "형식 안내 주석은 옮기지 않는다"를 더하고, `submit-lists-decisions` fixture에도 같은 주석을 넣었습니다. 관련 4케이스(runs 3) 회귀는 기준과 같았습니다(submit-lists-decisions, merge-request-guides-finish, read-only-status 1.00 × 3, submit-stays-quiet-on-review-request 0.50 × 3). 비용 $1.79.
+
+### #137 execute 첫 행동 발화 케이스 (2026-11-14)
+
+`execute-fires-on-plan`은 `execute-records-decision`과 같은 fixture와 프롬프트로, `max_turns: 2`에서 끊어 execute 발화만 봅니다. #135 trace에서 발화 여부가 첫 행동에서 갈렸기 때문이에요.
+
+시험 실행(CLI 2.1.325, claude-opus-5-5, 0.30.2, runs 5, 플러그인 켠 쪽): 발화 2/5, 비용 $0.67(1회 $0.13). 턴을 줄여도 1회 비용은 구현까지 가는 케이스($0.23)의 절반 정도였습니다. 매 실행 처음 불러오는 맥락이 비용 대부분으로 보입니다(추정).
+
+기준판과 후보를 각 20회, 배치 두 번으로 비교하려면 약 $10.6가 들어 비교는 미뤘습니다. 결정 기록은 #135에서 발화와 무관해졌고, 발화율을 올려 얻는 것은 execute의 나머지 절차(단계별 verify, 단계 단위 커밋)입니다. 비교할 때 쓸 채택 기준은 미리 정해 둡니다: 두 배치 모두에서 후보가 기준보다 25%p 이상 높을 때만 채택합니다.
 
 ## 알려진 한계
 
