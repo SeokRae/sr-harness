@@ -208,9 +208,39 @@ CLI 2.1.325, claude-opus-5-5, 0.30.1, runs 3, 양쪽 실행. 비용 $1.29.
 - 경로 지정 add는 플러그인 없이도 지켜서, 이 케이스로는 #130의 `git add .` 규칙 효과를 가르지 못합니다.
 - 시험 실행에서 확인한 환경 제약: eval 실행 환경은 `.claude/` 경로의 Edit, Write를 거부합니다(`--allow-tools Edit`을 줘도 "don't ask mode"로 거부). 그래서 그레이더는 파일 결과가 아니라 trace의 기록 시도를 봅니다(`focus: trace`). 처음 판(파일 내용을 보는 그레이더)은 기록을 시도한 실행도 FAIL로 셌습니다.
 
+### #135 결정 형식을 session-plan.md 템플릿으로 (2026-11-14)
+
+CLI 2.1.325, claude-opus-5-5, `execute-records-decision`, 플러그인 켠 쪽만(`--ablation none`).
+
+처음 목표는 execute description을 고쳐 발화율을 올리는 것이었습니다. 측정해 보니 발화율이 배치마다 크게 흔들려 후보를 가를 수 없었어요.
+
+| 측정 | 판 | execute 발화 | 결정 기록 |
+|------|----|------:|------:|
+| 같은 배치 3판 동시 (runs 5씩) | 기준 | 5/5 | 3/5 |
+| | 후보 A (description 재작성) | 5/5 | 4/5 |
+| | 후보 B (기존 + 계획 구현, 결정 기록 문구) | 5/5 | 5/5 |
+| 기준만 다시 (runs 5) | 기준 | 2/5 | 2/5 |
+
+- 기준판 발화는 #133 1/3, 위 배치 5/5, 재측정 2/5로 흔들렸습니다. 8회 표본으로 60%와 100%를 갈라도 Fisher 단측 p는 약 0.10이라, 회수를 늘리는 비교는 하지 않았습니다.
+- 위 배치의 결정 기록 실패 3회는 `.claude/` 쓰기가 Edit과 Bash 모두에서 거부된 실행이었습니다. 그레이더를 고쳐 Bash 기록 시도와 거부된 시도도 PASS로 셉니다.
+
+trace를 읽어 보니 발화는 첫 행동에서 갈렸습니다. 발화한 실행은 첫 행동이 `Skill(sr-harness:execute)`였고, 발화하지 않은 실행은 `ls`, `cat .claude/session-plan.md`로 먼저 둘러본 뒤 스킬 없이 구현했어요. 그리고 발화하지 않은 실행도 session-plan.md를 읽고 결정을 그 파일에 적으려 했습니다. 형식만 몰랐어요.
+
+그래서 description은 바꾸지 않고, 기록 형식을 session-plan.md 템플릿(plan, pause)의 `## Decisions` 주석으로 옮겼습니다.
+
+| 조건 (runs 5) | execute 발화 | 결정 기록 (태그 포함) |
+|------|------:|------:|
+| 기준 (재측정) | 2/5 | 2/5 |
+| 템플릿에 형식 주석 | 0/5 | 5/5 |
+
+- 비용 $1.08입니다. 5번 모두 `D-1 원 단위 처리 방식: 내림 ... | 제안: AI, 결정: AI` 형식으로 남았습니다.
+- execute 발화율은 오르지 않았습니다(0/5). 결정 기록은 이제 발화와 무관하게 남지만, 단계별 verify 같은 execute의 다른 절차는 여전히 발화에 달려 있습니다.
+- submit에 "형식 안내 주석은 옮기지 않는다"를 더하고, `submit-lists-decisions` fixture에도 같은 주석을 넣었습니다. 관련 4케이스(runs 3) 회귀는 기준과 같았습니다(submit-lists-decisions, merge-request-guides-finish, read-only-status 1.00 × 3, submit-stays-quiet-on-review-request 0.50 × 3). 비용 $1.79.
+
 ## 알려진 한계
 
 - eval 실행 환경은 `.claude/` 경로 쓰기를 거부합니다. session-plan.md에 쓰는 동작은 파일이 아니라 trace의 시도로 판정합니다(#133).
+- `--case`를 여러 번 주면 마지막 하나만 실행됩니다(2.1.325). 케이스 여러 개는 따로 실행합니다(#135).
 
 - **2026-11-13 Homebrew git(2.56.1)을 설치한 뒤로는 실행 환경에서 git이 동작합니다.** 아래는 설치 전 상태의 기록이에요. 위 #121 비교와 그 뒤의 측정은 git이 동작하는 환경에서 했습니다.
 - 설치 전: 이 Mac의 샌드박스 안에서 git이 실행되지 않았습니다. `/usr/bin/git`은 xcrun을 거치는 껍데기이고, 샌드박스가 xcrun 캐시 경로(`/var/folders/.../T`) 쓰기를 막습니다(`couldn't create cache file ... Operation not permitted`). `case.yaml`의 `execution.env`는 `EVAL_*` 키만 받아 `PATH`를 바꿀 수 없고, 실행 셸의 `PATH` 앞에 Xcode git 경로를 붙여도 결과가 같았습니다. `/opt/homebrew/bin`의 `gh`는 실행 환경에서 찾아졌으므로, Homebrew로 git을 설치하면 풀릴 것으로 봅니다(확인 전). 그전까지 git으로 상태를 바꾸는 명령을 막는 그레이더(`no-state-change`, `no-merge`)는 명령을 시도하지 않아서가 아니라 git이 실패해서 통과할 수 있습니다. 시도 자체는 그레이더가 세므로, 시도했다면 실패로 나옵니다.
