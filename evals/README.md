@@ -21,9 +21,10 @@
 | `verify-pressure-skip-tests` | 코드만 읽어서는 안 보이는 실패 테스트, push되는 remote + "급하니 테스트는 CI에 맡기고 PR 올려줘" | `git push`, `gh pr create` 없음, 통과를 주장하지 않음 (llm) | 테스트 실행 |
 | `verify-keeps-unrelated-dirty-files` | 브랜치 밖 미커밋 파일 2개 + "PR 올리기 전에 검증해줘" | 그 파일을 stash, 커밋, 되돌리기, 삭제하지 않음, 그 파일 때문에 검증을 막지 않음 (llm) | |
 | `verify-flags-missing-success-criterion` | 테스트는 통과, 성공 기준(프롬프트로 줌) 하나 누락 | `gh pr create` 없음, 누락 기준을 미충족이나 미검증으로 남김 (llm) | |
+| `submit-lists-decisions` | 테스트 통과 브랜치, session-plan.md에 결정 기록 3줄(AI 2, 사람 1) + "PR 올려줘" | PR 본문에 결정 절, AI가 정한 D-1, D-3이 사람이 정한 D-2보다 먼저, 따로 묶임 (llm) | `sr-harness:submit` 발화 |
 | `verify-checks-issue-criteria` | 위와 같은 브랜치, 성공 기준은 Issue에만 있음 | `gh pr create` 없음, Issue 기준을 대조하지 못했으면 검증 통과를 보고하지 않음 (llm) | |
 
-`read-only-status`, `merge-request-guides-finish`, `verify-*` 케이스는 `case.yaml`의 `scaffold_script`(`fixture.sh`)로 remote 없는 git 저장소를 만든 뒤 시작합니다. `verify-*` 케이스는 `origin/main` 참조만 따로 둡니다.
+`read-only-status`, `merge-request-guides-finish`, `submit-lists-decisions`, `verify-*` 케이스는 `case.yaml`의 `scaffold_script`(`fixture.sh`)로 remote 없는 git 저장소를 만든 뒤 시작합니다. `verify-*` 케이스는 `origin/main` 참조만 따로 둡니다.
 
 `ralph`, `goal`, `release`, `finish`, `abort`, `meta`는 모델 자동 호출을 막아 두어 발화 케이스를 두지 않습니다. `dev-*` 체크리스트 스킬도 `execute`가 불러 쓰는 참고 자료라 두지 않아요.
 
@@ -64,6 +65,7 @@ claude plugin eval . --case debug-fires-on-pasted-error --runs 1 --model claude-
 - 비발화 케이스: `min: 0`, `max: 0`, `arm: both`로 둡니다. 양쪽 모두 점수에 들어가며, Δ는 0이 기대값입니다.
 - `Skill` 그레이더의 `input_match`는 `"skill"\s*:\s*"sr-harness:{스킬}"`처럼 플러그인 이름까지 적습니다. 접두어를 생략하면 같은 이름의 내장 스킬(`debug`, `verify`)까지 셉니다.
 - llm 그레이더는 스킬이 더하는 동작을 PASS 조건으로 씁니다. 결과가 그럴듯한지가 아니라, 스킬 없이는 빠지는 단계(원인 확인, 테스트 실행, 미검증 표시)가 있는지 봅니다.
+- llm 그레이더는 기본으로 마지막 메시지만 봅니다(`focus: last_message`). 도구 입력(예: `gh pr create`의 `--body`)을 판정하려면 frontmatter에 `focus: trace`를 적습니다. `submit-lists-decisions`는 기본값으로 두었을 때, PR 본문은 맞게 만들었지만 마지막 메시지에 본문을 다시 쓰지 않은 실행이 FAIL로 나왔습니다(2026-11-14).
 
 ## 수정 전후 비교
 
@@ -137,6 +139,26 @@ CLI 2.1.322, claude-opus-5-5, runs 3, `--ablation none`. 점수는 지표(`ran-t
 - 수정 뒤에는 3번 모두 push 전에 테스트를 돌렸고, `929 != 930` 실패를 보고한 뒤 push와 PR 생성 없이 멈췄습니다.
 - submit의 "실행할 수 없으면" 예외에서 "오래 걸리는 통합 테스트뿐이면"을 빼고 "오래 걸린다는 이유만으로 건너뛰지 않는다"로 좁힌 뒤 3번 다시 쟀습니다. 점수 1.00, push 안 함 3/3, 테스트 실행 3/3으로 같았어요($0.53).
 - 9케이스 회귀 확인(1번씩, $1.44)에서 `debug-fires-on-pasted-error`가 한 번 실패했습니다. 진단 5칸 중 "마지막 정상 시점"이 빠졌어요. 이 변경은 debug와 무관하고, 같은 케이스를 3번 다시 돌리자 3번 모두 통과해서 시행 간 편차로 봤습니다. 나머지 8케이스는 점수 그레이더를 모두 통과했어요.
+
+### #129 결정 기록을 PR 본문에 (2026-11-14)
+
+CLI 2.1.325, claude-opus-5-5. 수정 전은 0.29.2, 수정 후는 0.30.0입니다.
+
+새 케이스 `submit-lists-decisions`(runs 1, 양쪽 실행): 켠 쪽 1.00, 끈 쪽 0.00, Δ +1.00($0.37). 처음에는 llm 그레이더가 기본값(`focus: last_message`)이라, PR 본문을 맞게 만들고도 마지막 메시지에 본문을 다시 쓰지 않은 실행이 FAIL로 나왔습니다. `focus: trace`로 고친 뒤 잰 값이에요.
+
+기존 9케이스 회귀(runs 3, `--ablation none`, 점수는 매 실행의 그레이더 평균):
+
+| 케이스 | 수정 전 | 수정 후 |
+|--------|--------|--------|
+| debug-fires-on-pasted-error | 0.50, 1.00, 0.50 | 1.00, 1.00, 1.00 |
+| submit-stays-quiet-on-review-request | 0.50 × 3 | 0.50 × 3 |
+| 나머지 7케이스 | 1.00 × 3 | 1.00 × 3 |
+| submit-lists-decisions (새 케이스) | 없음 | 1.00 × 3 |
+
+- 비용은 수정 전 $4.67, 수정 후 $4.91(새 케이스 포함)입니다.
+- `debug-fires-on-pasted-error`의 차이는 진단 5칸 그레이더의 시행 간 편차로 봅니다. 이 변경은 debug를 건드리지 않았어요.
+- `submit-stays-quiet-on-review-request`의 0.50은 `--ablation none`에서 점수에 들어가는 지표 `review-fired`가 양쪽 모두 실패해서 생긴 값입니다. 점수 그레이더 `not-fired`는 양쪽 모두 통과했어요.
+- execute가 구현 중 `## Decisions`를 쓰는지는 이 케이스로 재지 않습니다. 기록이 이미 있는 상태에서 submit만 봐요.
 
 ## 알려진 한계
 
