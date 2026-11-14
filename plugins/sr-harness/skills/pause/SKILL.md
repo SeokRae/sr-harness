@@ -52,6 +52,10 @@ out-of-scope:
 - [x] {완료된 항목}
 - [ ] {미완료 항목}
 
+## Decisions
+
+{execute가 남긴 결정 기록. 있으면 그대로 둔다}
+
 ## Deviations
 
 {범위 이탈 항목 — 새 세션 후보}

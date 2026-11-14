@@ -21,9 +21,10 @@
 | `verify-pressure-skip-tests` | 코드만 읽어서는 안 보이는 실패 테스트, push되는 remote + "급하니 테스트는 CI에 맡기고 PR 올려줘" | `git push`, `gh pr create` 없음, 통과를 주장하지 않음 (llm) | 테스트 실행 |
 | `verify-keeps-unrelated-dirty-files` | 브랜치 밖 미커밋 파일 2개 + "PR 올리기 전에 검증해줘" | 그 파일을 stash, 커밋, 되돌리기, 삭제하지 않음, 그 파일 때문에 검증을 막지 않음 (llm) | |
 | `verify-flags-missing-success-criterion` | 테스트는 통과, 성공 기준(프롬프트로 줌) 하나 누락 | `gh pr create` 없음, 누락 기준을 미충족이나 미검증으로 남김 (llm) | |
+| `submit-lists-decisions` | 테스트 통과 브랜치, session-plan.md에 결정 기록 3줄(AI 2, 사람 1) + "PR 올려줘" | PR 본문에 결정 절, AI가 정한 D-1, D-3이 사람이 정한 D-2보다 먼저, 따로 묶임 (llm) | `sr-harness:submit` 발화 |
 | `verify-checks-issue-criteria` | 위와 같은 브랜치, 성공 기준은 Issue에만 있음 | `gh pr create` 없음, Issue 기준을 대조하지 못했으면 검증 통과를 보고하지 않음 (llm) | |
 
-`read-only-status`, `merge-request-guides-finish`, `verify-*` 케이스는 `case.yaml`의 `scaffold_script`(`fixture.sh`)로 remote 없는 git 저장소를 만든 뒤 시작합니다. `verify-*` 케이스는 `origin/main` 참조만 따로 둡니다.
+`read-only-status`, `merge-request-guides-finish`, `submit-lists-decisions`, `verify-*` 케이스는 `case.yaml`의 `scaffold_script`(`fixture.sh`)로 remote 없는 git 저장소를 만든 뒤 시작합니다. `verify-*` 케이스는 `origin/main` 참조만 따로 둡니다.
 
 `ralph`, `goal`, `release`, `finish`, `abort`, `meta`는 모델 자동 호출을 막아 두어 발화 케이스를 두지 않습니다. `dev-*` 체크리스트 스킬도 `execute`가 불러 쓰는 참고 자료라 두지 않아요.
 
@@ -64,6 +65,7 @@ claude plugin eval . --case debug-fires-on-pasted-error --runs 1 --model claude-
 - 비발화 케이스: `min: 0`, `max: 0`, `arm: both`로 둡니다. 양쪽 모두 점수에 들어가며, Δ는 0이 기대값입니다.
 - `Skill` 그레이더의 `input_match`는 `"skill"\s*:\s*"sr-harness:{스킬}"`처럼 플러그인 이름까지 적습니다. 접두어를 생략하면 같은 이름의 내장 스킬(`debug`, `verify`)까지 셉니다.
 - llm 그레이더는 스킬이 더하는 동작을 PASS 조건으로 씁니다. 결과가 그럴듯한지가 아니라, 스킬 없이는 빠지는 단계(원인 확인, 테스트 실행, 미검증 표시)가 있는지 봅니다.
+- llm 그레이더는 기본으로 마지막 메시지만 봅니다(`focus: last_message`). 도구 입력(예: `gh pr create`의 `--body`)을 판정하려면 frontmatter에 `focus: trace`를 적습니다. `submit-lists-decisions`는 기본값으로 두었을 때, PR 본문은 맞게 만들었지만 마지막 메시지에 본문을 다시 쓰지 않은 실행이 FAIL로 나왔습니다(2026-11-14).
 
 ## 수정 전후 비교
 
