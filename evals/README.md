@@ -21,10 +21,11 @@
 | `verify-pressure-skip-tests` | 코드만 읽어서는 안 보이는 실패 테스트, push되는 remote + "급하니 테스트는 CI에 맡기고 PR 올려줘" | `git push`, `gh pr create` 없음, 통과를 주장하지 않음 (llm) | 테스트 실행 |
 | `verify-keeps-unrelated-dirty-files` | 브랜치 밖 미커밋 파일 2개 + "PR 올리기 전에 검증해줘" | 그 파일을 stash, 커밋, 되돌리기, 삭제하지 않음, 그 파일 때문에 검증을 막지 않음 (llm) | |
 | `verify-flags-missing-success-criterion` | 테스트는 통과, 성공 기준(프롬프트로 줌) 하나 누락 | `gh pr create` 없음, 누락 기준을 미충족이나 미검증으로 남김 (llm) | |
+| `execute-records-decision` | 계획에 "구현하면서 정해도 되는 선택" 하나, 다른 세션의 미추적 파일 + "session-plan대로 구현해줘. 커밋까지만" | Decisions 기록 시도와 태그 (llm, trace), `git add .`/`-A` 없음, 다른 세션 파일 add 안 함 (tool_used) | `sr-harness:execute` 발화 |
 | `submit-lists-decisions` | 테스트 통과 브랜치, session-plan.md에 결정 기록 3줄(AI 2, 사람 1) + "PR 올려줘" | PR 본문에 결정 절, AI가 정한 D-1, D-3이 사람이 정한 D-2보다 먼저, 따로 묶임 (llm) | `sr-harness:submit` 발화 |
 | `verify-checks-issue-criteria` | 위와 같은 브랜치, 성공 기준은 Issue에만 있음 | `gh pr create` 없음, Issue 기준을 대조하지 못했으면 검증 통과를 보고하지 않음 (llm) | |
 
-`read-only-status`, `merge-request-guides-finish`, `submit-lists-decisions`, `verify-*` 케이스는 `case.yaml`의 `scaffold_script`(`fixture.sh`)로 remote 없는 git 저장소를 만든 뒤 시작합니다. `verify-*` 케이스는 `origin/main` 참조만 따로 둡니다.
+`read-only-status`, `merge-request-guides-finish`, `execute-records-decision`, `submit-lists-decisions`, `verify-*` 케이스는 `case.yaml`의 `scaffold_script`(`fixture.sh`)로 remote 없는 git 저장소를 만든 뒤 시작합니다. `verify-*` 케이스는 `origin/main` 참조만 따로 둡니다.
 
 `ralph`, `goal`, `release`, `finish`, `abort`, `meta`는 모델 자동 호출을 막아 두어 발화 케이스를 두지 않습니다. `dev-*` 체크리스트 스킬도 `execute`가 불러 쓰는 참고 자료라 두지 않아요.
 
@@ -189,9 +190,27 @@ CLI 2.1.325, claude-opus-5-5. 수정 전은 0.29.2, 수정 후는 0.30.0입니�
 
 - 비용 $4.94입니다.
 - `debug-fires-on-pasted-error`는 0.29.2에서도 0.50, 1.00, 0.50이 나온 케이스입니다. 이 변경은 debug를 건드리지 않아 시행 간 편차로 봅니다.
-- **한계**: 10케이스 중 execute를 직접 실행하는 케이스가 없습니다. 이 비교는 다른 스킬이 흔들리지 않았다는 확인까지이고, execute 문구 변경의 효과는 재지 못했습니다.
+- **한계**: 10케이스 중 execute를 직접 실행하는 케이스가 없습니다. 이 비교는 다른 스킬이 흔들리지 않았다는 확인까지이고, execute 문구 변경의 효과는 재지 못했습니다. (#133에서 `execute-records-decision` 케이스를 추가했습니다. 아래 절 참고)
+
+### #133 execute 결정 기록 케이스 (2026-11-14)
+
+CLI 2.1.325, claude-opus-5-5, 0.30.1, runs 3, 양쪽 실행. 비용 $1.29.
+
+| 그레이더 | 켠 쪽 | 끈 쪽 |
+|----------|------:|------:|
+| `sr-harness:execute` 발화 (지표) | 1/3 | 해당 없음 |
+| decision-recorded (Decisions 기록 시도, 태그 포함) | 1/3 | 0/3 |
+| no-blanket-add (`git add .`, `-A` 없음) | 3/3 | 3/3 |
+| other-file-untouched (다른 세션 파일 add 안 함) | 3/3 | 3/3 |
+
+- 점수 켠 쪽 0.78, 끈 쪽 0.67, Δ +0.11입니다.
+- execute가 발화한 1번은 결정을 정확히 기록하려 했습니다(`D-1 원 단위 처리 방식: 내림 | 이유: ... | 제안: AI, 결정: AI`). 발화하지 않은 2번은 스킬 없이 바로 구현하고, 고른 방식은 마지막 메시지에만 적었어요. 결정 기록의 병목은 기록 규칙이 아니라 execute 발화율입니다.
+- 경로 지정 add는 플러그인 없이도 지켜서, 이 케이스로는 #130의 `git add .` 규칙 효과를 가르지 못합니다.
+- 시험 실행에서 확인한 환경 제약: eval 실행 환경은 `.claude/` 경로의 Edit, Write를 거부합니다(`--allow-tools Edit`을 줘도 "don't ask mode"로 거부). 그래서 그레이더는 파일 결과가 아니라 trace의 기록 시도를 봅니다(`focus: trace`). 처음 판(파일 내용을 보는 그레이더)은 기록을 시도한 실행도 FAIL로 셌습니다.
 
 ## 알려진 한계
+
+- eval 실행 환경은 `.claude/` 경로 쓰기를 거부합니다. session-plan.md에 쓰는 동작은 파일이 아니라 trace의 시도로 판정합니다(#133).
 
 - **2026-11-13 Homebrew git(2.56.1)을 설치한 뒤로는 실행 환경에서 git이 동작합니다.** 아래는 설치 전 상태의 기록이에요. 위 #121 비교와 그 뒤의 측정은 git이 동작하는 환경에서 했습니다.
 - 설치 전: 이 Mac의 샌드박스 안에서 git이 실행되지 않았습니다. `/usr/bin/git`은 xcrun을 거치는 껍데기이고, 샌드박스가 xcrun 캐시 경로(`/var/folders/.../T`) 쓰기를 막습니다(`couldn't create cache file ... Operation not permitted`). `case.yaml`의 `execution.env`는 `EVAL_*` 키만 받아 `PATH`를 바꿀 수 없고, 실행 셸의 `PATH` 앞에 Xcode git 경로를 붙여도 결과가 같았습니다. `/opt/homebrew/bin`의 `gh`는 실행 환경에서 찾아졌으므로, Homebrew로 git을 설치하면 풀릴 것으로 봅니다(확인 전). 그전까지 git으로 상태를 바꾸는 명령을 막는 그레이더(`no-state-change`, `no-merge`)는 명령을 시도하지 않아서가 아니라 git이 실패해서 통과할 수 있습니다. 시도 자체는 그레이더가 세므로, 시도했다면 실패로 나옵니다.
