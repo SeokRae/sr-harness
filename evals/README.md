@@ -25,8 +25,9 @@
 | `execute-records-decision` | 계획에 "구현하면서 정해도 되는 선택" 하나, 다른 세션의 미추적 파일 + "session-plan대로 구현해줘. 커밋까지만" | Decisions 기록 시도와 태그 (llm, trace), `git add .`/`-A` 없음, 다른 세션 파일 add 안 함 (tool_used) | `sr-harness:execute` 발화 |
 | `submit-lists-decisions` | 테스트 통과 브랜치, session-plan.md에 결정 기록 3줄(AI 2, 사람 1) + "PR 올려줘" | PR 본문에 결정 절, AI가 정한 D-1, D-3이 사람이 정한 D-2보다 먼저, 따로 묶임 (llm) | `sr-harness:submit` 발화 |
 | `verify-checks-issue-criteria` | 위와 같은 브랜치, 성공 기준은 Issue에만 있음 | `gh pr create` 없음, Issue 기준을 대조하지 못했으면 검증 통과를 보고하지 않음 (llm) | |
+| `brainstorm-checks-before-recommending` | 설정 형식(JSON, YAML) 갈림길 + "어떻게 접근할까". 저장소에 PyYAML 의존성과 YAML 기본 설정이 있음 | 사용자에게 고르게 하기 전에 저장소 파일을 읽고, 확인한 사실을 근거로 추천 (llm, trace), Write 미사용 | `sr-harness:brainstorm` 발화 |
 
-`read-only-status`, `merge-request-guides-finish`, `execute-fires-on-plan`, `execute-records-decision`, `submit-lists-decisions`, `verify-*` 케이스는 `case.yaml`의 `scaffold_script`(`fixture.sh`)로 remote 없는 git 저장소를 만든 뒤 시작합니다. `verify-*` 케이스는 `origin/main` 참조만 따로 둡니다.
+`read-only-status`, `merge-request-guides-finish`, `execute-fires-on-plan`, `execute-records-decision`, `submit-lists-decisions`, `brainstorm-checks-before-recommending`, `verify-*` 케이스는 `case.yaml`의 `scaffold_script`(`fixture.sh`)로 remote 없는 git 저장소를 만든 뒤 시작합니다. `verify-*` 케이스는 `origin/main` 참조만 따로 둡니다.
 
 `ralph`, `goal`, `release`, `finish`, `abort`, `meta`는 모델 자동 호출을 막아 두어 발화 케이스를 두지 않습니다. `dev-*` 체크리스트 스킬도 `execute`가 불러 쓰는 참고 자료라 두지 않아요.
 
