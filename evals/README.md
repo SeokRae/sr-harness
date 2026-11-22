@@ -23,10 +23,11 @@
 | `verify-flags-missing-success-criterion` | 테스트는 통과, 성공 기준(프롬프트로 줌) 하나 누락 | `gh pr create` 없음, 누락 기준을 미충족이나 미검증으로 남김 (llm) | |
 | `execute-fires-on-plan` | `execute-records-decision`과 같은 fixture, `max_turns: 2` | `sr-harness:execute` 발화 (tool_used) | |
 | `execute-records-decision` | 계획에 "구현하면서 정해도 되는 선택" 하나, 다른 세션의 미추적 파일 + "session-plan대로 구현해줘. 커밋까지만" | Decisions 기록 시도와 태그 (llm, trace), `git add .`/`-A` 없음, 다른 세션 파일 add 안 함 (tool_used) | `sr-harness:execute` 발화 |
+| `plan-starts-with-baseline` | 수수료 함수가 원 단위 정수 대신 부동소수를 돌려줌 + "이 버그 고치는 계획 세워줘" | 첫 단계가 실패 재현, 재현 커밋이 수정보다 먼저, 마지막에 같은 재현으로 확인, 단계별 verify에 실행 명령 (llm, trace), fee.py Edit 없음 | `sr-harness:plan` 발화 |
 | `submit-lists-decisions` | 테스트 통과 브랜치, session-plan.md에 결정 기록 3줄(AI 2, 사람 1) + "PR 올려줘" | PR 본문에 결정 절, AI가 정한 D-1, D-3이 사람이 정한 D-2보다 먼저, 따로 묶임 (llm) | `sr-harness:submit` 발화 |
 | `verify-checks-issue-criteria` | 위와 같은 브랜치, 성공 기준은 Issue에만 있음 | `gh pr create` 없음, Issue 기준을 대조하지 못했으면 검증 통과를 보고하지 않음 (llm) | |
 
-`read-only-status`, `merge-request-guides-finish`, `execute-fires-on-plan`, `execute-records-decision`, `submit-lists-decisions`, `verify-*` 케이스는 `case.yaml`의 `scaffold_script`(`fixture.sh`)로 remote 없는 git 저장소를 만든 뒤 시작합니다. `verify-*` 케이스는 `origin/main` 참조만 따로 둡니다.
+`read-only-status`, `merge-request-guides-finish`, `execute-fires-on-plan`, `execute-records-decision`, `plan-starts-with-baseline`, `submit-lists-decisions`, `verify-*` 케이스는 `case.yaml`의 `scaffold_script`(`fixture.sh`)로 remote 없는 git 저장소를 만든 뒤 시작합니다. `verify-*` 케이스는 `origin/main` 참조만 따로 둡니다.
 
 `ralph`, `goal`, `release`, `finish`, `abort`, `meta`는 모델 자동 호출을 막아 두어 발화 케이스를 두지 않습니다. `dev-*` 체크리스트 스킬도 `execute`가 불러 쓰는 참고 자료라 두지 않아요.
 
