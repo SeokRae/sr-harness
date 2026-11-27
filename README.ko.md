@@ -140,7 +140,7 @@ start
 | `brainstorm` | 반복 피드백 기반 아이디어 구체화 |
 | `plan` | step → verify 형식 계획 수립 |
 | `issue` | GitHub Issue + 브랜치 생성 |
-| `execute` | 구현 실행 · karpathy 체크포인트 |
+| `execute` | 구현 실행 · karpathy 체크포인트, 작업마다 실행 방식 판단 |
 | `debug` | 진단 우선 디버깅 |
 | `analyze` | 의도 정합성 게이트 (Issue ↔ diff), verify 전, 구현 맥락 없는 새 에이전트가 판정 |
 | `verify` | PR 제출 전 통합 검증 |
