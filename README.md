@@ -141,7 +141,7 @@ start
 | `brainstorm` | Iterative feedback loop to concretize ideas |
 | `plan` | Planning with step → verify format |
 | `issue` | GitHub Issue + branch creation |
-| `execute` | Implementation with Karpathy checkpoints |
+| `execute` | Implementation with Karpathy checkpoints, picks the execution method per task |
 | `debug` | Diagnose-first debugging |
 | `analyze` | Intent-consistency gate (Issue ↔ diff) before verify, judged by a fresh agent with no implementation context |
 | `verify` | Integration check before PR |
